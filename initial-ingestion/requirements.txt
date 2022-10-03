@@ -2,3 +2,4 @@
 confluent_kafka
 uuid
 pandas
+python-dotenv
