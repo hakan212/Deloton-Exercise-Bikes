@@ -7,6 +7,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# TODO: decide on the schema to read from in snowflake (data mart)
+
+# Snowflake Connection
+
 USER = os.environ.get('USER')
 ACCOUNT = os.environ.get('ACCOUNT')
 PASSWORD = os.environ.get('PASSWORD')
@@ -23,3 +27,12 @@ conn = snowflake.connector.connect(
     schema=SCHEMA
 )
 cs = conn.cursor()
+
+
+# Dash application
+
+app = Dash(__name__, use_pages=True)
+
+
+if __name__ == "__main__":
+    app.run_server(host="0.0.0.0", debug=True, port=8080)
