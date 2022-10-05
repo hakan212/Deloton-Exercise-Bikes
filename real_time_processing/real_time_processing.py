@@ -2,10 +2,10 @@ import os
 
 from confluent_kafka import Consumer
 from dotenv import load_dotenv
-
 load_dotenv()
 import json
 import re
+import uuid
 
 KAFKA_SERVER = os.getenv('KAFKA_SERVER')
 KAFKA_USERNAME=os.getenv('KAFKA_USERNAME')
