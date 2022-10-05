@@ -63,14 +63,28 @@ def run_query(query, engine=engine):
 def default():
     return "Delaton Exercise Bikes API"
 
+@flask_app.route("/ride/<ride_id>")
+def get_ride(ride_id):
+    query = f"""
+        SELECT *
+            FROM rides
+            WHERE id = {ride_id}
+    """
+    ride = run_query(query)
+
+    response = jsonify({"status": 200,"ride": ride})
+
+    return response
+
+
 @flask_app.route("/rider/<rider_id>", method=["GET"])
 def get_rider(rider_id):
-    rider_query = f"""
+    query = f"""
         SELECT *
             FROM riders
             WHERE id = {rider_id}
     """
-    rider = run_query(rider_query)
+    rider = run_query(query)
 
     response = jsonify({"status": 200,"rider": rider})
 
@@ -79,14 +93,14 @@ def get_rider(rider_id):
 
 @flask_app.route("/rider/<rider_id>/rides", method=["GET"])
 def get_rides_for_rider(rider_id):
-    rider_query = f"""
+    query = f"""
         SELECT *
             FROM rides
             WHERE rider_id = {rider_id}
     """
-    rider = run_query(rider_query)
+    rides = run_query(query)
 
-    response = jsonify({"status": 200,"rider": rider})
+    response = jsonify({"status": 200,"rides": rides})
 
     return response
 
