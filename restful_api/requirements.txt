@@ -1,0 +1,7 @@
+# requirements for flask x snowflake api
+pandas
+json
+sqlalchemy
+snowflake.connector
+snowflake.sqlalchemy
+flask
