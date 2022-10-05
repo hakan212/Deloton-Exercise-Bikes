@@ -1,4 +1,5 @@
 import snowflake.connector
+import pandas as pd
 import os
 from dotenv import load_dotenv
 
@@ -24,3 +25,6 @@ conn = snowflake.connector.connect(
     schema=SCHEMA
 )
 cs = conn.cursor()
+
+# TODO: query data into a pandas dataframe and pickle (12hr requirement)
+# should boost performance
