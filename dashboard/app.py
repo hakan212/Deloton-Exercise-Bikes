@@ -1,37 +1,44 @@
-import dash
-import dash_bootstrap_components as dbc
-from dash import Dash, html
-import snowflake.connector
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
-# TODO: decide on the schema to read from in snowflake (data mart)
-
-# Snowflake Connection
-
-USER = os.environ.get('USER')
-ACCOUNT = os.environ.get('ACCOUNT')
-PASSWORD = os.environ.get('PASSWORD')
-WAREHOUSE= os.environ.get('WAREHOUSE')
-DATABASE= os.environ.get('DATABASE')
-SCHEMA= os.environ.get('SCHEMA')
-
-conn = snowflake.connector.connect(
-    user=USER,
-    password=PASSWORD,
-    account=ACCOUNT,
-    warehouse=WAREHOUSE,
-    database=DATABASE,
-    schema=SCHEMA
-)
-cs = conn.cursor()
+from dash import Dash, dcc, html
+from dash.dependencies import Input, Output
 
 
-# Dash application
+app = Dash(__name__, use_pages=False)
 
-app = Dash(__name__, use_pages=True)
+app.layout = html.Div([
+    html.H1("Deloton Dashboard"),
+
+    #Current Ride info
+    html.Div([
+        html.H2('Current Ride'),
+        html.Div([
+            html.H3('Current Rider Account Details'),
+            html.Span('{Placeholder for details...}')
+        ]),
+        html.Div([
+            html.H3('Current Ride Stats'),
+            html.Div(id='live-ride-text'),
+            dcc.Interval(
+                id='live-ride-interval',
+                interval=1*1000, # in milliseconds
+                n_intervals=0 #counter for number of refreshes
+            )
+        ])
+    ]),
+    #Recent Ride info
+    html.Div([
+        html.H2('Recent Rides')
+    ])
+])
+
+
+@app.callback(Output('live-ride-text', 'children'),
+              Input('live-ride-interval', 'n_intervals'))
+def live_refresh_placeholder(n_intervals):
+    import random
+    heart_rate = random.randrange(50, 200)
+    return html.Span(
+        f'Riding for {n_intervals // 60} minutes and {n_intervals % 60} seconds. Heart rate: {heart_rate} BPM'
+    )
 
 
 if __name__ == "__main__":
