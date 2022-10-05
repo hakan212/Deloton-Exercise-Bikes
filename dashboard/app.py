@@ -7,21 +7,29 @@ app = Dash(__name__, use_pages=False)
 
 app.layout = html.Div([
     html.H1("Deloton Dashboard"),
+
+    #User info
     html.Div([
-        html.H2('Current Heartrate'),
-        html.Div(id='heart-rate-text'),
-        dcc.Interval(
-            id='interval-component',
-            interval=1*1000, # in milliseconds
-            n_intervals=0
-        )
+        html.Div([
+            html.H2('Current Rider Account Details'),
+            html.Span('{Placeholder for details...}')
+        ]),
+        html.Div([
+            html.H2('Current Ride Stats'),
+            html.Div(id='live-ride-text'),
+            dcc.Interval(
+                id='live-ride-interval',
+                interval=1*1000, # in milliseconds
+                n_intervals=0
+            )
+        ])
     ])
 ])
 
 
-@app.callback(Output('heart-rate-text', 'children'),
-              Input('interval-component', 'n_intervals'))
-def refresh_heartrate_placeholder(n_intervals):
+@app.callback(Output('live-ride-text', 'children'),
+              Input('live-ride-interval', 'n_intervals'))
+def live_refresh_placeholder(n_intervals):
     import random
     heart_rate = random.randrange(50, 200)
     return html.Span(
