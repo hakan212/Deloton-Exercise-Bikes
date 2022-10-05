@@ -1,16 +1,10 @@
-import json
 import os
-import re
+from datetime import datetime, timedelta
 
-import pandas as pd
-import sqlalchemy
-import snowflake.connector as sf
-from sqlalchemy import create_engine
-from snowflake.sqlalchemy import URL
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
-
-from datetime import datetime, timedelta
+from snowflake.sqlalchemy import URL
+from sqlalchemy import create_engine
 
 load_dotenv()
 
@@ -39,7 +33,7 @@ engine = create_engine(
 connection = engine.connect()
 
 
-def run_query(query, engine=engine):
+def run_query(query, db_engine=engine):
     """Runs a SQL query in Snowflake data warehouse
 
     Args:
@@ -49,7 +43,7 @@ def run_query(query, engine=engine):
     Returns:
         query_results: data associated with the query made
     """
-    conn = engine.connect()
+    conn = db_engine.connect()
 
     try:
         query_results = conn.execute(query)
@@ -69,7 +63,7 @@ def default():
     return "Delaton Exercise Bikes API"
 
 
-@flask_app.route("/ride/<ride_id>", method=["GET"], ["DELETE"])
+@flask_app.route("/ride/<ride_id>", method=["GET"])
 def get_ride(ride_id):
     query = f"""
         SELECT *
@@ -128,23 +122,21 @@ def get_daily():
 
         return response
 
-    else:
+    query = f"""
+        SELECT *
+            FROM rides
+            WHERE begin_timestamp > {datetime.now() - timedelta(days=1)}
+        """
+    daily_rides = run_query(query)
 
-        query = f"""
-            SELECT *
-                FROM rides
-                WHERE begin_timestamp > {datetime.now() - timedelta(days=1)}
-         """
-        daily_rides = run_query(query)
+    response = jsonify({"status": 200, "rides": daily_rides})
 
-        response = jsonify({"status": 200, "rides": daily_rides})
-
-        return response
+    return response
 
 
 # DELETE Endpoints
 @flask_app.route("/ride/<ride_id>", method=["POST"])
-#s Seems like DELETE requests aren't supported - workaround with POST
+# Seems like DELETE requests aren't supported - workaround with POST for now
 def delete_ride_id(ride_id):
     query = f"""
         DELETE FROM rides
@@ -162,6 +154,7 @@ def delete_ride_id(ride_id):
     response = jsonify({"status": 204, "ride": ride})
 
     return response
+
 
 if __name__ == "__main__":
     # TODO: import waitress for when we containerize
