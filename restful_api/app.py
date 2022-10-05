@@ -19,19 +19,6 @@ flask_app = Flask(__name__)
 
 # Snowflake-SQLalchemy connection
 
-engine = create_engine(
-    URL(
-        user=USER,
-        password=PASSWORD,
-        account=ACCOUNT,
-        warehouse=WAREHOUSE,
-        database=DATABASE,
-        schema=SCHEMA,
-    )
-)
-
-connection = engine.connect()
-
 
 def run_query(query, db_engine=engine):
     """Runs a SQL query in Snowflake data warehouse
@@ -43,12 +30,26 @@ def run_query(query, db_engine=engine):
     Returns:
         query_results: data associated with the query made
     """
+    engine = create_engine(
+        URL(
+            user=USER,
+            password=PASSWORD,
+            account=ACCOUNT,
+            warehouse=WAREHOUSE,
+            database=DATABASE,
+            schema=SCHEMA,
+        )
+    )
+
     conn = db_engine.connect()
 
     try:
         query_results = conn.execute(query)
+    except Exception as e:
+        print(f"Exception: {e}")
     finally:
-        connection.close()
+        conn.close()
+        engine.dispose()
 
     data = query_results.fetchall()
 
