@@ -75,7 +75,7 @@ def update_current_ride_metrics (current_data: dict, log: str):
 def update_user_information (current_data: dict, user_information: str):
 ## Given string from log on new user, will update current_data user information
     current_data['user_id'] = int(re.findall('"user_id":(\d+)', user_information)[0])
-    current_data['user_name'] = re.findall('"name":"(\w+ \w+| \w+ \w+ \w+)', user_information)[0]
+    current_data['user_name'] = re.findall('"name":"(\w+ \w+ \w+|\w+ \w+)', user_information)[0]
     current_data['user_gender'] = re.findall('"gender":"(\w+)', user_information)[0]
     current_data['user_address'] = re.findall('"address":"([\w ,]+)', user_information)[0]
     current_data['user_dob'] = int(re.findall('"date_of_birth":(-\d+)', user_information)[0])
@@ -111,6 +111,5 @@ while True:
 
         if '-------' in log or 'Getting user data from server' in log:
             current_data = {}
-
 
     print(current_data)
