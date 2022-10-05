@@ -7,7 +7,7 @@ import snowflake.connector as sf
 from sqlalchemy import create_engine
 from snowflake.sqlalchemy import URL
 from dotenv import load_dotenv
-from flask import Flask, request
+from flask import Flask, jsonify
 
 load_dotenv()
 
@@ -64,8 +64,17 @@ def default():
     return "Delaton Exercise Bikes API"
 
 @flask_app.route("/rider/<rider_id>", method=["GET"])
-def get_rider(rider_id);
+def get_rider(rider_id):
+    rider_query = f"""
+        SELECT *
+            FROM riders
+            WHERE id = {rider_id}
+    """
+    rider = run_query(rider_query)
 
+    response = jsonify({"status": 200,"rider": rider})
+
+    return response
 
     
 
