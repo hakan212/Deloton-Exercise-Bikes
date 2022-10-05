@@ -20,7 +20,7 @@ flask_app = Flask(__name__)
 # Snowflake-SQLalchemy connection
 
 
-def run_query(query, db_engine=engine):
+def run_query(query):
     """Runs a SQL query in Snowflake data warehouse
 
     Args:
@@ -41,7 +41,7 @@ def run_query(query, db_engine=engine):
         )
     )
 
-    conn = db_engine.connect()
+    conn = engine.connect()
 
     try:
         query_results = conn.execute(query)
