@@ -76,9 +76,19 @@ def get_rider(rider_id):
 
     return response
 
-    
 
 @flask_app.route("/rider/<rider_id>/rides", method=["GET"])
+def get_rides_for_rider(rider_id):
+    rider_query = f"""
+        SELECT *
+            FROM rides
+            WHERE rider_id = {rider_id}
+    """
+    rider = run_query(rider_query)
+
+    response = jsonify({"status": 200,"rider": rider})
+
+    return response
 
 
 @flask_app.route("/daily", method=["GET"])
