@@ -2,7 +2,10 @@ import json
 import os
 
 import pandas as pd
+import sqlalchemy
 import snowflake.connector as sf
+from sqlalchemy import create_engine
+from snowflake.sqlalchemy import URL
 from dotenv import load_dotenv
 from flask import Flask, request
 
@@ -13,26 +16,29 @@ ACCOUNT = os.environ.get("ACCOUNT")
 PASSWORD = os.environ.get("PASSWORD")
 WAREHOUSE = os.environ.get("WAREHOUSE")
 DATABASE = os.environ.get("DATABASE")
-SCHEMA = os.environ.get("SCHEMA")
+SCHEMA = os.environ.get("SCHEMA") # need to change to the correct table
 
 flask_app = Flask(__name__)
 
-# Snowflake connection
+# Snowflake-SQLalchemy connection
 
-conn = sf.connect(
+engine = create_engine(URL(
     user=USER,
     password=PASSWORD,
     account=ACCOUNT,
     warehouse=WAREHOUSE,
     database=DATABASE,
-    schema=SCHEMA,
-)
+    schema=SCHEMA
+))
 
-def run_query(conn, query):
+connection = engine.connect()
+
+
+def run_query(query, conn=connection):
     """Runs a SQL query in Snowflake data warehouse
 
     Args:
-        conn: Snowflake DB connection
+        conn: Snowflake_SQLalchemy DB connection
         query: SQL query
 
     Returns:
@@ -53,8 +59,9 @@ def default():
     return "Delaton Exercise Bikes API"
 
 @flask_app.route("/rider/<rider_id>", method=["GET"])
-def get_rider_id(rider_id);
-    snow_sql = request.args.get
+def get_rider(rider_id);
+
+    
 
 @flask_app.route("/rider/<rider_id>/rides", method=["GET"])
 
@@ -69,4 +76,4 @@ def delete_ride_id(ride_id):
 
 
 if __name__ == "__main__":
-    flask_app.run()
+    flask_app.run(debug=True)
