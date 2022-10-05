@@ -2,4 +2,6 @@
 pandas
 json
 snowflake.connector
+snowflake-sqlalchemy
+sqlalchemy
 flask
