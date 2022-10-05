@@ -6,7 +6,7 @@ from dash.dependencies import Input, Output
 app = Dash(__name__, use_pages=False)
 
 app.layout = html.Div([
-    html.H1("Delaton Dashboard"),
+    html.H1("Deloton Dashboard"),
     html.Div([
         html.H2('Current Heartrate'),
         html.Div(id='heart-rate-text'),
