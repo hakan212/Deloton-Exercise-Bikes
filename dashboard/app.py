@@ -8,21 +8,26 @@ app = Dash(__name__, use_pages=False)
 app.layout = html.Div([
     html.H1("Deloton Dashboard"),
 
-    #User info
+    #Current Ride info
     html.Div([
+        html.H2('Current Ride'),
         html.Div([
-            html.H2('Current Rider Account Details'),
+            html.H3('Current Rider Account Details'),
             html.Span('{Placeholder for details...}')
         ]),
         html.Div([
-            html.H2('Current Ride Stats'),
+            html.H3('Current Ride Stats'),
             html.Div(id='live-ride-text'),
             dcc.Interval(
                 id='live-ride-interval',
                 interval=1*1000, # in milliseconds
-                n_intervals=0
+                n_intervals=0 #counter for number of refreshes
             )
         ])
+    ]),
+    #Recent Ride info
+    html.Div([
+        html.H2('Recent Rides')
     ])
 ])
 
