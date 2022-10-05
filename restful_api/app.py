@@ -2,7 +2,7 @@ import os
 from datetime import datetime, timedelta
 import json
 import snowflake.connector as sf
-
+import time
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 
@@ -52,12 +52,12 @@ def run_query(query, conn):
 def default():
     return "Delaton Exercise Bikes API"
 
+
 @flask_app.route("/rides", methods=["GET"])
 def get_rides():
     query = f"""
         SELECT *
             FROM rides
-        LIMIT 10
     """
     query_results = run_query(query, conn)
 
@@ -70,75 +70,101 @@ def get_rides():
     return response
 
 
-# @flask_app.route("/ride/<ride_id>", methods=["GET"])
-# def get_ride(ride_id):
-#     query = f"""
-#         SELECT *
-#             FROM rides
-#             WHERE ride_id = {ride_id}
-#     """
-#     ride = run_query(query)
+@flask_app.route("/rides/<ride_id>", methods=["GET"])
+def get_ride(ride_id):
+    query = f"""
+        SELECT *
+            FROM rides
+            WHERE ride_id = {ride_id}
+    """
+    query_results = run_query(query, conn)
 
-#     response = jsonify({"status": 200, "ride": ride})
+    json_string = query_results.fetch_pandas_all().to_json(orient="records")
 
-#     return response
+    parsed_json = json.loads(json_string)
 
+    response = jsonify({"status": 200, "ride": parsed_json})
 
-# @flask_app.route("/rider/<rider_id>", methods=["GET"])
-# def get_rider(rider_id):
-#     query = f"""
-#         SELECT *
-#             FROM users
-#             WHERE user_id = {rider_id}
-#     """
-#     rider = run_query(query)
-
-#     response = jsonify({"status": 200, "rider": rider})
-
-#     return response
+    return response
 
 
-# @flask_app.route("/rider/<rider_id>/rides", methods=["GET"])
-# def get_rides_for_rider(rider_id):
-#     query = f"""
-#         SELECT *
-#             FROM rides
-#             WHERE rider_id = {rider_id}
-#     """
-#     rides = run_query(query)
+@flask_app.route("/rider/<rider_id>", methods=["GET"])
+def get_rider(rider_id):
+    query = f"""
+        SELECT *
+            FROM users
+            WHERE user_id = {rider_id}
+    """
+    query_results = run_query(query, conn)
 
-#     response = jsonify({"status": 200, "rides": rides})
+    json_string = query_results.fetch_pandas_all().to_json(orient="records")
 
-#     return response
+    parsed_json = json.loads(json_string)
+
+    response = jsonify({"status": 200, "rider": parsed_json})
+
+    return response
 
 
-# @flask_app.route("/daily", methods=["GET"])
-# # daily endpoint should handle both daily and daily + query string
-# def get_daily():
-#     requested_date = request.args.get("date")
+@flask_app.route("/rider/<rider_id>/rides", methods=["GET"])
+def get_rides_for_rider(rider_id):
+    query = f"""
+        SELECT *
+            FROM rides
+            WHERE user_id = {rider_id}
+    """
+    query_results = run_query(query, conn)
 
-#     if requested_date is not None:
-#         query = f"""
-#             SELECT *
-#                 FROM rides
-#                 WHERE begin_timestamp = {requested_date}
-#         """
-#         requested_date_rides = run_query(query)
+    json_string = query_results.fetch_pandas_all().to_json(orient="records")
 
-#         response = jsonify({"status": 200, "rides": requested_date_rides})
+    parsed_json = json.loads(json_string)
 
-#         return response
+    response = jsonify({"status": 200, "rides": parsed_json})
 
-#     query = f"""
-#         SELECT *
-#             FROM rides
-#             WHERE begin_timestamp > {datetime.now() - timedelta(days=1)}
-#         """
-#     daily_rides = run_query(query)
+    return response
 
-#     response = jsonify({"status": 200, "rides": daily_rides})
 
-#     return response
+@flask_app.route("/daily", methods=["GET"])
+# daily endpoint should handle both daily and daily + query string
+def get_daily():
+    requested_date = request.args.get("date")
+
+    if requested_date is not None:
+        query = f"""
+            SELECT *
+                FROM rides
+                WHERE begin_timestamp = TO_TIMESTAMP({requested_date})
+        """
+        query_results = run_query(query, conn)
+
+        json_string = query_results.fetch_pandas_all().to_json(orient="records")
+
+        parsed_json = json.loads(json_string)
+
+        if len(parsed_json) == 0:
+            response = jsonify({"status": 204, "rides": "No content"})
+
+            return response
+        
+
+        response = jsonify({"status": 200, "rides": parsed_json})
+
+        return response
+
+    # query = f"""
+    #     SELECT *
+    #         FROM rides
+    #         WHERE begin_timestamp >= CURRENT_DATE
+    #     """
+    # query_results = run_query(query, conn)
+
+    # json_string = query_results.fetch_pandas_all().to_json(orient="records")
+
+    # parsed_json = json.loads(json_string)
+
+    # response = jsonify({"status": 200, "rides": parsed_json})
+
+    # return response
 
 
 # # DELETE Endpoints
