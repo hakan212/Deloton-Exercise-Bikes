@@ -34,7 +34,7 @@ engine = create_engine(URL(
 connection = engine.connect()
 
 
-def run_query(query, conn=connection):
+def run_query(query, engine=engine):
     """Runs a SQL query in Snowflake data warehouse
 
     Args:
@@ -44,11 +44,16 @@ def run_query(query, conn=connection):
     Returns:
         query_results: data associated with the query made
     """
-    cs = conn.cursor()
-    cs.execute(query)
-    query_results = cs.fetchall()
-    cs.close()
-    return query_results
+    conn = engine.connect()
+
+    try: 
+        query_results = conn.execute(query)
+    finally:
+        connection.close()
+ 
+    data = query_results.fetchall()
+    
+    return data
 
 
 # API Endpoints
@@ -60,6 +65,7 @@ def default():
 
 @flask_app.route("/rider/<rider_id>", method=["GET"])
 def get_rider(rider_id);
+
 
     
 
