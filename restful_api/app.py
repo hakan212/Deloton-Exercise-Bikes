@@ -17,6 +17,7 @@ WAREHOUSE= os.environ.get('WAREHOUSE')
 DATABASE= os.environ.get('DATABASE')
 SCHEMA= os.environ.get('SCHEMA')
 
+flask_app = Flask(__name__)
 
 # SQLalchemy connection
 
@@ -46,3 +47,11 @@ cs = conn.cursor()
 
 
 # API Endpoints
+
+@flask_app.route('/')
+def index():
+    return "Delaton Exercise Bikes API"
+
+
+if __name__ == "__main__":
+    flask_app.run()
