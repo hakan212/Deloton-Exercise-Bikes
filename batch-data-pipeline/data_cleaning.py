@@ -10,7 +10,7 @@ def convert_unix_to_date(unix_timestamp):
 
 
 def split_full_name(name):
-    """Split full name based on various conditions, such as if they have a title or not, checks to see if they have a last name"""
+    """Split full name based on if they have a title or not, checks to see if they have a last name"""
     name_list = name.split(" ")
     titles = ["Mr", "Mrs", "Miss", "Ms", "Dr"]
 
