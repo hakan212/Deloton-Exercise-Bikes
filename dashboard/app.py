@@ -21,7 +21,7 @@ app.layout = html.Div([
             html.Div(id='live-ride-text'),
             dcc.Interval(
                 id='live-ride-interval',
-                interval=1*1000, # in milliseconds
+                interval=0.5*1000, # in milliseconds
                 n_intervals=0 #counter for number of refreshes
             )
         ])
@@ -36,25 +36,15 @@ app.layout = html.Div([
 @app.callback(Output('live-ride-text', 'children'),
               Input('live-ride-interval', 'n_intervals'))
 def live_refresh(n_intervals):
-    kafka_message = real_time_processing.c.poll(1) #poll all messages that have occurred since last refresh
+    real_time_processing.refresh_data()
 
-    if kafka_message is not None: #ensure we have a message
-        log = kafka_message.value().decode('utf-8')
-
-        if 'INFO' in log: #only check for strings with INFO
-            real_time_processing.update_current_ride_metrics(real_time_processing.current_data, log)
-        
-        if 'SYSTEM' in log:
-            real_time_processing.update_current_rider_information(real_time_processing.current_data, log)    
-
-        if '-------' in log or 'Getting user data from server' in log:
-            real_time_processing.current_data = {}
+    ride_duration_seconds = real_time_processing.current_data.get('duration') or 0
+    heart_rate = real_time_processing.current_data.get('heart_rate') or 0
     
-    ride_duration_seconds = real_time_processing.current_data.get('duration') or -1
-    heart_rate = real_time_processing.current_data.get('heart_rate') or -1
-
     message = (f'Riding for {ride_duration_seconds // 60} minutes and {ride_duration_seconds % 60} seconds. '
         f'Heart rate: {heart_rate} BPM')
+    print(message)
+
     return html.Span(message)
 
 
