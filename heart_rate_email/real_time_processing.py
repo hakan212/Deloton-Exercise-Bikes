@@ -42,7 +42,7 @@ c.subscribe([KAFKA_TOPIC_NAME])
 current_data = {}
 
 
-def update_heart_rate(current_data: dict, log: str):
+def update_heart_rate(current_data: dict, log: str) -> None:
     '''Will update current_data given log containing information on the current ride'''
     values = json.loads(log)
     new_log = values.get("log")
@@ -57,18 +57,18 @@ def update_heart_rate(current_data: dict, log: str):
         current_data["heart_rate"] = heart_rate
 
 
-def convert_epoc_milliseconds_to_age(epoc_milliseconds: int):
+def convert_epoc_milliseconds_to_dob(epoc_milliseconds: int) -> datetime:
     epoc_seconds = epoc_milliseconds / 1000
 
     return datetime.datetime.fromtimestamp(epoc_seconds)
 
 
-def calculate_age(born: datetime):
+def calculate_age(born: datetime) -> int:
     today = date.today()
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
 
 
-def update_user_information(current_data: dict, user_information: str):
+def update_user_information(current_data: dict, user_information: str) -> None:
     '''Given string from log on new user, will update current_data user information'''
     current_data["user_id"] = int(re.findall('"user_id":(\d+)', user_information)[0])
     current_data["user_name"] = re.findall(
@@ -79,13 +79,13 @@ def update_user_information(current_data: dict, user_information: str):
     )[0]
 
     user_dob_epoc = int(re.findall('"date_of_birth\\":([-\d]+)', user_information)[0])
-    user_dob = convert_epoc_milliseconds_to_age(user_dob_epoc)
+    user_dob = convert_epoc_milliseconds_to_dob(user_dob_epoc)
 
     current_data["user_dob"] = user_dob
     current_data["user_age"] = calculate_age(user_dob)
 
 
-def update_current_rider_information(current_data: dict, log: str):
+def update_current_rider_information(current_data: dict, log: str) -> None:
     '''Updates information on current rider'''
     values = json.loads(log)
     new_log = values.get("log")

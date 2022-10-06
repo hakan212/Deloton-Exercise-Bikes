@@ -52,7 +52,7 @@ def send_email(
     email_body_text: str,
     email_subject: str,
     charset: str = "UTF-8",
-):
+) -> None:
     ## Sends email using AWS SES
     client = boto3.client("ses", region_name=aws_region)
 
