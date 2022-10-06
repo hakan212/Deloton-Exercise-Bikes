@@ -39,7 +39,7 @@ def flatten_list(address_list):
             flat_list.extend(element)
         else:
             flat_list.append(element)
-            
+
     return flat_list
 
 

@@ -6,10 +6,6 @@ from statistics import mean
 from confluent_kafka import Consumer
 from dotenv import load_dotenv
 
-# from data_cleaning import *
-# from log_processing import *
-# from snowflake_connection import *
-
 import log_processing
 import snowflake_connection
 
@@ -75,10 +71,12 @@ def polling_kafka():
             log = kafka_message.value().decode("utf-8")
 
             if "SYSTEM" in log:
-                first_user_collected = True #After it has finished waiting for the first user, the first system log that comes in is the next user
-                                            #hence first user is collected, which is important when extracting data in the 'new ride' condition
-                                            
-                begin_timestamp, user_dictionary = log_processing.dict_from_system_log(log)
+                first_user_collected = True  # After it has finished waiting for the first user, the first system log that comes in is the next user
+                # hence first user is collected, which is important when extracting data in the 'new ride' condition
+
+                begin_timestamp, user_dictionary = log_processing.dict_from_system_log(
+                    log
+                )
 
             elif "INFO" in log:  # only check for strings with INFO
 
@@ -89,7 +87,9 @@ def polling_kafka():
                     split_by_timestamp_and_logs = " mendoza v9: [INFO]: Ride - "
                     timestamp_and_values = log.split(split_by_timestamp_and_logs)
 
-                    log_values = log_processing.extract_values_from_log(timestamp_and_values[1])
+                    log_values = log_processing.extract_values_from_log(
+                        timestamp_and_values[1]
+                    )
 
                     duration = int(float(log_values[0]))
                     resistance_list.append(int(log_values[1]))
@@ -98,7 +98,9 @@ def polling_kafka():
                     split_by_timestamp_and_logs = " mendoza v9: [INFO]: Telemetry - "
                     timestamp_and_values = log.split(split_by_timestamp_and_logs)
 
-                    log_values = log_processing.extract_values_from_log(timestamp_and_values[1])
+                    log_values = log_processing.extract_values_from_log(
+                        timestamp_and_values[1]
+                    )
 
                     heart_rate_list.append(int(log_values[0]))
                     rpm_list.append(int(log_values[1]))
