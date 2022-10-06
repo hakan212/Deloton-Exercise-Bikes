@@ -30,7 +30,7 @@ def connect_to_snowflake():
  
 def insert_into_users(cs,user_dictionary):
     """Makes insert query into users table once all relevant information has been obtained"""
-    cs.execute(
+    cs.execute_async(
                 """INSERT INTO users(user_id, first_name, last_name, gender, date_of_birth, 
                 height_cm, weight_kg, house_name, street, region, postcode, email, account_created) """
                 "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
@@ -47,7 +47,7 @@ def insert_into_users(cs,user_dictionary):
 def insert_into_rides(cs, user_dictionary, begin_timestamp, duration, total_power,
                 mean_power, mean_resistance, mean_rpm, mean_heart_rate):
     """Makes insert query into rides table once all relevant information has been obtained"""
-    cs.execute(
+    cs.execute_async(
                 "INSERT INTO rides(user_id, begin_timestamp, total_duration_sec, total_power, mean_power, mean_resistance, mean_rpm, mean_heart_rate) "
                 "VALUES(%s,%s,%s,%s,%s,%s,%s,%s)",
                 (user_dictionary['user_id'], begin_timestamp, duration, 
