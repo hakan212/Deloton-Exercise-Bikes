@@ -5,6 +5,10 @@ load_dotenv()
 import json
 import re
 import uuid
+import datetime
+from datetime import date
+from heart_rate_calculator import heart_rate_low, heart_rate_high
+from email_sender import get_email_subject, get_email_HTML_body, get_email_text_body, send_email
 
 KAFKA_SERVER = os.getenv('KAFKA_SERVER')
 KAFKA_USERNAME=os.getenv('KAFKA_USERNAME')
@@ -48,12 +52,28 @@ def update_heart_rate (current_data: dict, log: str):
         current_data['heart_rate'] = heart_rate
 
 
+def convert_epoc_milliseconds_to_age (epoc_milliseconds: int):
+    epoc_seconds = epoc_milliseconds / 1000
+
+    return datetime.datetime.fromtimestamp(epoc_seconds)
+
+
+
+def calculate_age(born: datetime):
+    today = date.today()
+    return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+
 def update_user_information (current_data: dict, user_information: str):
 ## Given string from log on new user, will update current_data user information
     current_data['user_id'] = int(re.findall('"user_id":(\d+)', user_information)[0])
     current_data['user_name'] = re.findall('"name":"(\w+ \w+ \w+|\w+ \w+)', user_information)[0]
-    current_data['user_dob'] = int(re.findall('"date_of_birth\\":([-\d]+)', user_information)[0])
     current_data['user_email'] = re.findall('"email_address":"(.+@\w+.\w+)"', user_information)[0]
+
+    user_dob_epoc = int(re.findall('"date_of_birth\\":([-\d]+)', user_information)[0])
+    user_dob = convert_epoc_milliseconds_to_age(user_dob_epoc)
+
+    current_data['user_dob'] = user_dob
+    current_data['user_age'] = calculate_age(user_dob)
 
 
 def update_current_rider_information (current_data: dict, log: str):
@@ -82,5 +102,10 @@ while True:
 
         if '-------' in log or 'Getting user data from server' in log:
             current_data = {}
+    
+    if 'age'
+    
+    current_rider_age = current_data['age']
+    current_rider_age
 
     print(current_data)
