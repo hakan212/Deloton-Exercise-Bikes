@@ -1,7 +1,7 @@
 import json
 import re
 
-from data_cleaning import clean_user_data
+import data_cleaning
 
 
 def extract_values_from_log(string):
@@ -36,5 +36,5 @@ def dict_from_system_log(log):
     dictionary_string = split_log[1][:-1]
     user_dictionary = json.loads(dictionary_string)
 
-    user_dictionary = clean_user_data(user_dictionary)
+    user_dictionary = data_cleaning.clean_user_data(user_dictionary)
     return begin_timestamp, user_dictionary

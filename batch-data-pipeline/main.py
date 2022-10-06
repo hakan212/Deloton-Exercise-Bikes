@@ -6,9 +6,12 @@ from statistics import mean
 from confluent_kafka import Consumer
 from dotenv import load_dotenv
 
-from data_cleaning import *
-from log_processing import *
-from snowflake_connection import *
+# from data_cleaning import *
+# from log_processing import *
+# from snowflake_connection import *
+
+import log_processing
+import snowflake_connection
 
 load_dotenv()
 
@@ -53,7 +56,7 @@ def polling_kafka():
     )
 
     consumer = subscribe_to_kafka_topic()
-    cs = connect_to_snowflake()
+    cs = snowflake_connection.connect_to_snowflake()
 
     resistance_list = []
     power_list = []
@@ -65,7 +68,7 @@ def polling_kafka():
         kafka_message = consumer.poll(0.5)
 
         if wait_for_first_user:
-            kafka_message = wait_for_system_log(consumer)
+            kafka_message = log_processing.wait_for_system_log(consumer)
             wait_for_first_user = False
 
         if kafka_message is not None:  # exclude none values
@@ -74,7 +77,8 @@ def polling_kafka():
             if "SYSTEM" in log:
                 first_user_collected = True #After it has finished waiting for the first user, the first system log that comes in is the next user
                                             #hence first user is collected, which is important when extracting data in the 'new ride' condition
-                begin_timestamp, user_dictionary = dict_from_system_log(log)
+                                            
+                begin_timestamp, user_dictionary = log_processing.dict_from_system_log(log)
 
             elif "INFO" in log:  # only check for strings with INFO
 
@@ -85,7 +89,7 @@ def polling_kafka():
                     split_by_timestamp_and_logs = " mendoza v9: [INFO]: Ride - "
                     timestamp_and_values = log.split(split_by_timestamp_and_logs)
 
-                    log_values = extract_values_from_log(timestamp_and_values[1])
+                    log_values = log_processing.extract_values_from_log(timestamp_and_values[1])
 
                     duration = int(float(log_values[0]))
                     resistance_list.append(int(log_values[1]))
@@ -94,7 +98,7 @@ def polling_kafka():
                     split_by_timestamp_and_logs = " mendoza v9: [INFO]: Telemetry - "
                     timestamp_and_values = log.split(split_by_timestamp_and_logs)
 
-                    log_values = extract_values_from_log(timestamp_and_values[1])
+                    log_values = log_processing.extract_values_from_log(timestamp_and_values[1])
 
                     heart_rate_list.append(int(log_values[0]))
                     rpm_list.append(int(log_values[1]))
@@ -109,8 +113,8 @@ def polling_kafka():
                 mean_heart_rate = mean(heart_rate_list)
                 mean_resistance = mean(resistance_list)
 
-                insert_into_users(cs, user_dictionary)
-                insert_into_rides(
+                snowflake_connection.insert_into_users(cs, user_dictionary)
+                snowflake_connection.insert_into_rides(
                     cs,
                     user_dictionary,
                     begin_timestamp,
