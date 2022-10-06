@@ -1,6 +1,6 @@
 # requirements for flask x snowflake api
 json
-snowflake.connector
+snowflake-connector-python
 python-dotenv
 flask
 pyarrow
