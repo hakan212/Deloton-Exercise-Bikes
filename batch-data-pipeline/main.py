@@ -72,7 +72,8 @@ def polling_kafka():
             log = kafka_message.value().decode("utf-8")
 
             if "SYSTEM" in log:
-                first_user_collected = True
+                first_user_collected = True #After it has finished waiting for the first user, the first system log that comes in is the next user
+                                            #hence first user is collected, which is important when extracting data in the 'new ride' condition
                 begin_timestamp, user_dictionary = dict_from_system_log(log)
 
             elif "INFO" in log:  # only check for strings with INFO
