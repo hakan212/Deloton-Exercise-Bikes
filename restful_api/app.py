@@ -1,11 +1,9 @@
-import os
-from datetime import datetime, timedelta
 import json
+import os
+
 import snowflake.connector as sf
-import time
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
-
 
 load_dotenv()
 
@@ -14,19 +12,20 @@ ACCOUNT = os.environ.get("ACCOUNT")
 PASSWORD = os.environ.get("PASSWORD")
 WAREHOUSE = os.environ.get("WAREHOUSE")
 DATABASE = os.environ.get("DATABASE")
-BATCH_SCHEMA = os.environ.get("BATCH_SCHEMA") # now the name of the batch production schema
+BATCH_SCHEMA = os.environ.get("BATCH_SCHEMA")
 
 flask_app = Flask(__name__)
 
 # Snowflake-SQLalchemy connection
 conn = sf.connect(
-        user="admin",
-        password=PASSWORD,
-        account=ACCOUNT,
-        warehouse=WAREHOUSE,
-        database=DATABASE,
-        schema=BATCH_SCHEMA
+    user="admin",
+    password=PASSWORD,
+    account=ACCOUNT,
+    warehouse=WAREHOUSE,
+    database=DATABASE,
+    schema=BATCH_SCHEMA,
 )
+
 
 def run_query(query, conn):
     """Runs a SQL query in Snowflake data warehouse
@@ -41,7 +40,7 @@ def run_query(query, conn):
     cursor = conn.cursor()
 
     query_results = cursor.execute(query)
-   
+
     return query_results
 
 
@@ -130,7 +129,7 @@ def get_daily():
     requested_date = request.args.get("date")
 
     if requested_date is not None:
-        
+
         query = f"""
             SELECT *
                 FROM rides
@@ -163,9 +162,9 @@ def get_daily():
     parsed_json = json.loads(json_string)
 
     if len(parsed_json) == 0:
-            response = jsonify({"status": 204, "rides": "No content"})
+        response = jsonify({"status": 204, "rides": "No content"})
 
-            return response
+        return response
 
     response = jsonify({"status": 200, "rides": parsed_json})
 
