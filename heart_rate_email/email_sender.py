@@ -26,13 +26,13 @@ BODY_HTML = '''<html>
 
 CHARSET = "UTF-8"
 
-# Create a new SES resource and specify a region.
-client = boto3.client('ses',region_name=AWS_REGION)
 
-def send_email(boto_3_ses_client, send_email_from:str ,recipient:str, email_body_html: str, email_body_text: str, email_subject: str ,charset: str = "UTF-8"):
+def send_email(aws_region: str, send_email_from:str ,recipient:str, email_body_html: str, email_body_text: str, email_subject: str ,charset: str = "UTF-8"):
+    client = boto3.client('ses',region_name=aws_region)
+  
     try:
         #Provide the contents of the email.
-        response = boto_3_ses_client.send_email(
+        response = client.send_email(
             Destination={
                 'ToAddresses': [
                     recipient,
@@ -64,4 +64,4 @@ def send_email(boto_3_ses_client, send_email_from:str ,recipient:str, email_body
         print(response['MessageId'])
 
 
-send_email(client, SENDER, RECIPIENT, BODY_HTML, BODY_TEXT, SUBJECT, CHARSET)
+send_email(AWS_REGION, SENDER, RECIPIENT, BODY_HTML, BODY_TEXT, SUBJECT, CHARSET)
