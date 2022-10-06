@@ -2,6 +2,7 @@ import os
 
 from confluent_kafka import Consumer
 from dotenv import load_dotenv
+
 load_dotenv()
 import json
 import re

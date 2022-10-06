@@ -1,4 +1,3 @@
-from re import I
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
 
