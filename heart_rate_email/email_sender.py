@@ -1,6 +1,6 @@
 import boto3
 from botocore.exceptions import ClientError
-from heart_rate_calculator import heart_rate_low, he
+from heart_rate_calculator import heart_rate_low, heart_rate_high
 
 SENDER = 'Deloton Exercise Co. <trainee.hakan.bas@sigmalabs.co.uk>'
 
