@@ -1,0 +1,4 @@
+# /requirements.txt
+confluent_kafka
+python-dotenv
+snowflake-connector-python
