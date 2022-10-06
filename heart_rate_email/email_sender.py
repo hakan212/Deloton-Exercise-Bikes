@@ -11,12 +11,14 @@ AWS_REGION = 'eu-west-2'
 CHARSET = "UTF-8"
 
 def get_email_subject (heart_rate, age):
+## Returns appropriate subject given age and heart rate
     if heart_rate_high(heart_rate, age):
         return 'WARNING: Heart rate very high.'
     if heart_rate_low(heart_rate, age):
         return 'Heart rate low during Deloton session.'
 
 def get_email_HTML_body (heart_rate, age):
+## Returns appropriate HTML body given age and heart rate
     if heart_rate_high(heart_rate, age):
         email_body_header = 'WARNING: Heart rate dangerously fast!'
         email_body_content = 'Your Deloton exercise bike recorded your heart rate to be very high, perhaps you should take a break.'
@@ -34,6 +36,7 @@ def get_email_HTML_body (heart_rate, age):
     '''
 
 def get_email_text_body (heart_rate, age):
+## Returns appropriate text body given age and heart rate
     if heart_rate_high(heart_rate, age):
         email_body_header = 'WARNING: Heart rate dangerously fast!'
         email_body_content = 'Your Deloton exercise bike recorded your heart rate to be very high, perhaps you should take a break.'
@@ -46,6 +49,7 @@ def get_email_text_body (heart_rate, age):
     '''
 
 def send_email(aws_region: str, send_email_from:str ,recipient:str, email_body_html: str, email_body_text: str, email_subject: str ,charset: str = "UTF-8"):
+## Sends email using AWS SES
     client = boto3.client('ses',region_name=aws_region)
   
     try:
@@ -81,10 +85,3 @@ def send_email(aws_region: str, send_email_from:str ,recipient:str, email_body_h
         print("Email sent! Message ID:"),
         print(response['MessageId'])
 
-BODY_HTML = get_email_HTML_body(15, 25)
-
-BODY_TEXT = get_email_text_body(15,25)
-
-SUBJECT = get_email_subject(15,25)
-
-send_email(AWS_REGION, SENDER, RECIPIENT, BODY_HTML, BODY_TEXT, SUBJECT, CHARSET)
