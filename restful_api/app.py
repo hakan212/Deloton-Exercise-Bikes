@@ -130,10 +130,11 @@ def get_daily():
     requested_date = request.args.get("date")
 
     if requested_date is not None:
+        
         query = f"""
             SELECT *
                 FROM rides
-                WHERE begin_timestamp = TO_TIMESTAMP({requested_date})
+                WHERE TO_DATE(begin_timestamp) = TO_DATE('{requested_date}')
         """
         query_results = run_query(query, conn)
 
@@ -145,48 +146,44 @@ def get_daily():
             response = jsonify({"status": 204, "rides": "No content"})
 
             return response
-        
 
         response = jsonify({"status": 200, "rides": parsed_json})
 
         return response
 
-    # query = f"""
-    #     SELECT *
-    #         FROM rides
-    #         WHERE begin_timestamp >= CURRENT_DATE
-    #     """
-    # query_results = run_query(query, conn)
+    query = f"""
+        SELECT *
+            FROM rides
+            WHERE TO_DATE(begin_timestamp) = TO_DATE(CURRENT_DATE)
+        """
+    query_results = run_query(query, conn)
 
-    # json_string = query_results.fetch_pandas_all().to_json(orient="records")
+    json_string = query_results.fetch_pandas_all().to_json(orient="records")
 
-    # parsed_json = json.loads(json_string)
+    parsed_json = json.loads(json_string)
 
-    # response = jsonify({"status": 200, "rides": parsed_json})
+    if len(parsed_json) == 0:
+            response = jsonify({"status": 204, "rides": "No content"})
 
-    # return response
+            return response
+
+    response = jsonify({"status": 200, "rides": parsed_json})
+
+    return response
 
 
-# # DELETE Endpoints
-# @flask_app.route("/ride/<ride_id>", methods=["POST"])
-# # Seems like DELETE requests aren't supported - workaround with POST for now
-# def delete_ride_id(ride_id):
-#     query = f"""
-#         DELETE FROM rides
-#             WHERE id = {ride_id}
-#     """
-#     run_query(query)
+# DELETE Endpoints
+@flask_app.route("/ride/<ride_id>", methods=["POST"])
+def delete_ride_id(ride_id):
+    query = f"""
+        DELETE FROM rides
+            WHERE id = {ride_id}
+    """
+    run_query(query)
 
-#     second_query = f"""
-#         SELECT *
-#             FROM rides
-#             WHERE id = {ride_id}
-#     """
-#     ride = run_query(second_query)
+    response = jsonify({"status": 200})
 
-#     response = jsonify({"status": 204, "ride": ride})
-
-#     return response
+    return response
 
 
 if __name__ == "__main__":
