@@ -30,18 +30,26 @@ def connect_to_snowflake():
  
 def insert_into_users(cs,user_dictionary):
     """Makes insert query into users table once all relevant information has been obtained"""
-    cs.execute_async(
-                """INSERT INTO users(user_id, first_name, last_name, gender, date_of_birth, 
-                height_cm, weight_kg, house_name, street, region, postcode, email, account_created) """
-                "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-                (
-                user_dictionary['user_id'],user_dictionary['first_name'],user_dictionary['last_name'],user_dictionary['gender'],
-                user_dictionary['date_of_birth'],user_dictionary['height_cm'],user_dictionary['weight_kg'],user_dictionary['house_number'],
-                user_dictionary['street_name'],user_dictionary['region'],user_dictionary['postcode'],
-                user_dictionary['email_address'],user_dictionary['account_create_date']
-                )
-                )
-    print('made insert into users')
+
+    check_for_existing_user = cs.execute(
+        "select user_id from users" 
+        " where user_id = (%s)", #space is important before where statement
+        (user_dictionary['user_id'])
+        ).fetchall()
+
+    if check_for_existing_user == []: #If empty response, user is not present in database
+        cs.execute_async(
+                    """INSERT INTO users(user_id, first_name, last_name, gender, date_of_birth, 
+                    height_cm, weight_kg, house_name, street, region, postcode, email, account_created) """
+                    "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+                    (
+                    user_dictionary['user_id'],user_dictionary['first_name'],user_dictionary['last_name'],user_dictionary['gender'],
+                    user_dictionary['date_of_birth'],user_dictionary['height_cm'],user_dictionary['weight_kg'],user_dictionary['house_number'],
+                    user_dictionary['street_name'],user_dictionary['region'],user_dictionary['postcode'],
+                    user_dictionary['email_address'],user_dictionary['account_create_date']
+                    )
+                    )
+        print('made insert into users')
 
  
 def insert_into_rides(cs, user_dictionary, begin_timestamp, duration, total_power,
