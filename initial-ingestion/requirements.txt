@@ -1,5 +1,0 @@
-# /requirements.txt
-confluent_kafka
-uuid
-python-dotenv
-boto3
