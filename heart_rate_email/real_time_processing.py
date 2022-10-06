@@ -103,9 +103,19 @@ while True:
         if '-------' in log or 'Getting user data from server' in log:
             current_data = {}
     
-    if 'age'
-    
-    current_rider_age = current_data['age']
-    current_rider_age
+    if 'age' in current_data:
+        current_rider_age = current_data['age']
 
-    print(current_data)
+    if 'heart_rate' in current_data:
+        current_heart_rate = current_data['heart_rate']
+
+    if heart_rate_low(current_heart_rate, current_rider_age) or heart_rate_high(current_heart_rate, current_rider_age):
+        aws_region = 'eu-west-2'
+        sender = 'Deloton Exercise Co. <trainee.hakan.bas@sigmalabs.co.uk>'
+        recipient = current_data['user_email']
+        email_body_html = get_email_HTML_body(current_heart_rate, current_rider_age)
+        email_body_text = get_email_text_body(current_heart_rate, current_rider_age)
+        email_subject = get_email_subject(current_heart_rate, current_rider_age)
+
+        send_email(aws_region, sender, recipient, email_body_html, email_body_text, email_subject, 'UTF-8')
+
