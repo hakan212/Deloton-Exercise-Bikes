@@ -27,7 +27,7 @@ conn = sf.connect(
 )
 
 
-def run_query(query, conn):
+def run_query(query):
     """Runs a SQL query in Snowflake data warehouse
 
     Args:
@@ -58,7 +58,7 @@ def get_rides():
         SELECT *
             FROM rides
     """
-    query_results = run_query(query, conn)
+    query_results = run_query(query)
 
     json_string = query_results.fetch_pandas_all().to_json(orient="records")
 
@@ -76,7 +76,7 @@ def get_ride(ride_id):
             FROM rides
             WHERE ride_id = {ride_id}
     """
-    query_results = run_query(query, conn)
+    query_results = run_query(query)
 
     json_string = query_results.fetch_pandas_all().to_json(orient="records")
 
@@ -94,7 +94,7 @@ def get_rider(rider_id):
             FROM users
             WHERE user_id = {rider_id}
     """
-    query_results = run_query(query, conn)
+    query_results = run_query(query)
 
     json_string = query_results.fetch_pandas_all().to_json(orient="records")
 
@@ -112,7 +112,7 @@ def get_rides_for_rider(rider_id):
             FROM rides
             WHERE user_id = {rider_id}
     """
-    query_results = run_query(query, conn)
+    query_results = run_query(query)
 
     json_string = query_results.fetch_pandas_all().to_json(orient="records")
 
@@ -135,7 +135,7 @@ def get_daily():
                 FROM rides
                 WHERE TO_DATE(begin_timestamp) = TO_DATE('{requested_date}')
         """
-        query_results = run_query(query, conn)
+        query_results = run_query(query)
 
         json_string = query_results.fetch_pandas_all().to_json(orient="records")
 
@@ -155,7 +155,7 @@ def get_daily():
             FROM rides
             WHERE TO_DATE(begin_timestamp) = TO_DATE(CURRENT_DATE)
         """
-    query_results = run_query(query, conn)
+    query_results = run_query(query)
 
     json_string = query_results.fetch_pandas_all().to_json(orient="records")
 
