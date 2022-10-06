@@ -1,0 +1,6 @@
+# requirements for flask x snowflake api
+json
+snowflake.connector
+python-dotenv
+flask
+pyarrow
