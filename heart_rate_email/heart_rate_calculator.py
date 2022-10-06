@@ -5,9 +5,16 @@ def calculate_max_heart_rate (age: int) -> int:
     else:
         return 208 - (0.7 * age)
 
-def check_if_heart_rate_abnormal (current_heart_rate: int, max_heart_rate:int) -> bool:
+def heart_rate_low (current_heart_rate: int, age:int) -> bool:
 ## Returns true if current heart rate is abnormal
-    upper_limit = 0.9 * max_heart_rate
+    max_heart_rate = calculate_max_heart_rate(age)
     lower_limit = 0.5 * max_heart_rate
 
-    return lower_limit <= current_heart_rate <= upper_limit
+    return current_heart_rate <= lower_limit
+
+def heart_rate_low (current_heart_rate: int, age:int) -> bool:
+## Returns true if current heart rate is abnormal
+    max_heart_rate = calculate_max_heart_rate(age)
+    upper_limit = 0.9 * max_heart_rate
+
+    return current_heart_rate >= upper_limit
