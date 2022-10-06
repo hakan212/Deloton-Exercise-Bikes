@@ -49,7 +49,7 @@ def run_query(query, conn):
 # GET Endpoints
 @flask_app.route("/")
 def default():
-    return "Delaton Exercise Bikes API"
+    return "Deloton Exercise Bikes API"
 
 
 @flask_app.route("/rides", methods=["GET"])
