@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-USER = os.environ.get('USER')
+USER = 'admin'
 ACCOUNT = os.environ.get('ACCOUNT')
 PASSWORD = os.environ.get('PASSWORD')
 WAREHOUSE= os.environ.get('WAREHOUSE')
@@ -15,7 +15,6 @@ SCHEMA= os.environ.get('SCHEMA')
 
 def connect_to_snowflake():
     """connect to snowflake to make queries"""
-    print(USER)
     conn = snowflake.connector.connect(
         user=USER,
         password=PASSWORD,
@@ -34,7 +33,7 @@ def insert_into_users(cs,user_dictionary):
     check_for_existing_user = cs.execute(
         "select user_id from users" 
         " where user_id = (%s)", #space is important before where statement
-        (user_dictionary['user_id'])
+        (str(user_dictionary['user_id']))
         ).fetchall()
 
     if check_for_existing_user == []: #If empty response, user is not present in database
