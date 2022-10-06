@@ -41,8 +41,8 @@ app.layout = html.Div([
 @app.callback(Output('current-rider-text', 'children'),
               Input('current_rider_interval', 'n_intervals'))
 def current_rider_details(n_intervals: int) -> html.Span:
-    """Returns an html span element containing text with live rider information
-    
+    """Returns an html span element containing text with current rider information
+
     Args:
         n_intervals: A  loop counter. Not used in the function body, but dash requires you to have
         it for the function to be called in repeatedly.
@@ -52,9 +52,8 @@ def current_rider_details(n_intervals: int) -> html.Span:
     message = f"""User id: {data.get('user_id')}
         Name: {data.get('user_name')}
         Gender: {data.get('user_gender')}
-        Date of Birth: {data.get('user_dob')}
-        Height: {data.get('user_height')}
-        Weight:{data.get('user_weight')}"""
+        Height: {data.get('user_height')} cm
+        Weight: {data.get('user_weight')} kg"""
 
     return html.Span(message)
 
@@ -68,13 +67,10 @@ def live_ride_details(n_intervals: int) -> html.Span:
         it for the function to be called in repeatedly.
     """
     real_time_processing.refresh_data()
-
     ride_duration_seconds = real_time_processing.current_data.get('duration') or 0
     heart_rate = real_time_processing.current_data.get('heart_rate') or 0
-
-    message = f"""Riding for {ride_duration_seconds // 60} minutes 
-        and {ride_duration_seconds % 60} seconds. 
-        Heart rate: {heart_rate} BPM"""
+    message = (f'Riding for {int(ride_duration_seconds // 60)} minutes and '
+        f'{int(ride_duration_seconds % 60)}  seconds. Heart rate: {heart_rate} BPM')
 
     return html.Span(message)
 
