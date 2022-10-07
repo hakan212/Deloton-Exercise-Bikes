@@ -12,18 +12,26 @@ WAREHOUSE= os.environ.get('WAREHOUSE')
 DATABASE= os.environ.get('DATABASE')
 SCHEMA= os.environ.get('SCHEMA')
 
-conn = snowflake.connector.connect(
-    user=USER,
-    password=PASSWORD,
-    account=ACCOUNT,
-    warehouse=WAREHOUSE,
-    database=DATABASE,
-    schema=SCHEMA
-)
-cs = conn.cursor()
-cursor_type = type(cs)
+
+cursor_type = snowflake.connector.cursor.SnowflakeCursor
+
+def connect_to_snowflake() -> cursor_type:
+    """Connect to the snowflake schema and obtain a cursor"""
+    conn = snowflake.connector.connect(
+        user=USER,
+        password=PASSWORD,
+        account=ACCOUNT,
+        warehouse=WAREHOUSE,
+        database=DATABASE,
+        schema=SCHEMA
+    )
+
+    cs = conn.cursor()
+    return cs
+
 
 def query_snowflake_into_df(cs: cursor_type) -> pd.Dataframe:
+    """Query recent_rides table and obtain a pandas dataframe of them"""
     snowflake_df = cs.execute('SELECT * FROM recent_rides').fetch_pandas_all()
 
     return snowflake_df
