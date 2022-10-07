@@ -1,3 +1,4 @@
-#requirements for data_transfer_pipeline
+# requirements for data_transfer_pipeline
 sqlalchemy
 python-dotenv
+psycopg2-binary
