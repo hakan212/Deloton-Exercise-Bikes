@@ -14,3 +14,15 @@ The applications we have produced are:
 - Daily Executive Reports
 - Public API
 - Tableau Integrations
+
+## Heart Rate Alerts
+
+## Live Dashboard
+
+## Daily Executive Reports
+
+## Public API
+
+## Tableau Integrations
+
+Tableau is a data visualisation tool that gives data analysts more options in handling data. We have connected our Aurora PostgreSQL instance to Tableau, which gives access to all of the data within the database for analysis. We have shared the Tableau via Tableau Server, allowing analysts to share their findings in a secure way.
