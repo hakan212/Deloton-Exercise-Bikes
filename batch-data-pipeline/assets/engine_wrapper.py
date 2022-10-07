@@ -1,8 +1,8 @@
-
 import pandas as pd
 from sqlalchemy import create_engine
 
-class database_connection: 
+
+class database_connection:
     def __init__(
         self,
         database_name,
@@ -10,32 +10,33 @@ class database_connection:
         password,
         host,
         port,
-    ): 
-        self.engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{database_name}')
-    
-    
-    def read_table_into_df(self,schema,table): 
-        """Read table into pandas dataframe from chosen schema"""
-        df = pd.read_sql_table(table,con=self.engine,schema=schema)
-        return df
-    
+    ):
+        self.engine = create_engine(
+            f"postgresql://{user}:{password}@{host}:{port}/{database_name}"
+        )
 
-    def select_user(self,user_dictionary):
+    def read_table_into_df(self, schema, table):
+        """Read table into pandas dataframe from chosen schema"""
+        df = pd.read_sql_table(table, con=self.engine, schema=schema)
+        return df
+
+    def select_user(self, user_dictionary):
         """Queries user table to obtain rows with user, used to check if user is new"""
-        
+
         select_user_query = """
         select user_id from zookeepers_production.users
-        where user_id = (%s)"""  #parameterised query avoids sql injection
-        
-        user_df = pd.read_sql(select_user_query,con=self.engine,params=user_dictionary['user_id'])
+        where user_id = (%s)"""  # parameterised query avoids sql injection
+
+        user_df = pd.read_sql(
+            select_user_query, con=self.engine, params=[user_dictionary["user_id"]]
+        )
 
         return user_df
-        
 
-    def insert_users_query(self,user_dictionary):
+    def insert_users_query(self, user_dictionary):
         """Insert new user into users table"""
 
-        with self.engine.connect() as connection: #Connection automatically closes at end of code block
+        with self.engine.connect() as connection:  # Connection automatically closes at end of code block
 
             insert_users_query = """
             INSERT INTO zookeepers_production.users(user_id, first_name, last_name, gender, date_of_birth, 
@@ -58,9 +59,19 @@ class database_connection:
                 user_dictionary["account_create_date"],
             )
 
-            connection.execute(insert_users_query,parameterised_values)
-        
-    def insert_rides_query(self,user_dictionary,begin_timestamp,duration,total_power,mean_power,mean_resistance,mean_rpm,mean_heart_rate):
+            connection.execute(insert_users_query, parameterised_values)
+
+    def insert_rides_query(
+        self,
+        user_dictionary,
+        begin_timestamp,
+        duration,
+        total_power,
+        mean_power,
+        mean_resistance,
+        mean_rpm,
+        mean_heart_rate,
+    ):
         """Insert new rides into rides table"""
         with self.engine.connect() as connection:
             insert_rides_query = """
@@ -79,8 +90,4 @@ class database_connection:
                 mean_heart_rate,
             )
 
-            connection.execute(insert_rides_query,parameterised_values)
-
-
-
-    
+            connection.execute(insert_rides_query, parameterised_values)

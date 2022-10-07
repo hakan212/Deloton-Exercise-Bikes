@@ -6,8 +6,8 @@ from statistics import mean
 from confluent_kafka import Consumer
 from dotenv import load_dotenv
 
-import log_processing
 import insert_queries
+import log_processing
 from assets.engine_wrapper import database_connection
 
 load_dotenv()
@@ -17,11 +17,11 @@ KAFKA_USERNAME = os.getenv("KAFKA_USERNAME")
 KAFKA_PASSWORD = os.getenv("KAFKA_PASSWORD")
 KAFKA_TOPIC_NAME = os.getenv("KAFKA_TOPIC_NAME")
 
-DB_HOST = os.getenv('DB_HOST')
-DB_PORT=os.getenv('DB_PORT')
-DB_USER=os.getenv('DB_USER')
-DB_PASSWORD=os.getenv('DB_PASSWORD')
-DB_NAME=os.getenv('DB_NAME')
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_NAME = os.getenv("DB_NAME")
 
 
 def subscribe_to_kafka_topic():
@@ -59,7 +59,7 @@ def polling_kafka():
     )
 
     consumer = subscribe_to_kafka_topic()
-    conn = database_connection(DB_NAME,DB_USER,DB_PASSWORD,DB_HOST,DB_PORT)
+    conn = database_connection(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
 
     resistance_list = []
     power_list = []
