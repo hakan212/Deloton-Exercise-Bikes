@@ -2,6 +2,7 @@ from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
 
 import real_time_processing
+from heart_rate_calculator import heart_rate_low, heart_rate_high
 
 app = Dash(__name__, use_pages=False)
 
@@ -39,6 +40,7 @@ app.layout = html.Div(
                     style= {"display": "none"},
                     children=[
                         html.H3("HEART RATE WARNING"),
+                        html.Div(id="heart-rate-alert-description"),
                         dcc.Interval(
                             id="heart-rate-alert-interval",
                             interval=0.5 * 1000,  # in milliseconds
@@ -88,11 +90,19 @@ def live_ride_details(n_intervals: int) -> html.Span:
         it for the function to be called in repeatedly.
     """
     real_time_processing.refresh_data()
-    ride_duration_seconds = real_time_processing.current_data.get("duration") or 0
-    heart_rate = real_time_processing.current_data.get("heart_rate") or 0
+    ride_duration_total_seconds = real_time_processing.current_data.get("duration")# or 0
+    heart_rate = real_time_processing.current_data.get("heart_rate")# or 0
+
+    if ride_duration_total_seconds:
+        ride_duration_minutes = int(ride_duration_total_seconds // 60)
+        ride_duration_seconds = int(ride_duration_total_seconds % 60)
+    else:
+        ride_duration_minutes = 0
+        ride_duration_seconds = 0
+
     message = (
-        f"Riding for {int(ride_duration_seconds // 60)} minutes and "
-        f"{int(ride_duration_seconds % 60)}  seconds. Heart rate: {heart_rate} BPM"
+        f"Riding for {ride_duration_minutes} minutes and "
+        f"{ride_duration_seconds}  seconds. Heart rate: {heart_rate} BPM"
     )
 
     return html.Span(message)
@@ -104,10 +114,26 @@ def live_ride_details(n_intervals: int) -> html.Span:
 def heart_rate_alert (n_intervals:int) -> dict:
     current_heart_rate = real_time_processing.current_data.get("heart_rate")
     if(current_heart_rate):
-        print("yassssse")
         return {"display": "block"}
     else:
         return {"display": "none"}
+
+@app.callback(
+    Output("heart-rate-alert-description", "children"), 
+    Input("heart-rate-alert-interval", "n_intervals")
+)
+def heart_rate_description (n_intervals: int) -> html.Span:
+    current_heart_rate = real_time_processing.current_data.get("heart_rate")
+    current_age = real_time_processing.current_data.get("user_age")
+
+    if heart_rate_low(current_heart_rate, current_age):
+        message = "Heart rate too low, work harder!"
+    elif heart_rate_high (current_heart_rate, current_age):
+        message = "Heart rate very high! Perhaps take a break or decrease intensity."
+    else:
+        message = "Keep going!"
+    
+    return html.Span(message)
 
 
 if __name__ == "__main__":
