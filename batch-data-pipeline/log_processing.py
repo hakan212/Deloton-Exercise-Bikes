@@ -16,7 +16,6 @@ def wait_for_system_log(consumer):
     print("Waiting for first user to finish... This may take some time.")
     while True:
         kafka_message = consumer.poll(0.5)
-
         if kafka_message is not None:
             kafka_log = kafka_message.value().decode("utf-8")
 

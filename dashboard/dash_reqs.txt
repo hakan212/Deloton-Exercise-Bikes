@@ -5,4 +5,4 @@ plotly
 dash_bootstrap_components
 python-dotenv
 snowflake-connector-python
-snowflake-sqlalchemy
+snowflake-connector-python[pandas]
