@@ -1,6 +1,6 @@
+import datetime
 import json
 import re
-import datetime
 from datetime import date
 
 
@@ -51,6 +51,7 @@ def convert_epoc_milliseconds_to_dob(epoc_milliseconds: int) -> datetime:
 
     return datetime.datetime.fromtimestamp(epoc_seconds)
 
+
 def calculate_age(born: datetime) -> int:
     today = date.today()
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
@@ -86,7 +87,6 @@ def update_user_information(current_data: dict, user_information: str):
     user_dob = convert_epoc_milliseconds_to_dob(user_dob_epoc)
     current_data["user_dob"] = user_dob
     current_data["user_age"] = calculate_age(user_dob)
-
 
 
 def update_current_rider_information(current_data: dict, log: str):

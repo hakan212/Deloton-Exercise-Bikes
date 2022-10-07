@@ -2,7 +2,7 @@ from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
 
 import real_time_processing
-from heart_rate_calculator import heart_rate_low, heart_rate_high
+from heart_rate_calculator import heart_rate_high, heart_rate_low
 
 app = Dash(__name__, use_pages=False)
 
@@ -37,7 +37,7 @@ app.layout = html.Div(
                 ),
                 html.Div(
                     id="heart-rate-alert",
-                    style= {"display": "none"},
+                    style={"display": "none"},
                     children=[
                         html.H3("HEART RATE WARNING"),
                         html.Div(id="heart-rate-alert-description"),
@@ -46,7 +46,7 @@ app.layout = html.Div(
                             interval=0.5 * 1000,  # in milliseconds
                             n_intervals=0,  # counter for number of refreshes
                         ),
-                    ]
+                    ],
                 ),
             ]
         ),
@@ -79,8 +79,7 @@ def current_rider_details(n_intervals: int) -> html.Span:
 
 
 @app.callback(
-    Output("live-ride-text", "children"), 
-    Input("live-ride-interval", "n_intervals")
+    Output("live-ride-text", "children"), Input("live-ride-interval", "n_intervals")
 )
 def live_ride_details(n_intervals: int) -> html.Span:
     """Returns an html span element containing text with live information on the current ride
@@ -90,8 +89,10 @@ def live_ride_details(n_intervals: int) -> html.Span:
         it for the function to be called in repeatedly.
     """
     real_time_processing.refresh_data()
-    ride_duration_total_seconds = real_time_processing.current_data.get("duration")# or 0
-    heart_rate = real_time_processing.current_data.get("heart_rate")# or 0
+    ride_duration_total_seconds = real_time_processing.current_data.get(
+        "duration"
+    )  # or 0
+    heart_rate = real_time_processing.current_data.get("heart_rate")  # or 0
 
     if ride_duration_total_seconds:
         ride_duration_minutes = int(ride_duration_total_seconds // 60)
@@ -107,24 +108,28 @@ def live_ride_details(n_intervals: int) -> html.Span:
 
     return html.Span(message)
 
+
 @app.callback(
-    Output("heart-rate-alert", "style"), 
-    Input("heart-rate-alert-interval", "n_intervals")
+    Output("heart-rate-alert", "style"),
+    Input("heart-rate-alert-interval", "n_intervals"),
 )
-def heart_rate_alert (n_intervals:int) -> dict:
+def heart_rate_alert(n_intervals: int) -> dict:
     current_heart_rate = real_time_processing.current_data.get("heart_rate")
     current_age = real_time_processing.current_data.get("user_age")
 
-    if heart_rate_low(current_heart_rate, current_age) or heart_rate_high(current_heart_rate, current_age):
+    if heart_rate_low(current_heart_rate, current_age) or heart_rate_high(
+        current_heart_rate, current_age
+    ):
         return {"display": "block"}
     else:
         return {"display": "none"}
 
+
 @app.callback(
-    Output("heart-rate-alert-description", "children"), 
-    Input("heart-rate-alert-interval", "n_intervals")
+    Output("heart-rate-alert-description", "children"),
+    Input("heart-rate-alert-interval", "n_intervals"),
 )
-def heart_rate_description (n_intervals: int) -> html.Span:
+def heart_rate_description(n_intervals: int) -> html.Span:
     current_heart_rate = real_time_processing.current_data.get("heart_rate")
     current_age = real_time_processing.current_data.get("user_age")
 
@@ -133,9 +138,11 @@ def heart_rate_description (n_intervals: int) -> html.Span:
     if current_heart_rate and current_age:
         if heart_rate_low(current_heart_rate, current_age):
             message = "Heart rate too low, work harder!"
-        elif heart_rate_high (current_heart_rate, current_age):
-            message = "Heart rate very high! Perhaps take a break or decrease intensity."
-    
+        elif heart_rate_high(current_heart_rate, current_age):
+            message = (
+                "Heart rate very high! Perhaps take a break or decrease intensity."
+            )
+
     return html.Span(message)
 
 
