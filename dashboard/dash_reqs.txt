@@ -1,4 +1,4 @@
-# requiremens for Dash dashboard
+# requirements for Dash dashboard
 dash
 pandas
 plotly
