@@ -2,9 +2,6 @@
 import pandas as pd
 from sqlalchemy import create_engine
 
-from ingestion.ingestion_load_s3 import load_s3_data
-
-
 class database_connection: 
     def __init__(
         self,
@@ -17,32 +14,40 @@ class database_connection:
         self.engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{database_name}')
     
     
-    def read_table(self,schema='week4_hakan_staging',table='staging_ecommerce'): #All functions go to staging database by default
+    def read_table(self,schema,table): 
         """Read table from chosen schema"""
-        staging_df = pd.read_sql_table(table,con=self.engine,schema=schema)
-        return staging_df
+        df = pd.read_sql_table(table,con=self.engine,schema=schema)
+        return df
+    
+    def insert_table(self,schema,table,user_dictionary):
+        """Insert data into chosen table"""
         
-        
-    def drop_table(self,schema='week4_hakan_staging',table='staging_ecommerce'):
-        """Drop table from chosen schema"""
         with self.engine.connect() as connection:
 
-            drop_table_query = f'''DROP TABLE IF EXISTS {schema}.{table}'''
-            connection.execute(drop_table_query)
-            print('Table dropped')
+            insert_users_query = """INSERT INTO users(user_id, first_name, last_name, gender, date_of_birth, 
+                    height_cm, weight_kg, house_name, street, region, postcode, email, account_created)
+            VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"""
+
+            tuple_of_values = (
+                user_dictionary["user_id"],
+                user_dictionary["first_name"],
+                user_dictionary["last_name"],
+                user_dictionary["gender"],
+                user_dictionary["date_of_birth"],
+                user_dictionary["height_cm"],
+                user_dictionary["weight_kg"],
+                user_dictionary["house_number"],
+                user_dictionary["street_name"],
+                user_dictionary["region"],
+                user_dictionary["postcode"],
+                user_dictionary["email_address"],
+                user_dictionary["account_create_date"],
+            )
+
+            connection.execute(insert_users_query,tuple_of_values)
+        
+        
 
 
-    def load_df_to_database(self,schema='week4_hakan_staging', table='staging_ecommerce', col_name='Order Number', df=load_s3_data()):
-        """Load dataframe into chosen database"""
-        try:
-            existing_df = pd.read_sql_table(table,con=self.engine,schema=schema)
-            exclude_existing_data = (~df[col_name].isin(existing_df[col_name])) #Exclude existing data to avoid repeated data
-            df = df[exclude_existing_data] 
 
-        except ValueError as e:
-            print(e,f'There were no duplicates to be checked as the {table} in {schema} does not exist')
-
-        finally:
-            df.to_sql(table, con=self.engine,schema=schema,index=False,if_exists='append') #Append data to build the dataset rather than replacing old data
-            print('combined df loaded into database')
     
