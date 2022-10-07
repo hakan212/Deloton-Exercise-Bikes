@@ -1,5 +1,7 @@
 import json
 import re
+import datetime
+from datetime import date
 
 
 def update_duration_and_resistance(current_data: dict, duration_and_resistance: list):
@@ -44,6 +46,16 @@ def update_current_ride_metrics(current_data: dict, log: str):
         update_heart_rpm_and_power(current_data, heart_rpm_and_power)
 
 
+def convert_epoc_milliseconds_to_dob(epoc_milliseconds: int) -> datetime:
+    epoc_seconds = epoc_milliseconds / 1000
+
+    return datetime.datetime.fromtimestamp(epoc_seconds)
+
+def calculate_age(born: datetime) -> int:
+    today = date.today()
+    return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+
+
 def update_user_information(current_data: dict, user_information: str):
     ## Given string from log on new user, will update current_data user information
     current_data["user_id"] = int(re.findall('"user_id":(\d+)', user_information)[0])
@@ -54,9 +66,6 @@ def update_user_information(current_data: dict, user_information: str):
     current_data["user_address"] = re.findall('"address":"([\w ,]+)', user_information)[
         0
     ]
-    current_data["user_dob"] = int(
-        re.findall('"date_of_birth\\":([-\d]+)', user_information)[0]
-    )
     current_data["user_email"] = re.findall(
         '"email_address":"(.+@\w+.\w+)"', user_information
     )[0]
@@ -72,6 +81,12 @@ def update_user_information(current_data: dict, user_information: str):
     current_data["user_bike_serial"] = re.findall(
         '"bike_serial":"(\w+)', user_information
     )[0]
+
+    user_dob_epoc = int(re.findall('"date_of_birth\\":([-\d]+)', user_information)[0])
+    user_dob = convert_epoc_milliseconds_to_dob(user_dob_epoc)
+    current_data["user_dob"] = user_dob
+    current_data["user_age"] = calculate_age(user_dob)
+
 
 
 def update_current_rider_information(current_data: dict, log: str):
