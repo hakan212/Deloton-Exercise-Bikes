@@ -1,4 +1,6 @@
 # /requirements.txt
 confluent_kafka
 python-dotenv
-snowflake-connector-python
+sqlalchemy
+pandas
+psycopg2-binary
