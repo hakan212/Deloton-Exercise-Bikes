@@ -114,6 +114,14 @@ def live_ride_details(n_intervals: int) -> html.Span:
     Input("heart-rate-alert-interval", "n_intervals"),
 )
 def heart_rate_alert(n_intervals: int) -> dict:
+    """
+    Will display warning message on screen if heart rate is too high or low
+    Toggles the display option on the div with id heart-rate-alert
+    
+    Args:
+        n_intervals: A  loop counter. Not used in the function body, but dash requires you to have
+        it for the function to be called in repeatedly. 
+    """
     current_heart_rate = real_time_processing.current_data.get("heart_rate")
     current_age = real_time_processing.current_data.get("user_age")
 
@@ -130,6 +138,14 @@ def heart_rate_alert(n_intervals: int) -> dict:
     Input("heart-rate-alert-interval", "n_intervals"),
 )
 def heart_rate_description(n_intervals: int) -> html.Span:
+    """
+    Determines output of heart-rate-alert-description
+    
+    Args:
+        n_intervals: A  loop counter. Not used in the function body, but dash requires you to have
+        it for the function to be called in repeatedly. 
+    """
+
     current_heart_rate = real_time_processing.current_data.get("heart_rate")
     current_age = real_time_processing.current_data.get("user_age")
 
