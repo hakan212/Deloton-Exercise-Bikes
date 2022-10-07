@@ -7,7 +7,8 @@ from confluent_kafka import Consumer
 from dotenv import load_dotenv
 
 import log_processing
-import snowflake_connection
+import insert_queries
+from assets.engine_wrapper import database_connection
 
 load_dotenv()
 
@@ -15,6 +16,12 @@ KAFKA_SERVER = os.getenv("KAFKA_SERVER")
 KAFKA_USERNAME = os.getenv("KAFKA_USERNAME")
 KAFKA_PASSWORD = os.getenv("KAFKA_PASSWORD")
 KAFKA_TOPIC_NAME = os.getenv("KAFKA_TOPIC_NAME")
+
+DB_HOST = os.getenv('DB_HOST')
+DB_PORT=os.getenv('DB_PORT')
+DB_USER=os.getenv('DB_USER')
+DB_PASSWORD=os.getenv('DB_PASSWORD')
+DB_NAME=os.getenv('DB_NAME')
 
 
 def subscribe_to_kafka_topic():
@@ -52,7 +59,7 @@ def polling_kafka():
     )
 
     consumer = subscribe_to_kafka_topic()
-    cs = snowflake_connection.connect_to_snowflake()
+    conn = database_connection(DB_NAME,DB_USER,DB_PASSWORD,DB_HOST,DB_PORT)
 
     resistance_list = []
     power_list = []
@@ -115,9 +122,9 @@ def polling_kafka():
                 mean_heart_rate = mean(heart_rate_list)
                 mean_resistance = mean(resistance_list)
 
-                snowflake_connection.insert_into_users(cs, user_dictionary)
-                snowflake_connection.insert_into_rides(
-                    cs,
+                insert_queries.insert_into_users(conn, user_dictionary)
+                insert_queries.insert_into_rides(
+                    conn,
                     user_dictionary,
                     begin_timestamp,
                     duration,
