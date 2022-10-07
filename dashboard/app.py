@@ -34,7 +34,18 @@ app.layout = html.Div(
                         ),
                     ]
                 ),
-                
+                html.Div(
+                    id="heart-rate-alert",
+                    style= {"display": "none"},
+                    children=[
+                        html.H3("HEART RATE WARNING"),
+                        dcc.Interval(
+                            id="heart-rate-alert-interval",
+                            interval=0.5 * 1000,  # in milliseconds
+                            n_intervals=0,  # counter for number of refreshes
+                        ),
+                    ]
+                ),
             ]
         ),
         # Recent Ride info
@@ -66,7 +77,8 @@ def current_rider_details(n_intervals: int) -> html.Span:
 
 
 @app.callback(
-    Output("live-ride-text", "children"), Input("live-ride-interval", "n_intervals")
+    Output("live-ride-text", "children"), 
+    Input("live-ride-interval", "n_intervals")
 )
 def live_ride_details(n_intervals: int) -> html.Span:
     """Returns an html span element containing text with live information on the current ride
@@ -84,6 +96,18 @@ def live_ride_details(n_intervals: int) -> html.Span:
     )
 
     return html.Span(message)
+
+@app.callback(
+    Output("heart-rate-alert", "style"), 
+    Input("heart-rate-alert-interval", "n_intervals")
+)
+def heart_rate_alert (n_intervals:int) -> dict:
+    current_heart_rate = real_time_processing.current_data.get("heart_rate")
+    if(current_heart_rate):
+        print("yassssse")
+        return {"display": "block"}
+    else:
+        return {"display": "none"}
 
 
 if __name__ == "__main__":
