@@ -3,3 +3,4 @@ confluent_kafka
 python-dotenv
 sqlalchemy
 pandas
+psycopg2-binary

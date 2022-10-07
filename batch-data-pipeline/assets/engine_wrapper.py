@@ -1,6 +1,11 @@
 import pandas as pd
+import os
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 
+
+SCHEMA_NAME = os.getenv('SCHEMA_NAME')
+load_dotenv()
 
 class database_connection:
     def __init__(
@@ -23,8 +28,8 @@ class database_connection:
     def select_user(self, user_dictionary):
         """Queries user table to obtain rows with user, used to check if user is new"""
 
-        select_user_query = """
-        select user_id from zookeepers_production.users
+        select_user_query = f"""
+        select user_id from {SCHEMA_NAME}.users
         where user_id = (%s)"""  # parameterised query avoids sql injection
 
         user_df = pd.read_sql(
@@ -38,8 +43,8 @@ class database_connection:
 
         with self.engine.connect() as connection:  # Connection automatically closes at end of code block
 
-            insert_users_query = """
-            INSERT INTO zookeepers_production.users(user_id, first_name, last_name, gender, date_of_birth, 
+            insert_users_query = f"""
+            INSERT INTO {SCHEMA_NAME}.users(user_id, first_name, last_name, gender, date_of_birth, 
             height_cm, weight_kg, house_name, street, region, postcode, email, account_created)
             VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"""
 
@@ -74,8 +79,8 @@ class database_connection:
     ):
         """Insert new rides into rides table"""
         with self.engine.connect() as connection:
-            insert_rides_query = """
-            INSERT INTO zookeepers_production.rides(user_id, begin_timestamp, total_duration_sec, 
+            insert_rides_query = f"""
+            INSERT INTO {SCHEMA_NAME}.rides(user_id, begin_timestamp, total_duration_sec, 
             total_power, mean_power, mean_resistance, mean_rpm, mean_heart_rate)
             VALUES(%s,%s,%s,%s,%s,%s,%s,%s);"""
 
