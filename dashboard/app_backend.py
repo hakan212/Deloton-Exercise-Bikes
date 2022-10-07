@@ -31,7 +31,7 @@ def connect_to_snowflake() -> cursor_type:
 
 
 def query_snowflake_into_df(cs: cursor_type) -> pd.Dataframe:
-    """Query recent_rides table and obtain a pandas dataframe of them"""
+    """Query recent_rides table and obtain a pandas dataframe of data"""
     snowflake_df = cs.execute('SELECT * FROM recent_rides').fetch_pandas_all()
 
     return snowflake_df
