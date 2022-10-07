@@ -34,6 +34,7 @@ app.layout = html.Div(
                         ),
                     ]
                 ),
+                
             ]
         ),
         # Recent Ride info

@@ -55,7 +55,7 @@ def update_user_information(current_data: dict, user_information: str):
         0
     ]
     current_data["user_dob"] = int(
-        int(re.findall('"date_of_birth\\":([-\d]+)', user_information)[0])
+        re.findall('"date_of_birth\\":([-\d]+)', user_information)[0]
     )
     current_data["user_email"] = re.findall(
         '"email_address":"(.+@\w+.\w+)"', user_information
