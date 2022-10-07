@@ -1,4 +1,4 @@
-def handler(event, context):    
+def handler(event, context):
     import os
 
     from dotenv import load_dotenv
@@ -14,18 +14,14 @@ def handler(event, context):
     MART_SCHEMA = os.getenv("MART_SCHEMA")
     PRODUCTION_SCHEMA = os.getenv("PRODUCTION_SCHEMA")
 
-
     def get_engine_connection():
         """
         Connects to postgreSQL DBMS on AWS Aurora
 
         """
-        conn_string = (
-            f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-        )
+        conn_string = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
         return create_engine(conn_string)
-
 
     def transfer_production_to_mart():
         """
@@ -38,7 +34,7 @@ def handler(event, context):
         The two CTEs are right joined to make up the required
         data for the recent_rides tables in the mart schema
 
-        (date_of_birth) is converted to age by dividing it by 
+        (date_of_birth) is converted to age by dividing it by
         8766 which is the number of light hours in a light year
         (inc. leap years). Converts EPOCH to age.
 
@@ -68,11 +64,10 @@ def handler(event, context):
                     RIGHT JOIN rides_before AS rb
                         ON ugd.user_id = rb.user_id
             """
-            
+
             conn.execute(query)
 
         print("transferred data from production to schema")
-
 
     def clear_stale_data():
         """
@@ -91,7 +86,6 @@ def handler(event, context):
             conn.execute(query)
 
         print("dropped rows older than 12 hours")
-
 
     if __name__ == "__main__":
         transfer_production_to_mart()
