@@ -1,30 +1,33 @@
 import json
 import os
 
-import snowflake.connector as sf
+from sqlalchemy import create_engine
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 
 load_dotenv()
 
-USER = os.environ.get("USER")
-ACCOUNT = os.environ.get("ACCOUNT")
-PASSWORD = os.environ.get("PASSWORD")
-WAREHOUSE = os.environ.get("WAREHOUSE")
-DATABASE = os.environ.get("DATABASE")
-BATCH_SCHEMA = os.environ.get("BATCH_SCHEMA")
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_NAME = os.getenv("DB_NAME")
+MART_SCHEMA = os.getenv("MART_SCHEMA")
+PRODUCTION_SCHEMA = os.getenv("PRODUCTION_SCHEMA")
 
 flask_app = Flask(__name__)
 
-# Snowflake-SQLalchemy connection
-conn = sf.connect(
-    user="admin",
-    password=PASSWORD,
-    account=ACCOUNT,
-    warehouse=WAREHOUSE,
-    database=DATABASE,
-    schema=BATCH_SCHEMA,
-)
+
+def get_engine_connection():
+    """
+    Connects to postgreSQL DBMS on AWS Aurora
+
+    """
+    conn_string = (
+        f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    )
+
+    return create_engine(conn_string)
 
 
 def run_query(query):
