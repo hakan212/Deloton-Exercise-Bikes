@@ -1,3 +1,4 @@
 boto3
 os
-python_dotenv
+python-dotenv
+confluent-kafka
