@@ -89,8 +89,7 @@ def handler(event, context):
 
         print("dropped rows older than 12 hours")
 
-    if __name__ == "__main__":
-        transfer_production_to_mart()
-        clear_stale_data()
+    transfer_production_to_mart()
+    clear_stale_data()
 
     return "Function Executed"
