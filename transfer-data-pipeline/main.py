@@ -33,33 +33,27 @@ def handler(event, context):
 
         The two CTEs are right joined to make up the required
         data for the recent_rides tables in the mart schema
-
-        (date_of_birth) is converted to age by dividing it by
-        8766 which is the number of light hours in a light year
-        (inc. leap years). Converts EPOCH to age.
-
         """
         with get_engine_connection() as conn:
 
-            query = f"""
-                DECLARE LT_HRS_PER_LT_YR CONSTANT INTEGER := 8766
-
+            query = f"""      
                 INSERT INTO {MART_SCHEMA}.recent_rides
-
+                
                 WITH user_gender_dob AS (
                     SELECT user_id, gender,
-                        DATEDIFF(hour,date_of_birth, CURRENT_DATE)/LT_HRS_PER_LT_YR
+                        DATE_PART('year', AGE(CURRENT_DATE, date_of_birth))
                             AS age 
                         FROM {PRODUCTION_SCHEMA}.users
                 ),
-
                 rides_before AS (
                     SELECT *
                         FROM {PRODUCTION_SCHEMA}.rides
-                        WHERE TO_DATE(rs.begin_timestamp) > DATEADD(HOUR, -12, CURRENT_DATE)
+                        WHERE begin_timestamp > (CURRENT_DATE - INTERVAL '12 hours')
                 )
+                SELECT ugd.user_id, rb.ride_id, ugd.gender, ugd.age, rb.begin_timestamp,
+                    rb.total_duration_sec, rb.total_power, rb.mean_power, rb.mean_resistance,
+                        rb.mean_rpm, rb.mean_heart_rate
 
-                SELECT ugd.*, rb.*
                     FROM user_gender_dob AS ugd
                     RIGHT JOIN rides_before AS rb
                         ON ugd.user_id = rb.user_id
@@ -80,7 +74,7 @@ def handler(event, context):
 
             query = f"""
                 DELETE FROM {MART_SCHEMA}.recent_rides
-                    WHERE TO_DATE(begin_timestamp) < DATEADD(HOUR, -12, CURRENT_DATE)
+                   WHERE begin_timestamp < (CURRENT_DATE - INTERVAL '12 hours')
             """
 
             conn.execute(query)
