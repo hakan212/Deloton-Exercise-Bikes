@@ -1,6 +1,5 @@
 # requirements for flask x snowflake api
-json
 sqlalachemy
 python-dotenv
 flask
-pyarrow
+psycopg2-binary
