@@ -31,18 +31,17 @@ def get_engine_connection():
 
 
 def run_query(query):
-    """Runs a SQL query in Snowflake data warehouse
+    """Runs a SQL query in AWS Aurora RDBMS
 
     Args:
-        conn: Snowflake_SQLalchemy DB connection
         query: SQL query
 
     Returns:
         query_results: data associated with the query made
     """
-    cursor = conn.cursor()
+    engine = get_engine_connection()
 
-    query_results = cursor.execute(query)
+    query_results = engine.execute(query)
 
     return query_results
 
