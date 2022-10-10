@@ -129,7 +129,7 @@ def heart_rate_alert(n_intervals: int) -> dict:
     current_heart_rate = real_time_processing.current_data.get("heart_rate")
     current_age = real_time_processing.current_data.get("user_age")
 
-    if current_age is None or heart_rate_ok(current_heart_rate, current_age):
+    if not current_age or not current_heart_rate or heart_rate_ok(current_heart_rate, current_age):
         return {"display": "none"}
 
     return {"display": "block"}
