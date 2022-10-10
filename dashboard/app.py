@@ -49,12 +49,12 @@ app.layout = html.Div(
                         ),
                     ],
                 ),
-            ]
-        className='panel', id='left-panel')),
+            ],
+        className='panel', id='left-panel'),
         # Recent Ride info
         html.Div([html.H2("Recent Rides")]
         , className='panel', id='right-panel'
-        ),
+        )
     ]
 )
 
