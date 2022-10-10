@@ -66,6 +66,9 @@ def handler(event, context):
                 FROM user_gender_dob AS ugd
                 RIGHT JOIN rides_before AS rb
                     ON ugd.user_id = rb.user_id
+            
+            ON CONFLICT (ride_id)
+            DO NOTHING
         """
 
         run_query(query)
