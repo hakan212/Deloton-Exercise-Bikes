@@ -1,2 +1,7 @@
 .env
 .venv
+batch-data-pipeline/__pycache__/data_cleaning.cpython-39.pyc
+.gitignore
+batch-data-pipeline/assets/__pycache__/engine_wrapper.cpython-39.pyc
+dashboard/__pycache__/real_time_processing.cpython-39.pyc
+batch-data-pipeline/__pycache__/insert_queries.cpython-39.pyc
