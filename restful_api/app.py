@@ -1,8 +1,6 @@
 import json
 import os
 from datetime import date
-from pickle import TRUE
-from unittest import result
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
@@ -141,4 +139,4 @@ def delete_user_id(user_id):
 
 
 if __name__ == "__main__":
-    flask_app.run(host='0.0.0.0',port=5001)
+    flask_app.run(host="0.0.0.0", port=5001)

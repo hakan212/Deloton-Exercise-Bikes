@@ -8,8 +8,10 @@ load_dotenv()
 
 SCHEMA_NAME = os.getenv("SCHEMA_NAME")
 
+
 class databaseConnection:
     """Engine wrapper around SQLAlchemy, used to make queries for the API Frontend"""
+
     def __init__(
         self,
         database_name,
