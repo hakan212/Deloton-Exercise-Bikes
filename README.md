@@ -39,7 +39,9 @@ The report generator is deployed on an AWS Lambda function, which is scheduled t
 
 ## Public API
 
-We have deployed
+An API is available for Deloton Staff members to inspect the data stored for all users and rides. The API is designed around REST principles and queries up-to-date information of all data. Users can retrieve all rides, specific rides and users by their respective ids, all rides on a certain id, or send a delete request for any ride or user.
+
+The API is hosted using EC2 and is available online at: http://18.170.223.8:5001
 
 ## Tableau Integrations
 
