@@ -6,6 +6,7 @@ from dash.dependencies import Input, Output
 
 import real_time_processing
 from heart_rate_calculator import heart_rate_high, heart_rate_low, heart_rate_ok
+import recent_rides_visualisations
 
 app = Dash(__name__, use_pages=False, external_stylesheets=[dbc.themes.COSMO])
 
@@ -149,7 +150,16 @@ def heart_rate_description(data: dict) -> html.Span:
     Input("recent-rides-interval", "n_intervals"),
 )
 def recent_rides_live_refresh(n_intervals: int):
-    pass
+    recent_rides_data = recent_rides_visualisations.get_recent_rides_data()
+
+    gender_count = recent_rides_data.groupby(["gender"]).count()["user_id"]
+    gender_duration = recent_rides_data.groupby(["gender"]).sum()["total_duration_sec"]
+
+    gender_count_pie = recent_rides_visualisations.create_gender_split_pie_chart(gender_count, "Number of Rides by Gender")
+    gender_duration_pie = recent_rides_visualisations.create_gender_split_pie_chart(gender_duration, "Total Ride Duration by Gender")
+    ride_age_groups_bar = recent_rides_visualisations.create_ride_age_groups_bar(recent_rides_data)
+
+    return gender_count_pie, gender_duration_pie, ride_age_groups_bar
 
 
 if __name__ == "__main__":
