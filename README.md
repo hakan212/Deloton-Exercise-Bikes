@@ -33,6 +33,10 @@ The dashboard is deployed on EC2 and is available online at:
 
 ## Daily Executive Reports
 
+We have create an automated report generator to deliver insights of the data to the CEO. This contains visualisations of data from users for the entire day, including the gender, age ranges and total and average power output.
+
+The report generator is deployed on an AWS Lambda function, which is scheduled to run everyday to deliver an email and PDF with insights generated from the day.
+
 ## Public API
 
 ## Tableau Integrations
