@@ -1,9 +1,11 @@
+from typing import Tuple
+
 import dash_bootstrap_components as dbc
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
 
 import real_time_processing
-from heart_rate_calculator import heart_rate_high, heart_rate_low
+from heart_rate_calculator import heart_rate_high, heart_rate_low, heart_rate_ok
 
 app = Dash(__name__, use_pages=False, external_stylesheets=[dbc.themes.COSMO])
 
@@ -13,28 +15,20 @@ app.layout = html.Div(
         # Current Ride info
         html.Div(
             [
+                dcc.Interval(  # Calls a callback to refresh all the live components in the div
+                    id="current-ride-interval",
+                    interval=1000,  # refresh frequency in milliseconds
+                    n_intervals=0,  # loop counter
+                ),
                 html.H2("Current Ride"),
                 html.Div(
                     [
                         html.H3("Current Rider Account Details"),
                         html.Div(id="current-rider-text"),
-                        dcc.Interval(
-                            id="current_rider_interval",
-                            interval=0.5 * 1000,
-                            n_intervals=0,
-                        ),
                     ]
                 ),
                 html.Div(
-                    [
-                        html.H3("Current Ride Stats"),
-                        html.Div(id="live-ride-text"),
-                        dcc.Interval(
-                            id="live-ride-interval",
-                            interval=0.5 * 1000,  # in milliseconds
-                            n_intervals=0,  # counter for number of refreshes
-                        ),
-                    ]
+                    [html.H3("Current Ride Stats"), html.Div(id="live-ride-text")]
                 ),
                 html.Div(
                     id="heart-rate-alert",
@@ -42,64 +36,72 @@ app.layout = html.Div(
                     children=[
                         html.H3("HEART RATE WARNING"),
                         html.Div(id="heart-rate-alert-description"),
-                        dcc.Interval(
-                            id="heart-rate-alert-interval",
-                            interval=0.5 * 1000,  # in milliseconds
-                            n_intervals=0,  # counter for number of refreshes
-                        ),
                     ],
                 ),
             ],
-        className='panel', id='left-panel'),
+            className="panel",
+            id="left-panel",
+        ),
         # Recent Ride info
-        html.Div([html.H2("Recent Rides")]
-        , className='panel', id='right-panel'
-        )
+        html.Div(
+            [
+                dcc.Interval(  # Calls a callback to refresh all the live components in the div
+                    id="recent-rides-interval",
+                    interval=5
+                    * 60
+                    * 1000,  # refresh frequency in milliseconds (= 5 mins)
+                    n_intervals=0,  # loop counter
+                ),
+                html.H2("Recent Rides"),
+                dcc.Graph(id="graph-1"),
+                dcc.Graph(id="graph-2"),
+                dcc.Graph(id="graph-3"),
+            ],
+            className="panel",
+            id="right-panel",
+        ),
     ]
 )
 
 
 @app.callback(
     Output("current-rider-text", "children"),
-    Input("current_rider_interval", "n_intervals"),
+    Output("live-ride-text", "children"),
+    Output("heart-rate-alert", "style"),
+    Output("heart-rate-alert-description", "children"),
+    Input("current-ride-interval", "n_intervals"),
 )
-def current_rider_details(n_intervals: int) -> html.Span:
-    """Returns an html span element containing text with current rider information
-
-    Args:
-        n_intervals: A  loop counter. Not used in the function body, but dash requires you to have
-        it for the function to be called in repeatedly.
-    """
-    data = real_time_processing.current_data
-
-    message = f"""User id: {data.get('user_id')}
-        Name: {data.get('user_name')}
-        Gender: {data.get('user_gender')}
-        Height: {data.get('user_height')} cm
-        Weight: {data.get('user_weight')} kg"""
-
-    return html.Span(message)
-
-
-@app.callback(
-    Output("live-ride-text", "children"), Input("live-ride-interval", "n_intervals")
-)
-def live_ride_details(n_intervals: int) -> html.Span:
-    """Returns an html span element containing text with live information on the current ride
-
-    Args:
-        n_intervals: A  loop counter. Not used in the function body, but dash requires you to have
-        it for the function to be called in repeatedly.
-    """
+def current_ride_live_refresh(n_intervals: int) -> Tuple:
     real_time_processing.refresh_data()
-    ride_duration_total_seconds = real_time_processing.current_data.get(
-        "duration"
-    )  # or 0
-    heart_rate = real_time_processing.current_data.get("heart_rate")  # or 0
+    data = real_time_processing.current_data
+    return (
+        current_rider_details(data),
+        live_ride_details(data),
+        heart_rate_alert(data),
+        heart_rate_description(data),
+    )
 
-    if ride_duration_total_seconds:
-        ride_duration_minutes = int(ride_duration_total_seconds // 60)
-        ride_duration_seconds = int(ride_duration_total_seconds % 60)
+
+def current_rider_details(data: dict) -> html.Div:
+    """Returns an html span element containing text with current rider information"""
+    return html.Div(children=[
+        html.Div(f"User id: {data.get('user_id')}"),
+        html.Div(f"Name: {data.get('user_name')}"),
+        html.Div(f"Gender: {data.get('user_gender')}"),
+        html.Div(f"Height: {data.get('user_height')}cm"),
+        html.Div(f"Age: {data.get('user_age')}"),
+        html.Div(f"Weight: {data.get('user_weight')}kg")
+    ])
+
+
+def live_ride_details(data: dict) -> html.Span:
+    """Returns an html span element containing text with live information on the current ride"""
+    ride_duration_seconds = data.get("duration")
+    heart_rate = data.get("heart_rate")
+
+    if ride_duration_seconds:
+        ride_duration_minutes = int(ride_duration_seconds // 60)
+        ride_duration_seconds = int(ride_duration_seconds % 60)
     else:
         ride_duration_minutes = 0
         ride_duration_seconds = 0
@@ -112,57 +114,42 @@ def live_ride_details(n_intervals: int) -> html.Span:
     return html.Span(message)
 
 
-@app.callback(
-    Output("heart-rate-alert", "style"),
-    Input("heart-rate-alert-interval", "n_intervals"),
-)
-def heart_rate_alert(n_intervals: int) -> dict:
-    """
-    Will display warning message on screen if heart rate is too high or low
+def heart_rate_alert(data: dict) -> dict:
+    """Will display warning message on screen if heart rate is too high or low
     Toggles the display option on the div with id heart-rate-alert
-    
-    Args:
-        n_intervals: A  loop counter. Not used in the function body, but dash requires you to have
-        it for the function to be called in repeatedly. 
     """
-    current_heart_rate = real_time_processing.current_data.get("heart_rate")
-    current_age = real_time_processing.current_data.get("user_age")
+    heart_rate = data.get("heart_rate")
+    rider_age = data.get("user_age")
 
-    if heart_rate_low(current_heart_rate, current_age) or heart_rate_high(
-        current_heart_rate, current_age
-    ):
-        return {"display": "block"}
-    else:
+    if not rider_age or not heart_rate or heart_rate_ok(heart_rate, rider_age):
         return {"display": "none"}
 
+    return {"display": "block"}
+
+
+def heart_rate_description(data: dict) -> html.Span:
+    """Determines output of heart-rate-alert-description"""
+    heart_rate = data.get("heart_rate")
+    rider_age = data.get("user_age")
+
+    message = ""
+    if not heart_rate or not rider_age:
+        pass
+    elif heart_rate_low(heart_rate, rider_age):
+        message = "Heart rate too low, work harder!"
+    elif heart_rate_high(heart_rate, rider_age):
+        message = "Heart rate very high! Perhaps take a break or decrease intensity."
+    return html.Span(message)
+
 
 @app.callback(
-    Output("heart-rate-alert-description", "children"),
-    Input("heart-rate-alert-interval", "n_intervals"),
+    Output("graph-1", "figure"),
+    Output("graph-2", "figure"),
+    Output("graph-3", "figure"),
+    Input("recent-rides-interval", "n_intervals"),
 )
-def heart_rate_description(n_intervals: int) -> html.Span:
-    """
-    Determines output of heart-rate-alert-description
-    
-    Args:
-        n_intervals: A  loop counter. Not used in the function body, but dash requires you to have
-        it for the function to be called in repeatedly. 
-    """
-
-    current_heart_rate = real_time_processing.current_data.get("heart_rate")
-    current_age = real_time_processing.current_data.get("user_age")
-
-    message = "Keep going!"
-
-    if current_heart_rate and current_age:
-        if heart_rate_low(current_heart_rate, current_age):
-            message = "Heart rate too low, work harder!"
-        elif heart_rate_high(current_heart_rate, current_age):
-            message = (
-                "Heart rate very high! Perhaps take a break or decrease intensity."
-            )
-
-    return html.Span(message)
+def recent_rides_live_refresh(n_intervals: int):
+    pass
 
 
 if __name__ == "__main__":
