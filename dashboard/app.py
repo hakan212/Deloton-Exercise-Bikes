@@ -1,10 +1,11 @@
+import dash_bootstrap_components as dbc
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
 
 import real_time_processing
 from heart_rate_calculator import heart_rate_high, heart_rate_low
 
-app = Dash(__name__, use_pages=False)
+app = Dash(__name__, use_pages=False, external_stylesheets=[dbc.themes.COSMO])
 
 app.layout = html.Div(
     [
@@ -49,9 +50,11 @@ app.layout = html.Div(
                     ],
                 ),
             ]
-        ),
+        className='panel', id='left-panel')),
         # Recent Ride info
-        html.Div([html.H2("Recent Rides")]),
+        html.Div([html.H2("Recent Rides")]
+        , className='panel', id='right-panel'
+        ),
     ]
 )
 

@@ -1,0 +1,27 @@
+body {
+  background-color: #333333;
+  color: #7fc37e;
+}
+
+.panel {
+  height: 90%;
+  width: 48.75%;
+  position: absolute;
+  z-index: 1;
+  overflow-x: hidden;
+  padding-top: 200px;
+  border: solid 2px #000;
+  border-radius: 40px;
+}
+
+#left-panel {
+  left: 0.5%;
+  background-color: #53565a;
+  color: #7fc37e;
+}
+
+#right-panel {
+  right: 0.5%;
+  background-color: #53565a;
+  color: #7fc37e;
+}
