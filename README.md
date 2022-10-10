@@ -45,4 +45,4 @@ The API is hosted using EC2 and is available online at: http://18.170.223.8:5001
 
 ## Tableau Integrations
 
-Tableau is a data visualisation tool that gives data analysts more options in handling data. We have connected our Aurora PostgreSQL instance to Tableau, which gives access to all of the data within the database for analysis. We have shared the Tableau via Tableau Server, allowing analysts to share their findings in a secure way.
+Tableau is a data visualisation tool that gives data analysts more options in handling data. We have connected our Aurora PostgreSQL instance to Tableau, which gives access to all of the data within the database for analysis. We have shared the Tableau and its insights via Tableau Server, allowing analysts to share their findings in a secure way.
