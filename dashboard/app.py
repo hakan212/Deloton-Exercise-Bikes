@@ -82,16 +82,16 @@ def current_ride_live_refresh(n_intervals: int) -> Tuple:
     )
 
 
-def current_rider_details(data: dict) -> html.Span:
+def current_rider_details(data: dict) -> html.Div:
     """Returns an html span element containing text with current rider information"""
-    message = f"""User id: {data.get('user_id')}
-        Name: {data.get('user_name')}
-        Gender: {data.get('user_gender')}
-        Height: {data.get('user_height')}cm
-        Age: {data.get('user_age')}
-        Weight: {data.get('user_weight')}kg"""
-
-    return html.Span(message)
+    return html.Div(children=[
+        html.Div(f"User id: {data.get('user_id')}"),
+        html.Div(f"Name: {data.get('user_name')}"),
+        html.Div(f"Gender: {data.get('user_gender')}"),
+        html.Div(f"Height: {data.get('user_height')}cm"),
+        html.Div(f"Age: {data.get('user_age')}"),
+        html.Div(f"Weight: {data.get('user_weight')}kg")
+    ])
 
 
 def live_ride_details(data: dict) -> html.Span:
