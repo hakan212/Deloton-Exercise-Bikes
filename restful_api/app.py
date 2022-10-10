@@ -1,9 +1,13 @@
 import json
 import os
-import pandas as pd
-from sqlalchemy import create_engine
+from datetime import date
+from pickle import TRUE
+from unittest import result
+
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
+
+from assets.api_engine_wrapper import databaseConnection
 
 load_dotenv()
 
@@ -12,57 +16,45 @@ DB_PORT = os.getenv("DB_PORT")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
-MART_SCHEMA = os.getenv("MART_SCHEMA")
-PRODUCTION_SCHEMA = os.getenv("PRODUCTION_SCHEMA")
+
 
 flask_app = Flask(__name__)
 
 
-def get_engine_connection():
-    """
-    Connects to postgreSQL DBMS on AWS Aurora
-
-    """
-    conn_string = (
-        f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-    )
-
-    return create_engine(conn_string)
-
-
-def run_query(query):
-    """Runs a SQL query in AWS Aurora RDBMS
-
-    Args:
-        query: SQL query
+def create_connection():
+    """Creates an instance of database_connection, which is used as an engine wrapper
 
     Returns:
-        query_results: data associated with the query made
+        databaseConnection object
     """
-    engine = get_engine_connection()
 
-    query_results = engine.execute(query)
+    conn = databaseConnection(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
 
-    return query_results
+    return conn
 
+
+conn = create_connection()
 
 # API Endpoints
 
-# GET Endpoints
+## GET Endpoints
+
+
 @flask_app.route("/")
 def default():
-    return "Deloton Exercise Bikes API"
+    content1 = "Deleton Exercise Bikes API <br/> Append these endpoints to make your request: <br/> "
+    content2 = "<b>/rides:</b> Query all rides in the database <br/> <b>/rides/ride_id:</b> Query a specific ride with a ride_id <br/>"
+    content3 = "<b>/user/user_id:</b> Query a specific user with a user_id <br/> <b>/user/user_id/rides:</b> Obtain all rides for a specific user<br/>"
+    content4 = "<b>/daily?date=YYYY-MM-DD:</b> Obtain all rides that have happened on a specific date. Leave the date argument blank to use today's date<br/>"
+    content5 = "<b>/rides/ride_id method=DELETE</b>: Sending a delete request for a specific ride id will delete the ride<br/>"
+    content6 = "<b>/user/user_id method=DELETE</b>: Sending a delete request for a specific user id will delete the user and all rides they have been on<br/>"
+    return content1 + content2 + content3 + content4 + content5 + content6
 
 
 @flask_app.route("/rides", methods=["GET"])
 def get_rides():
-    query = f"""
-        SELECT *
-            FROM zookeepers_production.rides
-    """
-    query_results = run_query(query)
 
-    json_string = pd.read_sql_table('rides',)      .to_json(orient="records")
+    json_string = conn.read_table_into_df(table="rides").to_json(orient="records")
 
     parsed_json = json.loads(json_string)
 
@@ -73,14 +65,8 @@ def get_rides():
 
 @flask_app.route("/rides/<ride_id>", methods=["GET"])
 def get_ride(ride_id):
-    query = f"""
-        SELECT *
-            FROM rides
-            WHERE ride_id = {ride_id}
-    """
-    query_results = run_query(query)
 
-    json_string = query_results.fetch_pandas_all().to_json(orient="records")
+    json_string = conn.select_ride(ride_id).to_json(orient="records")
 
     parsed_json = json.loads(json_string)
 
@@ -89,34 +75,22 @@ def get_ride(ride_id):
     return response
 
 
-@flask_app.route("/rider/<rider_id>", methods=["GET"])
-def get_rider(rider_id):
-    query = f"""
-        SELECT *
-            FROM users
-            WHERE user_id = {rider_id}
-    """
-    query_results = run_query(query)
+@flask_app.route("/user/<user_id>", methods=["GET"])
+def get_user(user_id):
 
-    json_string = query_results.fetch_pandas_all().to_json(orient="records")
+    json_string = conn.select_user(user_id).to_json(orient="records")
 
     parsed_json = json.loads(json_string)
 
-    response = jsonify({"status": 200, "rider": parsed_json})
+    response = jsonify({"status": 200, "user": parsed_json})
 
     return response
 
 
-@flask_app.route("/rider/<rider_id>/rides", methods=["GET"])
-def get_rides_for_rider(rider_id):
-    query = f"""
-        SELECT *
-            FROM rides
-            WHERE user_id = {rider_id}
-    """
-    query_results = run_query(query)
+@flask_app.route("/user/<user_id>/rides", methods=["GET"])
+def get_rides_for_user(user_id):
 
-    json_string = query_results.fetch_pandas_all().to_json(orient="records")
+    json_string = conn.select_rides_with_user(user_id).to_json(orient="records")
 
     parsed_json = json.loads(json_string)
 
@@ -130,36 +104,10 @@ def get_rides_for_rider(rider_id):
 def get_daily():
     requested_date = request.args.get("date")
 
-    if requested_date is not None:
+    if requested_date is None:
+        requested_date = date.today().strftime("%Y-%m-%d")
 
-        query = f"""
-            SELECT *
-                FROM rides
-                WHERE TO_DATE(begin_timestamp) = TO_DATE('{requested_date}')
-        """
-        query_results = run_query(query)
-
-        json_string = query_results.fetch_pandas_all().to_json(orient="records")
-
-        parsed_json = json.loads(json_string)
-
-        if len(parsed_json) == 0:
-            response = jsonify({"status": 204, "rides": "No content"})
-
-            return response
-
-        response = jsonify({"status": 200, "rides": parsed_json})
-
-        return response
-
-    query = f"""
-        SELECT *
-            FROM rides
-            WHERE TO_DATE(begin_timestamp) = TO_DATE(CURRENT_DATE)
-        """
-    query_results = run_query(query)
-
-    json_string = query_results.fetch_pandas_all().to_json(orient="records")
+    json_string = conn.select_rides_with_date(requested_date).to_json(orient="records")
 
     parsed_json = json.loads(json_string)
 
@@ -173,20 +121,24 @@ def get_daily():
     return response
 
 
-# DELETE Endpoints
-@flask_app.route("/ride/<ride_id>", methods=["POST"])
+## DELETE Endpoints
+@flask_app.route("/rides/<ride_id>", methods=["DELETE"])
 def delete_ride_id(ride_id):
-    query = f"""
-        DELETE FROM rides
-            WHERE id = {ride_id}
-    """
-    run_query(query)
+    result = conn.delete_ride(ride_id)
 
-    response = jsonify({"status": 200})
+    response = jsonify({"status": result})
+
+    return response
+
+
+@flask_app.route("/user/<user_id>", methods=["DELETE"])
+def delete_user_id(user_id):
+    result = conn.delete_user(user_id)
+
+    response = jsonify({"status": result})
 
     return response
 
 
 if __name__ == "__main__":
-    # TODO: import waitress for when we containerize
-    flask_app.run(debug=True)
+    flask_app.run(host='0.0.0.0',port=5001)
