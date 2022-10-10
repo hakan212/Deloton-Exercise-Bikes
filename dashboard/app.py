@@ -150,17 +150,16 @@ def heart_rate_description(n_intervals: int) -> html.Span:
 
     current_heart_rate = real_time_processing.current_data.get("heart_rate")
     current_age = real_time_processing.current_data.get("user_age")
-
-    message = "Keep going!"
-
-    if current_heart_rate and current_age:
-        if heart_rate_low(current_heart_rate, current_age):
-            message = "Heart rate too low, work harder!"
-        elif heart_rate_high(current_heart_rate, current_age):
-            message = (
+    
+    message = ''
+    if not current_heart_rate or not current_age:
+        pass
+    elif heart_rate_low(current_heart_rate, current_age):
+        message = "Heart rate too low, work harder!"
+    elif heart_rate_high(current_heart_rate, current_age):
+        message = (
                 "Heart rate very high! Perhaps take a break or decrease intensity."
             )
-
     return html.Span(message)
 
 
