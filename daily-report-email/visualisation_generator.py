@@ -73,20 +73,27 @@ def get_number_of_rides(df):
     """
     return len(df)
 
-def get_gender_rides_pie(df):
+def plot_gender_rides_pie(df):
     gender_df = df['gender'].value_counts()
     gender_df.values
-    gender_fig = px.pie(gender_df,values=gender_df.values,names=gender_df.index,title=f'Gender of bicycle users for {date.today()}',width=500,height=500)
+    gender_fig = px.pie(gender_df,values=gender_df.values,names=gender_df.index,title=f'Gender of bicycle riders for {date.today()}',width=500,height=500, 
+    color_discrete_sequence=['#8FBC8F', '#483D8B'])
+    
+    gender_fig.write_image("./assets/temp/gender_fig.png")
+
     return gender_fig
 
-def get_age_rides_segments(df):
+def plot_age_rides_bar(df):
     age_bin = [0,15,30,45,60,75,90,105]
     age_df = df['age'].value_counts(bins=age_bin,sort=False)
     age_range_list = ['0-15','15-30','30-45','45-60','60-75','75-90','90-105+']
 
     age_bin_ticks = age_df.index.astype(str)
-    age_fig = px.bar(x=age_bin_ticks, y=age_df.values,labels={'y':'Number of riders','x':'Age ranges of riders'},width=750,title=f'Age ranges of bicycle riders for {date.today()}')
+    age_fig = px.bar(x=age_bin_ticks, y=age_df.values,labels={'y':'Number of riders','x':'Age ranges of riders'},width=650,title=f'Age ranges of bicycle riders for {date.today()}')
     age_fig.update_xaxes(tickvals=age_bin_ticks, ticktext = age_range_list)
+    age_fig.update_traces(marker=dict(color='#8FBC8F'))
+
+    age_fig.write_image("./assets/temp/age_fig.png")
 
     return age_fig
 
@@ -101,9 +108,3 @@ def get_mean_power_output(df):
 def get_mean_heart_rate(df):
     mean_heart_rate = df['mean_heart_rate'].mean().round(1)
     return mean_heart_rate
-
-    
-if __name__ == "__main__":
-    df_rides = get_dataframe()
-    num_rides = get_number_of_rides(df_rides)
-
