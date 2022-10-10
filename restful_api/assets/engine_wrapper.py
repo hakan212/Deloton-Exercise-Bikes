@@ -44,13 +44,26 @@ class database_connection:
 
         select_user_query = f"""
         select * from {SCHEMA_NAME}.users
-        where user_id = (%s)"""  # parameterised query avoids sql injection
+        where user_id = (%s)"""  
 
         user_df = pd.read_sql(
             select_user_query, con=self.engine, params=[user_id]
         )
 
         return user_df
+
+    def select_rides_with_user(self, user_id):
+        """Queries ride table to obtain rides for a specific user"""
+
+        select_rides_query = f"""
+        select * from {SCHEMA_NAME}.rides
+        where user_id = (%s)"""  
+
+        ride_df = pd.read_sql(
+            select_rides_query, con=self.engine, params=[user_id]
+        )
+
+        return ride_df
 
 
 

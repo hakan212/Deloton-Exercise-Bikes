@@ -79,14 +79,8 @@ def get_rider(rider_id):
 
 @flask_app.route("/rider/<rider_id>/rides", methods=["GET"])
 def get_rides_for_rider(rider_id):
-    query = f"""
-        SELECT *
-            FROM rides
-            WHERE user_id = {rider_id}
-    """
-    query_results = run_query(query)
 
-    json_string = query_results.fetch_pandas_all().to_json(orient="records")
+    json_string = conn.select_rides_with_user(rider_id).to_json(orient="records")
 
     parsed_json = json.loads(json_string)
 
