@@ -23,6 +23,14 @@ Deloton's bikes report heart rates of the user every 0.5 seconds. We have create
 
 ## Live Dashboard
 
+We have created a live dashboard that can visualise the current ride as well as recent rides within the last 12 hours.
+
+The current ride section shows information about the user as well as their performance on the bike, such as their heart rate, resistance and power output.
+
+The recent rides section contains visualisations of the data, such as the gender and age range as well as the total and average power output of users.
+
+The dashboard is deployed on EC2 and is available online at:
+
 ## Daily Executive Reports
 
 ## Public API
