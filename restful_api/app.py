@@ -1,11 +1,12 @@
 import json
 import os
-import pandas as pd
-from sqlalchemy import create_engine
+from datetime import date
+
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
-from assets.engine_wrapper import database_connection
-from datetime import date
+
+from assets.api_engine_wrapper import database_connection
+
 load_dotenv()
 
 DB_HOST = os.getenv("DB_HOST")
@@ -13,29 +14,29 @@ DB_PORT = os.getenv("DB_PORT")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
-MART_SCHEMA = os.getenv("MART_SCHEMA")
-PRODUCTION_SCHEMA = os.getenv("PRODUCTION_SCHEMA")
+
 
 flask_app = Flask(__name__)
 
 
 def create_connection():
-    """Creates an engine connection via the engine wrapper
-
+    """Creates an instance of database_connection, which is used as an engine wrapper
+    
     Returns:
-        Connection to SQLAlchemy engine
+        database_connection object
     """
 
     conn = database_connection(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
-    
 
     return conn
 
 
+conn = create_connection()
+
 # API Endpoints
 
-conn = create_connection()
-# GET Endpoints
+## GET Endpoints
+
 
 @flask_app.route("/")
 def default():
@@ -44,8 +45,8 @@ def default():
 
 @flask_app.route("/rides", methods=["GET"])
 def get_rides():
-   
-    json_string =  conn.read_table_into_df(table='rides').to_json(orient="records")
+
+    json_string = conn.read_table_into_df(table="rides").to_json(orient="records")
 
     parsed_json = json.loads(json_string)
 
@@ -96,12 +97,11 @@ def get_daily():
     requested_date = request.args.get("date")
 
     if requested_date is None:
-        requested_date = date.today().strftime('%Y-%m-%d')
-    
+        requested_date = date.today().strftime("%Y-%m-%d")
+
     json_string = conn.select_rides_with_date(requested_date).to_json(orient="records")
 
     parsed_json = json.loads(json_string)
-
 
     if len(parsed_json) == 0:
         response = jsonify({"status": 204, "rides": "No content"})
@@ -113,14 +113,10 @@ def get_daily():
     return response
 
 
-# DELETE Endpoints
-@flask_app.route("/ride/<ride_id>", methods=["POST"])
+## DELETE Endpoints
+@flask_app.route("/ride/<ride_id>", methods=["DELETE"])
 def delete_ride_id(ride_id):
-    query = f"""
-        DELETE FROM rides
-            WHERE id = {ride_id}
-    """
-    run_query(query)
+    conn.delete_ride(ride_id)
 
     response = jsonify({"status": 200})
 
@@ -128,5 +124,4 @@ def delete_ride_id(ride_id):
 
 
 if __name__ == "__main__":
-    # TODO: import waitress for when we containerize
     flask_app.run(debug=True)

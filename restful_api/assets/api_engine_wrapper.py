@@ -1,11 +1,12 @@
-import pandas as pd
 import os
+
+import pandas as pd
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 
-
-SCHEMA_NAME = os.getenv('SCHEMA_NAME')
+SCHEMA_NAME = os.getenv("SCHEMA_NAME")
 load_dotenv()
+
 
 class database_connection:
     def __init__(
@@ -21,21 +22,18 @@ class database_connection:
         )
 
     def read_table_into_df(self, table, schema=SCHEMA_NAME):
-        """Read table into pandas dataframe from chosen schema"""
+        """Read a whole table into a pandas dataframe"""
         df = pd.read_sql_table(table, con=self.engine, schema=schema)
         return df
 
-
     def select_ride(self, ride_id):
-        """Queries ride table to obtain specific ride"""
+        """Queries rides table to obtain specific ride"""
 
         select_ride_query = f"""
         select * from {SCHEMA_NAME}.rides
         where ride_id = (%s)"""  # parameterised query avoids sql injection
 
-        ride_df = pd.read_sql(
-            select_ride_query, con=self.engine, params=[ride_id]
-        )
+        ride_df = pd.read_sql(select_ride_query, con=self.engine, params=[ride_id])
 
         return ride_df
 
@@ -44,11 +42,9 @@ class database_connection:
 
         select_user_query = f"""
         select * from {SCHEMA_NAME}.users
-        where user_id = (%s)"""  
+        where user_id = (%s)"""
 
-        user_df = pd.read_sql(
-            select_user_query, con=self.engine, params=[user_id]
-        )
+        user_df = pd.read_sql(select_user_query, con=self.engine, params=[user_id])
 
         return user_df
 
@@ -57,27 +53,30 @@ class database_connection:
 
         select_rides_query = f"""
         select * from {SCHEMA_NAME}.rides
-        where user_id = (%s)"""  
+        where user_id = (%s)"""
 
-        ride_df = pd.read_sql(
-            select_rides_query, con=self.engine, params=[user_id]
-        )
+        ride_df = pd.read_sql(select_rides_query, con=self.engine, params=[user_id])
 
         return ride_df
 
     def select_rides_with_date(self, date):
-        """Queries ride table to obtain rides for a specific user"""
+        """Queries ride table to obtain rides on a given date"""
         select_rides_query = f"""
             SELECT *
                 FROM {SCHEMA_NAME}.rides
                 WHERE TO_CHAR(begin_timestamp,'YYYY-MM-DD') = (%s)
         """
-        
 
-        rides_df = pd.read_sql(
-            select_rides_query, con=self.engine, params=[date]
-        )
+        rides_df = pd.read_sql(select_rides_query, con=self.engine, params=[date])
 
         return rides_df
 
-
+    def delete_ride(self, ride_id):
+        """Deletes ride with specific ride_id"""
+        delete_ride_query = f"""
+            DELETE 
+                FROM {SCHEMA_NAME}.rides
+                WHERE ride_id = (%s)
+        """
+        with self.engine.connect() as connection:
+            connection.execute(delete_ride_query, (ride_id))
