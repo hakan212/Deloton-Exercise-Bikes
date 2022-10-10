@@ -75,8 +75,9 @@ def current_rider_details(n_intervals: int) -> html.Span:
     message = f"""User id: {data.get('user_id')}
         Name: {data.get('user_name')}
         Gender: {data.get('user_gender')}
-        Height: {data.get('user_height')} cm
-        Weight: {data.get('user_weight')} kg"""
+        Height: {data.get('user_height')}cm
+        Age: {data.get('user_age')}
+        Weight: {data.get('user_weight')}kg"""
 
     return html.Span(message)
 
