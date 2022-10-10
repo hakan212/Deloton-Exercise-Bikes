@@ -42,10 +42,11 @@ conn = create_connection()
 def default():
     content1 = "Deleton Exercise Bikes API <br/> Append these endpoints to make your request: <br/> "
     content2 = "<b>/rides:</b> Query all rides in the database <br/> <b>/rides/ride_id:</b> Query a specific ride with a ride_id <br/>"
-    content3 = "<b>/user/user_id:</b> Query a specific user with a user_id <br/> <b>/user/user_id/rides:</b> obtain all rides for a specific user<br/>"
+    content3 = "<b>/user/user_id:</b> Query a specific user with a user_id <br/> <b>/user/user_id/rides:</b> Obtain all rides for a specific user<br/>"
     content4 = "<b>/daily?date=YYYY-MM-DD:</b> Obtain all rides that have happened on a specific date. Leave the date argument blank to use today's date<br/>"
-    content5 = "<b>/rides/ride_id method=DELETE</b>: Sending a delete request for a specific ride id will delete the ride"
-    return content1 + content2 + content3 + content4 + content5
+    content5 = "<b>/rides/ride_id method=DELETE</b>: Sending a delete request for a specific ride id will delete the ride<br/>"
+    content6 = "<b>/user/user_id method=DELETE</b>: Sending a delete request for a specific user id will delete the user and all rides they have been on<br/>"
+    return content1 + content2 + content3 + content4 + content5 + content6
 
 
 @flask_app.route("/rides", methods=["GET"])
@@ -128,7 +129,7 @@ def delete_ride_id(ride_id):
     return response
 
 
-@flask_app.route("/users/<user_id>", methods=["DELETE"])
+@flask_app.route("/user/<user_id>", methods=["DELETE"])
 def delete_user_id(user_id):
     conn.delete_user(user_id)
 
