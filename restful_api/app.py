@@ -4,7 +4,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
-
+from assets.engine_wrapper import database_connection
 load_dotenv()
 
 DB_HOST = os.getenv("DB_HOST")
@@ -18,37 +18,24 @@ PRODUCTION_SCHEMA = os.getenv("PRODUCTION_SCHEMA")
 flask_app = Flask(__name__)
 
 
-def get_engine_connection():
-    """
-    Connects to postgreSQL DBMS on AWS Aurora
-
-    """
-    conn_string = (
-        f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-    )
-
-    return create_engine(conn_string)
-
-
-def run_query(query):
-    """Runs a SQL query in AWS Aurora RDBMS
-
-    Args:
-        query: SQL query
+def create_connection():
+    """Creates an engine connection via the engine wrapper
 
     Returns:
-        query_results: data associated with the query made
+        Connection to SQLAlchemy engine
     """
-    engine = get_engine_connection()
 
-    query_results = engine.execute(query)
+    conn = database_connection(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
+    
 
-    return query_results
+    return conn
 
 
 # API Endpoints
 
+conn = create_connection()
 # GET Endpoints
+
 @flask_app.route("/")
 def default():
     return "Deloton Exercise Bikes API"
@@ -56,13 +43,8 @@ def default():
 
 @flask_app.route("/rides", methods=["GET"])
 def get_rides():
-    query = f"""
-        SELECT *
-            FROM zookeepers_production.rides
-    """
-    query_results = run_query(query)
-
-    json_string = pd.read_sql_table('rides',)      .to_json(orient="records")
+   
+    json_string =  conn.read_table_into_df(table='rides').to_json(orient="records")
 
     parsed_json = json.loads(json_string)
 
@@ -73,14 +55,8 @@ def get_rides():
 
 @flask_app.route("/rides/<ride_id>", methods=["GET"])
 def get_ride(ride_id):
-    query = f"""
-        SELECT *
-            FROM rides
-            WHERE ride_id = {ride_id}
-    """
-    query_results = run_query(query)
 
-    json_string = query_results.fetch_pandas_all().to_json(orient="records")
+    json_string = conn.select_ride(ride_id).to_json(orient="records")
 
     parsed_json = json.loads(json_string)
 
@@ -91,14 +67,8 @@ def get_ride(ride_id):
 
 @flask_app.route("/rider/<rider_id>", methods=["GET"])
 def get_rider(rider_id):
-    query = f"""
-        SELECT *
-            FROM users
-            WHERE user_id = {rider_id}
-    """
-    query_results = run_query(query)
 
-    json_string = query_results.fetch_pandas_all().to_json(orient="records")
+    json_string = conn.select_user(rider_id).to_json(orient="records")
 
     parsed_json = json.loads(json_string)
 
