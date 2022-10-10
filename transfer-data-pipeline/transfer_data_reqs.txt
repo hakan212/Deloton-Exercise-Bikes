@@ -1,6 +1,4 @@
 # /requirements.txt
-confluent_kafka
-python-dotenv
 sqlalchemy
-pandas
+python-dotenv
 psycopg2-binary
