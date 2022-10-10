@@ -95,8 +95,8 @@ def live_ride_details(n_intervals: int) -> html.Span:
     real_time_processing.refresh_data()
     ride_duration_total_seconds = real_time_processing.current_data.get(
         "duration"
-    )  # or 0
-    heart_rate = real_time_processing.current_data.get("heart_rate")  # or 0
+    )
+    heart_rate = real_time_processing.current_data.get("heart_rate")
 
     if ride_duration_total_seconds:
         ride_duration_minutes = int(ride_duration_total_seconds // 60)
