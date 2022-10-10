@@ -72,7 +72,7 @@ class database_connection:
         return rides_df
 
     def delete_ride(self, ride_id):
-        """Deletes ride with specific ride_id"""
+        """Deletes ride with a specific ride_id"""
         delete_ride_query = f"""
             DELETE 
                 FROM {SCHEMA_NAME}.rides
@@ -80,3 +80,21 @@ class database_connection:
         """
         with self.engine.connect() as connection:
             connection.execute(delete_ride_query, (ride_id))
+
+    def delete_user(self, user_id):
+        """Deletes user with a specific user_id, along with all rides they have been on"""
+        delete_rides_query = f"""
+            DELETE 
+                FROM {SCHEMA_NAME}.rides
+                WHERE user_id = (%s)
+        """
+
+        delete_user_query = f"""
+            DELETE 
+                FROM {SCHEMA_NAME}.users
+                WHERE user_id = (%s)
+        """
+
+        with self.engine.connect() as connection:
+            connection.execute(delete_rides_query, (user_id))
+            connection.execute(delete_user_query, (user_id))

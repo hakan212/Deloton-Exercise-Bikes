@@ -21,7 +21,7 @@ flask_app = Flask(__name__)
 
 def create_connection():
     """Creates an instance of database_connection, which is used as an engine wrapper
-    
+
     Returns:
         database_connection object
     """
@@ -40,7 +40,12 @@ conn = create_connection()
 
 @flask_app.route("/")
 def default():
-    return "Deloton Exercise Bikes API"
+    content1 = "Deleton Exercise Bikes API <br/> Append these endpoints to make your request: <br/> "
+    content2 = "<b>/rides:</b> Query all rides in the database <br/> <b>/rides/ride_id:</b> Query a specific ride with a ride_id <br/>"
+    content3 = "<b>/user/user_id:</b> Query a specific user with a user_id <br/> <b>/user/user_id/rides:</b> obtain all rides for a specific user<br/>"
+    content4 = "<b>/daily?date=YYYY-MM-DD:</b> Obtain all rides that have happened on a specific date. Leave the date argument blank to use today's date<br/>"
+    content5 = "<b>/rides/ride_id method=DELETE</b>: Sending a delete request for a specific ride id will delete the ride"
+    return content1 + content2 + content3 + content4 + content5
 
 
 @flask_app.route("/rides", methods=["GET"])
@@ -67,22 +72,22 @@ def get_ride(ride_id):
     return response
 
 
-@flask_app.route("/rider/<rider_id>", methods=["GET"])
-def get_rider(rider_id):
+@flask_app.route("/user/<user_id>", methods=["GET"])
+def get_user(user_id):
 
-    json_string = conn.select_user(rider_id).to_json(orient="records")
+    json_string = conn.select_user(user_id).to_json(orient="records")
 
     parsed_json = json.loads(json_string)
 
-    response = jsonify({"status": 200, "rider": parsed_json})
+    response = jsonify({"status": 200, "user": parsed_json})
 
     return response
 
 
-@flask_app.route("/rider/<rider_id>/rides", methods=["GET"])
-def get_rides_for_rider(rider_id):
+@flask_app.route("/user/<user_id>/rides", methods=["GET"])
+def get_rides_for_user(user_id):
 
-    json_string = conn.select_rides_with_user(rider_id).to_json(orient="records")
+    json_string = conn.select_rides_with_user(user_id).to_json(orient="records")
 
     parsed_json = json.loads(json_string)
 
@@ -114,9 +119,18 @@ def get_daily():
 
 
 ## DELETE Endpoints
-@flask_app.route("/ride/<ride_id>", methods=["DELETE"])
+@flask_app.route("/rides/<ride_id>", methods=["DELETE"])
 def delete_ride_id(ride_id):
     conn.delete_ride(ride_id)
+
+    response = jsonify({"status": 200})
+
+    return response
+
+
+@flask_app.route("/users/<user_id>", methods=["DELETE"])
+def delete_user_id(user_id):
+    conn.delete_user(user_id)
 
     response = jsonify({"status": 200})
 
