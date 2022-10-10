@@ -7,7 +7,7 @@ from datetime import date
 
 from confluent_kafka import Consumer
 from dotenv import load_dotenv
-from email_sender import (get_email_HTML_body, get_email_subject,
+from email_sender_helpers import (get_email_HTML_body, get_email_subject,
                           get_email_text_body, send_email)
 from heart_rate_calculator import heart_rate_high, heart_rate_low
 
@@ -137,3 +137,5 @@ while True:
                 email_subject,
                 "UTF-8",
             )
+
+            print("email")
