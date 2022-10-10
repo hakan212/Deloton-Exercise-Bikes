@@ -27,7 +27,9 @@ def get_engine_connection():
 
 sql_engine = get_engine_connection()
 
-recent_rides_data = pd.read_sql_table(table_name, con=sql_engine, schema=MART_SCHEMA)
+def get_recent_rides_data ():
+    return pd.read_sql_table(table_name, con=sql_engine, schema=MART_SCHEMA)
+
 
 def create_gender_split_pie_chart (gender_related_data, title):
     gender_split_pie_chart = go.Figure(data=go.Pie(
@@ -43,7 +45,7 @@ def create_gender_split_pie_chart (gender_related_data, title):
     return gender_split_pie_chart
 
 
-def create_ride_age_groups_bar ():
+def create_ride_age_groups_bar (recent_rides_data):
     num_rides_by_age = recent_rides_data["age"].value_counts(bins=[18,30,40,50,60,70,80]).sort_index()
     num_rides_by_age = pd.DataFrame({"age_group": num_rides_by_age.index, "num_of_riders": num_rides_by_age.values})
     num_rides_by_age["age_group"] = num_rides_by_age["age_group"].astype("str")
@@ -69,8 +71,8 @@ def create_ride_age_groups_bar ():
 
     return rides_by_age_plot
 
-def get_total_power_recent_rides ():
+def get_total_power_recent_rides (recent_rides_data):
     return round(recent_rides_data["total_power"].sum())
 
-def get_mean_power_recent_rides():
+def get_mean_power_recent_rides(recent_rides_data):
     return round(recent_rides_data["mean_power"].mean(),2)
