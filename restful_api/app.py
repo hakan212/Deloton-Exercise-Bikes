@@ -1,6 +1,6 @@
 import json
 import os
-
+import pandas as pd
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
@@ -58,11 +58,11 @@ def default():
 def get_rides():
     query = f"""
         SELECT *
-            FROM rides
+            FROM zookeepers_production.rides
     """
     query_results = run_query(query)
 
-    json_string = query_results.fetch_pandas_all().to_json(orient="records")
+    json_string = pd.read_sql_table('rides',)      .to_json(orient="records")
 
     parsed_json = json.loads(json_string)
 
