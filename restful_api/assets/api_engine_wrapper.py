@@ -4,9 +4,9 @@ import pandas as pd
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 
-SCHEMA_NAME = os.getenv("SCHEMA_NAME")
 load_dotenv()
 
+SCHEMA_NAME = os.getenv("SCHEMA_NAME")
 
 class databaseConnection:
     """Engine wrapper around SQLAlchemy, used to make queries for the API Frontend"""
@@ -80,7 +80,13 @@ class databaseConnection:
                 WHERE ride_id = (%s)
         """
         with self.engine.connect() as connection:
-            connection.execute(delete_ride_query, (ride_id))
+            result = connection.execute(delete_ride_query, (ride_id))
+            rows_deleted = result.rowcount
+
+            if not rows_deleted:
+                return 404
+
+            return 200
 
     def delete_user(self, user_id):
         """Deletes user with a specific user_id, along with all rides they have been on"""
@@ -98,4 +104,8 @@ class databaseConnection:
 
         with self.engine.connect() as connection:
             connection.execute(delete_rides_query, (user_id))
-            connection.execute(delete_user_query, (user_id))
+            user_result = connection.execute(delete_user_query, (user_id))
+            user_rows_deleted = user_result.rowcount
+            if not user_rows_deleted:
+                return 404
+            return 200

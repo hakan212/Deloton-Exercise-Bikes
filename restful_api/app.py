@@ -1,6 +1,8 @@
 import json
 import os
 from datetime import date
+from pickle import TRUE
+from unittest import result
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
@@ -122,21 +124,21 @@ def get_daily():
 ## DELETE Endpoints
 @flask_app.route("/rides/<ride_id>", methods=["DELETE"])
 def delete_ride_id(ride_id):
-    conn.delete_ride(ride_id)
+    result = conn.delete_ride(ride_id)
 
-    response = jsonify({"status": 200})
+    response = jsonify({"status": result})
 
     return response
 
 
 @flask_app.route("/user/<user_id>", methods=["DELETE"])
 def delete_user_id(user_id):
-    conn.delete_user(user_id)
+    result = conn.delete_user(user_id)
 
-    response = jsonify({"status": 200})
+    response = jsonify({"status": result})
 
     return response
 
 
 if __name__ == "__main__":
-    flask_app.run(debug=False,host='0.0.0.0',port=5001)
+    flask_app.run(debug=True,host='0.0.0.0',port=5001)
