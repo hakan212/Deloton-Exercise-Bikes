@@ -5,7 +5,7 @@ from datetime import date
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 
-from assets.api_engine_wrapper import database_connection
+from assets.api_engine_wrapper import databaseConnection
 
 load_dotenv()
 
@@ -23,10 +23,10 @@ def create_connection():
     """Creates an instance of database_connection, which is used as an engine wrapper
 
     Returns:
-        database_connection object
+        databaseConnection object
     """
 
-    conn = database_connection(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
+    conn = databaseConnection(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
 
     return conn
 
@@ -139,4 +139,4 @@ def delete_user_id(user_id):
 
 
 if __name__ == "__main__":
-    flask_app.run(debug=True)
+    flask_app.run(debug=True,host='0.0.0.0',port=5001)
