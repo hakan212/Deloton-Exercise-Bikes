@@ -15,6 +15,11 @@ app.layout = html.Div(
         # Current Ride info
         html.Div(
             [
+                dcc.Interval(  # Calls a callback to refresh all the live components in the div
+                    id="current-ride-interval",
+                    interval=1000,  # refresh frequency in milliseconds
+                    n_intervals=0,  # loop counter
+                ),
                 html.H2("Current Ride"),
                 html.Div(
                     [
@@ -48,9 +53,9 @@ app.layout = html.Div(
                     n_intervals=0,  # loop counter
                 ),
                 html.H2("Recent Rides"),
-                dcc.Graph(id='graph-1'),
-                dcc.Graph(id='graph-2'),
-                dcc.Graph(id='graph-3')
+                dcc.Graph(id="graph-1"),
+                dcc.Graph(id="graph-2"),
+                dcc.Graph(id="graph-3"),
             ],
             className="panel",
             id="right-panel",
@@ -138,10 +143,10 @@ def heart_rate_description(data: dict) -> html.Span:
 
 
 @app.callback(
-    Output('graph-1', 'figure'),
-    Output('graph-2', 'figure'),
-    Output('graph-3', 'figure'),
-    Input("recent-rides-interval", "n_intervals")
+    Output("graph-1", "figure"),
+    Output("graph-2", "figure"),
+    Output("graph-3", "figure"),
+    Input("recent-rides-interval", "n_intervals"),
 )
 def recent_rides_live_refresh(n_intervals: int):
     pass
