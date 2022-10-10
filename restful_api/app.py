@@ -5,6 +5,7 @@ from sqlalchemy import create_engine
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from assets.engine_wrapper import database_connection
+from datetime import date
 load_dotenv()
 
 DB_HOST = os.getenv("DB_HOST")
@@ -94,38 +95,13 @@ def get_rides_for_rider(rider_id):
 def get_daily():
     requested_date = request.args.get("date")
 
-    if requested_date is not None:
-
-        query = f"""
-            SELECT *
-                FROM rides
-                WHERE TO_DATE(begin_timestamp) = TO_DATE('{requested_date}')
-        """
-        query_results = run_query(query)
-
-        json_string = query_results.fetch_pandas_all().to_json(orient="records")
-
-        parsed_json = json.loads(json_string)
-
-        if len(parsed_json) == 0:
-            response = jsonify({"status": 204, "rides": "No content"})
-
-            return response
-
-        response = jsonify({"status": 200, "rides": parsed_json})
-
-        return response
-
-    query = f"""
-        SELECT *
-            FROM rides
-            WHERE TO_DATE(begin_timestamp) = TO_DATE(CURRENT_DATE)
-        """
-    query_results = run_query(query)
-
-    json_string = query_results.fetch_pandas_all().to_json(orient="records")
+    if requested_date is None:
+        requested_date = date.today().strftime('%Y-%m-%d')
+    
+    json_string = conn.select_rides_with_date(requested_date).to_json(orient="records")
 
     parsed_json = json.loads(json_string)
+
 
     if len(parsed_json) == 0:
         response = jsonify({"status": 204, "rides": "No content"})

@@ -65,5 +65,19 @@ class database_connection:
 
         return ride_df
 
+    def select_rides_with_date(self, date):
+        """Queries ride table to obtain rides for a specific user"""
+        select_rides_query = f"""
+            SELECT *
+                FROM {SCHEMA_NAME}.rides
+                WHERE TO_CHAR(begin_timestamp,'YYYY-MM-DD') = (%s)
+        """
+        
+
+        rides_df = pd.read_sql(
+            select_rides_query, con=self.engine, params=[date]
+        )
+
+        return rides_df
 
 
