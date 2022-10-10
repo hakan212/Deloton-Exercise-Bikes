@@ -3,7 +3,7 @@ from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
 
 import real_time_processing
-from heart_rate_calculator import heart_rate_high, heart_rate_low
+from heart_rate_calculator import heart_rate_high, heart_rate_low, heart_rate_ok
 
 app = Dash(__name__, use_pages=False, external_stylesheets=[dbc.themes.COSMO])
 
@@ -128,12 +128,10 @@ def heart_rate_alert(n_intervals: int) -> dict:
     current_heart_rate = real_time_processing.current_data.get("heart_rate")
     current_age = real_time_processing.current_data.get("user_age")
 
-    if heart_rate_low(current_heart_rate, current_age) or heart_rate_high(
-        current_heart_rate, current_age
-    ):
-        return {"display": "block"}
-    else:
+    if current_age is None or heart_rate_ok(current_heart_rate, current_age):
         return {"display": "none"}
+
+    return {"display": "block"}
 
 
 @app.callback(
