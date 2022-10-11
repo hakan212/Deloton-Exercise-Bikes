@@ -72,7 +72,11 @@ def create_ride_age_groups_bar (recent_rides_data):
     return rides_by_age_plot
 
 def get_total_power_recent_rides (recent_rides_data):
-    return round(recent_rides_data["total_power"].sum())
+    total_power_watts = round(recent_rides_data["total_power"].sum())
+    total_power_kilowatts = round(total_power_watts/1000)
+
+    return f"{total_power_kilowatts}kW"
 
 def get_mean_power_recent_rides(recent_rides_data):
-    return round(recent_rides_data["mean_power"].mean(),2)
+    average_power = round(recent_rides_data["mean_power"].mean(),2)
+    return f"{average_power}W"
