@@ -20,10 +20,6 @@ class databaseConnection:
             f"postgresql://{user}:{password}@{host}:{port}/{database_name}"
         )
 
-    def read_table_into_df(self, schema, table):
-        """Read table into pandas dataframe from chosen schema"""
-        df = pd.read_sql_table(table, con=self.engine, schema=schema)
-        return df
 
     def select_user(self, user_dictionary):
         """Queries user table to obtain rows with user, used to check if user is new"""
