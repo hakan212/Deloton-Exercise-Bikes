@@ -3,7 +3,6 @@ from typing import Tuple
 import dash_bootstrap_components as dbc
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
-from numpy import average
 
 import real_time_processing
 from heart_rate_calculator import heart_rate_high, heart_rate_low, heart_rate_ok
