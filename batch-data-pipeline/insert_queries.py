@@ -1,4 +1,4 @@
-import pandas as pd
+import pandas as pd #needed for .empty method
 
 
 def insert_into_users(conn, user_dictionary):
