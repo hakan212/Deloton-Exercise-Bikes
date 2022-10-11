@@ -58,7 +58,7 @@ def create_ride_age_groups_bar(recent_rides_data):
     """Creates a bar chart representing the number of riders per age group"""
     num_rides_by_age = (
         recent_rides_data["age"]
-        .value_counts(bins=[18, 30, 40, 50, 60, 70, 80])
+        .value_counts(bins=[0, 15, 30, 45, 60, 75, 90, 110])
         .sort_index()
     )
     num_rides_by_age = pd.DataFrame(
@@ -78,6 +78,7 @@ def create_ride_age_groups_bar(recent_rides_data):
             "#7FC37F",
             "#7FC37F",
             "#7FC37F",
+            "#7FC37F",
         ],
     )
 
@@ -88,7 +89,7 @@ def create_ride_age_groups_bar(recent_rides_data):
         xaxis=dict(
             tickangle=90,
             tickvals=list(num_rides_by_age["age_group"]),
-            ticktext=["18-30", "31-40", "41-50", "51-60", "61-70", "71-80"],
+            ticktext=["0-15", "16-30", "31-45", "46-60", "61-75", "76-90", "90+"],
         ),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
