@@ -7,3 +7,5 @@ dash_bootstrap_components
 python-dotenv
 snowflake-connector-python
 snowflake-connector-python[pandas]
+sqlalchemy
+psycopg2
