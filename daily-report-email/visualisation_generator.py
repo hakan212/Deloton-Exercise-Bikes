@@ -17,10 +17,7 @@ PRODUCTION_SCHEMA = os.getenv("PRODUCTION_SCHEMA")
 
 
 def get_engine_connection():
-    """
-    Connects to postgreSQL DBMS on AWS Aurora using
-    an SQLalchemy engine.
-    """
+    """Connects to postgreSQL DBMS on AWS Aurora using an SQLalchemy engine."""
     conn_string = (
         f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     )
@@ -67,10 +64,7 @@ def get_dataframe():
 
 
 def plot_gender_rides_pie(df_riders):
-    """
-    Plots a pie chart of the gender split
-    of rides in the past day
-    """
+    """Plots a pie chart of the gender split of rides in the past day"""
     gender_df = df_riders["gender"].value_counts()
     gender_fig = px.pie(
         gender_df,
@@ -88,10 +82,7 @@ def plot_gender_rides_pie(df_riders):
 
 
 def plot_age_rides_bar(df_riders):
-    """
-    Plots a bar chart of the ages of riders
-    for the past day
-    """
+    """Plots a bar chart of the ages of riders for the past day"""
     age_bin = [0, 15, 30, 45, 60, 75, 90, 105]
     age_df = df_riders["age"].value_counts(bins=age_bin, sort=False)
     age_range_list = ["0-15", "16-30", "31-45", "46-60", "61-75", "76-90", "90+"]
@@ -113,35 +104,23 @@ def plot_age_rides_bar(df_riders):
 
 
 def get_number_of_rides(df_riders):
-    """
-    Return the total number of
-    rides in df_rides
-    """
+    """Return the total number of rides in df_rides"""
     return len(df_riders)
 
 
 def get_mean_total_power(df_riders):
-    """
-    Gets the mean total power of all riders
-    for the past day
-    """
+    """Gets the mean total power of all riders for the past day"""
     mean_total_power = int(df_riders["total_power"].mean())
     return mean_total_power
 
 
 def get_mean_power_output(df_riders):
-    """
-    Gets the mean power output per rider
-    for the past day
-    """
+    """Gets the mean power output per rider for the past day"""
     mean_power_output = df_riders["mean_power"].mean().round(2)
     return mean_power_output
 
 
 def get_mean_heart_rate(df_riders):
-    """
-    Gets the mean heart rate per rider
-    for the past day
-    """
+    """Gets the mean heart rate per rider for the past day"""
     mean_heart_rate = df_riders["mean_heart_rate"].mean().round(1)
     return mean_heart_rate
