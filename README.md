@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/80271709/195068761-ceba3b0f-fa3a-43b1-aa63-3a775fbe1ed6.png" width="700" height="250" />
+</p>
+
 # Deloton Exercise Bikes
 
 ## Overview
