@@ -51,8 +51,8 @@ def update_heart_rate(current_data: dict, log: str) -> None:
         new_log = new_log.split(" mendoza v9: [INFO]: Telemetry - ")
         timestamp = new_log[0]
         current_data["timestamp"] = timestamp
-
-        heart_rpm_and_power = re.findall(r"\d+.?\d+|\d", new_log[1])
+        numerical_regexp = r"\d+.?\d+|\d"
+        heart_rpm_and_power = re.findall(numerical_regexp, new_log[1])
         heart_rate = int(heart_rpm_and_power[0])
         current_data["heart_rate"] = heart_rate
 
