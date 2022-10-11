@@ -60,10 +60,8 @@ def send_email(
     msg.attach(msg_body)
 
     # Email attachment
-    with open(attachment_path, "rb") as attachment_file:
-        attachment = attachment_file.read()
-    attached_file = MIMEApplication(attachment)
-    attached_file.add_header(
+    attachment = MIMEApplication(open(attachment_path, "rb").read())
+    attachment.add_header(
         "Content-Disposition", "attachment", filename="deloton_daily_report.pdf"
     )
     msg.attach(attachment)
