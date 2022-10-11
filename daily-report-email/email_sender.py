@@ -28,7 +28,7 @@ BODY_TEXT = (
     + "\nKind Regards,"
     + "\nDeloton Exercise Co."
 )
-ATTACHMENT_PATH = "./assets/tmp/deloton_daily_report.pdf"
+ATTACHMENT_PATH = "./tmp/deloton_daily_report.pdf"
 
 
 def send_email(
@@ -92,7 +92,7 @@ def handler(event, context):
     send_email(
         REGION,
         SENDER,
-        CEO_RECIPIENT,
+        "trainee.jordan.pacho@sigmalabs.co.uk",
         BODY_TEXT,
         EMAIL_SUBJECT,
         ATTACHMENT_PATH,
