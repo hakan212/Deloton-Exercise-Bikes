@@ -2,6 +2,4 @@
 .venv
 .gitignore
 __pycache__
-batch-data-pipeline/__pycache__/data_cleaning.cpython-39.pyc
-batch-data-pipeline/__pycache__/snowflake_connection.cpython-39.pyc
-batch-data-pipeline/__pycache__/log_processing.cpython-39.pyc
+batch-data-pipeline/__pycache__
