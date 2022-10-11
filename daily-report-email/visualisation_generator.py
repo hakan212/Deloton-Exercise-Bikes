@@ -94,7 +94,7 @@ def plot_age_rides_bar(df_riders):
     """
     age_bin = [0, 15, 30, 45, 60, 75, 90, 105]
     age_df = df_riders["age"].value_counts(bins=age_bin, sort=False)
-    age_range_list = ["0-15", "15-30", "30-45", "45-60", "60-75", "75-90", "90+"]
+    age_range_list = ["0-15", "16-30", "31-45", "46-60", "61-75", "76-90", "90+"]
 
     age_bin_ticks = age_df.index.astype(str)
     age_fig = px.bar(
