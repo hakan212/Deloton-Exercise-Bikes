@@ -2,7 +2,9 @@ from datetime import date
 
 from fpdf import FPDF
 
-from visualisation_generator import *
+from visualisation_generator import (get_mean_heart_rate,
+                                     get_mean_power_output,
+                                     get_mean_total_power)
 
 # A4 page size in mm
 HEIGHT = 297
@@ -29,7 +31,8 @@ def create_page_title(pdf, text):
     pdf.write(5, f"{text}")
 
 
-def generate_report(df):
+def generate_report(df_rides):
+    """Generate a PDF report with data insights"""
     pdf = FPDF()  # A4 by default
     pdf.compress = False
 
@@ -46,14 +49,19 @@ def generate_report(df):
     pdf.set_font("Times", "", 16)
     pdf.ln(15)
     pdf.write(
-        5, f"Average total power generated: {round(get_mean_total_power(df)/1000)} kW"
+        5,
+        f"Average total power generated: {round(get_mean_total_power(df_rides)/1000)} kW",
     )
     pdf.ln(10)
-    pdf.write(5, f"Average power generated per rider: {get_mean_power_output(df)} W")
+    pdf.write(
+        5, f"Average power generated per rider: {get_mean_power_output(df_rides)} W"
+    )
     pdf.ln(10)
-    pdf.write(5, f"Average heart rate per rider: {round(get_mean_heart_rate(df))} bpm")
+    pdf.write(
+        5, f"Average heart rate per rider: {round(get_mean_heart_rate(df_rides))} bpm"
+    )
 
-    pdf.image("./assets/temp/gender_fig.png", 0, 185, w=95, h=100)
-    pdf.image("./assets/temp/age_fig.png", 100, 185, w=115, h=100)
+    pdf.image("./assets/tmp/gender_fig.png", 0, 185, w=95, h=100)
+    pdf.image("./assets/tmp/age_fig.png", 100, 185, w=115, h=100)
 
-    pdf.output(name=f"./assets/tmp/deloton_daily_report.pdf", dest="F")
+    pdf.output(name="./assets/tmp/deloton_daily_report.pdf", dest="F")
