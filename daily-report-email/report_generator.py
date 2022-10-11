@@ -46,7 +46,7 @@ def generate_report(df):
     pdf.set_font("Times", "", 16)
     pdf.ln(15)
     pdf.write(
-        5, f"Average total power generated: {round(get_mean_total_power(df)/1000)} MW"
+        5, f"Average total power generated: {round(get_mean_total_power(df)/1000)} kW"
     )
     pdf.ln(10)
     pdf.write(5, f"Average power generated per rider: {get_mean_power_output(df)} W")
