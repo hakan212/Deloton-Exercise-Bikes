@@ -53,9 +53,9 @@ app.layout = html.Div(
                     n_intervals=0,  # loop counter
                 ),
                 html.H2("Recent Rides"),
-                dcc.Graph(id="graph-1"),
-                dcc.Graph(id="graph-2"),
-                dcc.Graph(id="graph-3"),
+                dcc.Graph(id="number-of-riders-gender-pie"),
+                dcc.Graph(id="duration-of-ride-gender-pie"),
+                dcc.Graph(id="number-of-riders-age-bar"),
                 html.H3("Total Power:"),
                 html.H2(id="total-power"),
                 html.H3("Average Power per Rider:"),
@@ -149,9 +149,9 @@ def heart_rate_description(data: dict) -> html.Span:
 
 
 @app.callback(
-    Output("graph-1", "figure"),
-    Output("graph-2", "figure"),
-    Output("graph-3", "figure"),
+    Output("number-of-riders-gender-pie", "figure"),
+    Output("duration-of-ride-gender-pie", "figure"),
+    Output("number-of-riders-age-bar", "figure"),
     Output("total-power", "children"),
     Output("average-power", "children"),
     Input("recent-rides-interval", "n_intervals"),
