@@ -4,7 +4,7 @@ from heart_rate_calculator import heart_rate_high, heart_rate_low
 
 
 def get_email_subject(heart_rate: int, age: int) -> str:
-    '''Returns appropriate subject given age and heart rate'''
+    """Returns appropriate subject given age and heart rate"""
     if heart_rate_high(heart_rate, age):
         return "WARNING: Heart rate very high."
     if heart_rate_low(heart_rate, age):
@@ -12,15 +12,15 @@ def get_email_subject(heart_rate: int, age: int) -> str:
 
 
 def get_email_HTML_body(heart_rate: int, age: int) -> str:
-    '''Returns appropriate HTML body given age and heart rate'''
+    """Returns appropriate HTML body given age and heart rate"""
     if heart_rate_high(heart_rate, age):
         email_body_header = "WARNING: Heart rate dangerously fast!"
         email_body_content = "Your Deloton exercise bike recorded your heart rate to be very high, perhaps you should take a break."
     if heart_rate_low(heart_rate, age):
         email_body_header = "Heart rate very low, increase intensity!"
         email_body_content = "Your Deloton exercise bike recorded your heart rate to be very low, increase the intensity of exercise."
-
-    return f"""<html>
+    
+    email_HTML_body = f"""<html>
     <head></head>
     <body>
         <h1>{email_body_header}</h1>
@@ -29,6 +29,7 @@ def get_email_HTML_body(heart_rate: int, age: int) -> str:
     </html>
     """
 
+    return email_HTML_body
 
 def get_email_text_body(heart_rate: int, age: int) -> str:
     ## Returns appropriate text body given age and heart rate
@@ -38,10 +39,11 @@ def get_email_text_body(heart_rate: int, age: int) -> str:
     if heart_rate_low(heart_rate, age):
         email_body_header = "Heart rate very low, increase intensity!"
         email_body_content = "Your Deloton exercise bike recorded your heart rate to be very low, increase the intensity of exercise."
-
-    return f"""{email_body_header}\r\n
+    
+    email_text_body = f"""{email_body_header}\r\n
     {email_body_content}
     """
+    return email_text_body
 
 
 def send_email(
