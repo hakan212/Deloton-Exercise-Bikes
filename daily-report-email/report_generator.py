@@ -2,9 +2,10 @@ from datetime import date
 
 from fpdf import FPDF
 
-from visualisation_generator import (get_mean_heart_rate,
+from visualisation_generator import (get_dataframe, get_mean_heart_rate,
                                      get_mean_power_output,
-                                     get_mean_total_power)
+                                     get_mean_total_power, get_number_of_rides,
+                                     plot_age_rides_bar, plot_gender_rides_pie)
 
 # A4 page size in mm
 HEIGHT = 297
@@ -48,6 +49,8 @@ def generate_report(df_rides):
 
     pdf.set_font("Times", "", 16)
     pdf.ln(15)
+    pdf.write(5, f"Total number of rides: {get_number_of_rides(df_rides)}")
+    pdf.ln(10)
     pdf.write(
         5,
         f"Average total power generated: {round(get_mean_total_power(df_rides)/1000)} kW",
@@ -65,3 +68,10 @@ def generate_report(df_rides):
     pdf.image("./assets/tmp/age_fig.png", 100, 185, w=115, h=100)
 
     pdf.output(name="./assets/tmp/deloton_daily_report.pdf", dest="F")
+
+
+if __name__ == "__main__":
+    df_rides = get_dataframe()
+    plot_age_rides_bar(df_rides)
+    plot_gender_rides_pie(df_rides)
+    generate_report(df_rides)
