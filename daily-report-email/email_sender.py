@@ -28,7 +28,7 @@ BODY_TEXT = (
     + "\nKind Regards,"
     + "\nDeloton Exercise Co."
 )
-ATTACHMENT_PATH = "./tmp/deloton_daily_report.pdf"
+ATTACHMENT_PATH = "/tmp/deloton_daily_report.pdf"
 
 
 def send_email(
