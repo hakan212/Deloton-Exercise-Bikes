@@ -91,8 +91,8 @@ def handler(event, context):
 
     send_email(
         AWS_REGION,
-        "Deloton Exercise Co. <trainee.jordan.pacho@sigmalabs.co.uk>",
-        "trainee.jordan.pacho@sigmalabs.co.uk",
+        SENDER,
+        CEO_RECIPIENT,
         BODY_TEXT,
         EMAIL_SUBJECT,
         ATTACHMENT_PATH,
