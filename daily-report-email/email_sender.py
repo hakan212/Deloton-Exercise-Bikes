@@ -14,7 +14,7 @@ from visualisation_generator import (get_dataframe, plot_age_rides_bar,
 
 load_dotenv()
 
-AWS_REGION = os.getenv("AWS_REGION")
+REGION = os.getenv("REGION")
 SENDER = os.getenv("SENDER")
 CEO_RECIPIENT = os.getenv("CEO_RECIPIENT")
 
@@ -90,7 +90,7 @@ def handler(event, context):
     generate_report(df_rides)
 
     send_email(
-        AWS_REGION,
+        REGION,
         SENDER,
         CEO_RECIPIENT,
         BODY_TEXT,
