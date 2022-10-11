@@ -158,6 +158,7 @@ def heart_rate_description(data: dict) -> html.Span:
     Input("recent-rides-interval", "n_intervals"),
 )
 def recent_rides_live_refresh(n_intervals: int):
+    """Obtains and displays visualisations & metrics on rides over past 12 hours"""
     recent_rides_data = recent_rides_visualisations.get_recent_rides_data()
 
     gender_count = recent_rides_data.groupby(["gender"]).count()["user_id"]
