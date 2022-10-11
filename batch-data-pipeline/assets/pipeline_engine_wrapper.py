@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 SCHEMA_NAME = os.getenv('SCHEMA_NAME')
 load_dotenv()
 
-class database_connection:
+class databaseConnection:
     def __init__(
         self,
         database_name,

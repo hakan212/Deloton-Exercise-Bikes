@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 import insert_queries
 import log_processing
-from assets.engine_wrapper import database_connection
+from assets.pipeline_engine_wrapper import databaseConnection
 
 load_dotenv()
 
@@ -59,7 +59,7 @@ def polling_kafka():
     )
 
     consumer = subscribe_to_kafka_topic()
-    conn = database_connection(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
+    conn = databaseConnection(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
 
     resistance_list = []
     power_list = []
