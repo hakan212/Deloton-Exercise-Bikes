@@ -47,4 +47,8 @@ The API is hosted using EC2 and is available online at: http://18.170.223.8:5001
 
 Tableau is a data visualisation tool that gives data analysts more options in handling data. We have connected our Aurora PostgreSQL instance to Tableau, which gives access to all of the data within the database for analysis. We have generated our own insights and shared them via Tableau Server, which can be securely accessed by other analysts.
 
-The Tableau visualisations can be accessed via https://prod-uk-a.online.tableau.com/#/site/zookeeperstableau/workbooks/221509?:origin=card_share_link (Tableau Cloud account required)
+The Tableau visualisations can be accessed via
+
+https://prod-uk-a.online.tableau.com/#/site/zookeeperstableau/workbooks/221509?:origin=card_share_link
+
+(Tableau Cloud account required)
