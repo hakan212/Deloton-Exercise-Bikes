@@ -3,6 +3,7 @@ from typing import Tuple
 import dash_bootstrap_components as dbc
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
+from numpy import average
 
 import real_time_processing
 from heart_rate_calculator import heart_rate_high, heart_rate_low, heart_rate_ok
@@ -57,6 +58,11 @@ app.layout = html.Div(
                 dcc.Graph(id="graph-1"),
                 dcc.Graph(id="graph-2"),
                 dcc.Graph(id="graph-3"),
+                html.H3("Total Power:"),
+                html.H2(id="total-power"),
+                html.H3("Average Power per Rider:"),
+                html.H2(id="average-power")
+
             ],
             className="panel",
             id="right-panel",
@@ -147,6 +153,8 @@ def heart_rate_description(data: dict) -> html.Span:
     Output("graph-1", "figure"),
     Output("graph-2", "figure"),
     Output("graph-3", "figure"),
+    Output("total-power", "children"),
+    Output("average-power", "children"),
     Input("recent-rides-interval", "n_intervals"),
 )
 def recent_rides_live_refresh(n_intervals: int):
@@ -158,8 +166,10 @@ def recent_rides_live_refresh(n_intervals: int):
     gender_count_pie = recent_rides_visualisations.create_gender_split_pie_chart(gender_count, "Number of Rides by Gender")
     gender_duration_pie = recent_rides_visualisations.create_gender_split_pie_chart(gender_duration, "Total Ride Duration by Gender")
     ride_age_groups_bar = recent_rides_visualisations.create_ride_age_groups_bar(recent_rides_data)
+    total_power = recent_rides_visualisations.get_total_power_recent_rides(recent_rides_data)
+    average_power = recent_rides_visualisations.get_mean_power_recent_rides(recent_rides_data)
 
-    return gender_count_pie, gender_duration_pie, ride_age_groups_bar
+    return gender_count_pie, gender_duration_pie, ride_age_groups_bar, total_power, average_power
 
 
 if __name__ == "__main__":
