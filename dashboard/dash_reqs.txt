@@ -1,6 +1,7 @@
 # requirements for Dash dashboard
 dash
 pandas
+confluent-kafka
 plotly
 dash_bootstrap_components
 python-dotenv
