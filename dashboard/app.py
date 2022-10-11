@@ -1,12 +1,11 @@
 from typing import Tuple
 
 import dash_bootstrap_components as dbc
+import real_time_processing
+import recent_rides_visualisations
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
-
-import real_time_processing
 from heart_rate_calculator import heart_rate_high, heart_rate_low, heart_rate_ok
-import recent_rides_visualisations
 
 app = Dash(__name__, use_pages=False, external_stylesheets=[dbc.themes.COSMO])
 
@@ -60,8 +59,7 @@ app.layout = html.Div(
                 html.H3("Total Power:"),
                 html.H2(id="total-power"),
                 html.H3("Average Power per Rider:"),
-                html.H2(id="average-power")
-
+                html.H2(id="average-power"),
             ],
             className="panel",
             id="right-panel",
@@ -90,14 +88,16 @@ def current_ride_live_refresh(n_intervals: int) -> Tuple:
 
 def current_rider_details(data: dict) -> html.Div:
     """Returns an html span element containing text with current rider information"""
-    return html.Div(children=[
-        html.Div(f"User id: {data.get('user_id')}"),
-        html.Div(f"Name: {data.get('user_name')}"),
-        html.Div(f"Gender: {data.get('user_gender')}"),
-        html.Div(f"Height: {data.get('user_height')}cm"),
-        html.Div(f"Age: {data.get('user_age')}"),
-        html.Div(f"Weight: {data.get('user_weight')}kg")
-    ])
+    return html.Div(
+        children=[
+            html.Div(f"User id: {data.get('user_id')}"),
+            html.Div(f"Name: {data.get('user_name')}"),
+            html.Div(f"Gender: {data.get('user_gender')}"),
+            html.Div(f"Height: {data.get('user_height')}cm"),
+            html.Div(f"Age: {data.get('user_age')}"),
+            html.Div(f"Weight: {data.get('user_weight')}kg"),
+        ]
+    )
 
 
 def live_ride_details(data: dict) -> html.Span:
@@ -163,13 +163,29 @@ def recent_rides_live_refresh(n_intervals: int):
     gender_count = recent_rides_data.groupby(["gender"]).count()["user_id"]
     gender_duration = recent_rides_data.groupby(["gender"]).sum()["total_duration_sec"]
 
-    gender_count_pie = recent_rides_visualisations.create_gender_split_pie_chart(gender_count, "Number of Rides by Gender")
-    gender_duration_pie = recent_rides_visualisations.create_gender_split_pie_chart(gender_duration, "Total Ride Duration by Gender")
-    ride_age_groups_bar = recent_rides_visualisations.create_ride_age_groups_bar(recent_rides_data)
-    total_power = recent_rides_visualisations.get_total_power_recent_rides(recent_rides_data)
-    average_power = recent_rides_visualisations.get_mean_power_recent_rides(recent_rides_data)
+    gender_count_pie = recent_rides_visualisations.create_gender_split_pie_chart(
+        gender_count, "Number of Rides by Gender"
+    )
+    gender_duration_pie = recent_rides_visualisations.create_gender_split_pie_chart(
+        gender_duration, "Total Ride Duration by Gender"
+    )
+    ride_age_groups_bar = recent_rides_visualisations.create_ride_age_groups_bar(
+        recent_rides_data
+    )
+    total_power = recent_rides_visualisations.get_total_power_recent_rides(
+        recent_rides_data
+    )
+    average_power = recent_rides_visualisations.get_mean_power_recent_rides(
+        recent_rides_data
+    )
 
-    return gender_count_pie, gender_duration_pie, ride_age_groups_bar, total_power, average_power
+    return (
+        gender_count_pie,
+        gender_duration_pie,
+        ride_age_groups_bar,
+        total_power,
+        average_power,
+    )
 
 
 if __name__ == "__main__":
