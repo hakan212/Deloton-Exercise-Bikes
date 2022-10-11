@@ -1,35 +1,34 @@
-import pandas as pd
-import plotly.express as px
-from sqlalchemy import create_engine
-from dotenv import load_dotenv
 import os
 from datetime import date
 
+import pandas as pd
+import plotly.express as px
+from dotenv import load_dotenv
+from sqlalchemy import create_engine
+
 load_dotenv()
+
 DB_HOST = os.getenv("DB_HOST")
 DB_PORT = os.getenv("DB_PORT")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
-PRODUCTION_SCHEMA = 'zookeepers_production'
-
-pd.options.plotting.backend = "plotly"
+PRODUCTION_SCHEMA = os.getenv("PRODUCTION_SCHEMA")
 
 
 def get_engine_connection():
-        """Connects to postgreSQL DBMS on AWS Aurora
+    """
+    Connects to postgreSQL DBMS on AWS Aurora using
+    an SQLalchemy engine.
+    """
+    conn_string = (
+        f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    )
 
-        Returns:
-            DB engine
-        """
-        conn_string = (
-            f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-        )
-
-        return create_engine(conn_string)
+    return create_engine(conn_string)
 
 
-def get_dataframe():  
+def get_dataframe():
     """
     Creates a Pandas DataFrame by querying
     AWS Aurora with an SQL statement.
@@ -62,49 +61,87 @@ def get_dataframe():
                 ON ugd.user_id = rb.user_id
     """
 
-    df = pd.read_sql(query, con=get_engine_connection())
+    df_riders = pd.read_sql(query, con=get_engine_connection())
 
-    return df
+    return df_riders
 
-def get_number_of_rides(df):
+
+def plot_gender_rides_pie(df_riders):
     """
-    Return the total number of
-    rides in df_rides
+    Plots a pie chart of the gender split
+    of rides in the past day
     """
-    return len(df)
+    gender_df = df_riders["gender"].value_counts()
+    gender_fig = px.pie(
+        gender_df,
+        values=gender_df.values,
+        names=gender_df.index,
+        title=f"Gender of bicycle riders for {date.today()}",
+        width=500,
+        height=500,
+        color_discrete_sequence=["#8FBC8F", "#483D8B"],
+    )
 
-def plot_gender_rides_pie(df):
-    gender_df = df['gender'].value_counts()
-    gender_df.values
-    gender_fig = px.pie(gender_df,values=gender_df.values,names=gender_df.index,title=f'Gender of bicycle riders for {date.today()}',width=500,height=500, 
-    color_discrete_sequence=['#8FBC8F', '#483D8B'])
-    
     gender_fig.write_image("./assets/temp/gender_fig.png")
 
     return gender_fig
 
-def plot_age_rides_bar(df):
-    age_bin = [0,15,30,45,60,75,90,105]
-    age_df = df['age'].value_counts(bins=age_bin,sort=False)
-    age_range_list = ['0-15','15-30','30-45','45-60','60-75','75-90','90-105+']
+
+def plot_age_rides_bar(df_riders):
+    """
+    Plots a bar chart of the ages of riders
+    for the past day
+    """
+    age_bin = [0, 15, 30, 45, 60, 75, 90, 105]
+    age_df = df_riders["age"].value_counts(bins=age_bin, sort=False)
+    age_range_list = ["0-15", "15-30", "30-45", "45-60", "60-75", "75-90", "90-105+"]
 
     age_bin_ticks = age_df.index.astype(str)
-    age_fig = px.bar(x=age_bin_ticks, y=age_df.values,labels={'y':'Number of riders','x':'Age ranges of riders'},width=650,title=f'Age ranges of bicycle riders for {date.today()}')
-    age_fig.update_xaxes(tickvals=age_bin_ticks, ticktext = age_range_list)
-    age_fig.update_traces(marker=dict(color='#8FBC8F'))
+    age_fig = px.bar(
+        x=age_bin_ticks,
+        y=age_df.values,
+        labels={"y": "Number of riders", "x": "Age ranges of riders"},
+        width=650,
+        title=f"Age ranges of bicycle riders for {date.today()}",
+    )
+    age_fig.update_xaxes(tickvals=age_bin_ticks, ticktext=age_range_list)
+    age_fig.update_traces(marker=dict(color="#8FBC8F"))
 
     age_fig.write_image("./assets/temp/age_fig.png")
 
     return age_fig
 
-def get_mean_total_power(df):
-    mean_total_power = int(df['total_power'].mean())
+
+def get_number_of_rides(df_riders):
+    """
+    Return the total number of
+    rides in df_rides
+    """
+    return len(df_riders)
+
+
+def get_mean_total_power(df_riders):
+    """
+    Gets the mean total power of all riders
+    for the past day
+    """
+    mean_total_power = int(df_riders["total_power"].mean())
     return mean_total_power
 
-def get_mean_power_output(df):
-    mean_power_output = df['mean_power'].mean().round(2)
+
+def get_mean_power_output(df_riders):
+    """
+    Gets the mean power output per rider
+    for the past day
+    """
+    mean_power_output = df_riders["mean_power"].mean().round(2)
     return mean_power_output
 
-def get_mean_heart_rate(df):
-    mean_heart_rate = df['mean_heart_rate'].mean().round(1)
+
+def get_mean_heart_rate(df_riders):
+    """
+    Gets the mean heart rate per rider
+    for the past day
+    """
+    mean_heart_rate = df_riders["mean_heart_rate"].mean().round(1)
     return mean_heart_rate
