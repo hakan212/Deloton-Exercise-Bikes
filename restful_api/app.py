@@ -40,6 +40,7 @@ conn = create_connection()
 
 @flask_app.route("/")
 def default():
+    """Endpoint for API landing page"""
     content1 = "Deleton Exercise Bikes API <br/> Append these endpoints to make your request: <br/> "
     content2 = "<b>/rides:</b> Query all rides in the database <br/> <b>/rides/ride_id:</b> Query a specific ride with a ride_id <br/>"
     content3 = "<b>/user/user_id:</b> Query a specific user with a user_id <br/> <b>/user/user_id/rides:</b> Obtain all rides for a specific user<br/>"
@@ -51,7 +52,7 @@ def default():
 
 @flask_app.route("/rides", methods=["GET"])
 def get_rides():
-
+    """Endpoint for querying all rides from database"""
     json_string = conn.read_table_into_df(table="rides").to_json(orient="records")
 
     parsed_json = json.loads(json_string)
@@ -63,7 +64,7 @@ def get_rides():
 
 @flask_app.route("/rides/<ride_id>", methods=["GET"])
 def get_ride(ride_id):
-
+    """Endpoint for querying ride with ride_id"""
     json_string = conn.select_ride(ride_id).to_json(orient="records")
 
     parsed_json = json.loads(json_string)
@@ -75,7 +76,7 @@ def get_ride(ride_id):
 
 @flask_app.route("/user/<user_id>", methods=["GET"])
 def get_user(user_id):
-
+    """Endpoint for querying user with user_id"""
     json_string = conn.select_user(user_id).to_json(orient="records")
 
     parsed_json = json.loads(json_string)
@@ -87,7 +88,7 @@ def get_user(user_id):
 
 @flask_app.route("/user/<user_id>/rides", methods=["GET"])
 def get_rides_for_user(user_id):
-
+    """Endpoint for querying all rides for a specific user"""
     json_string = conn.select_rides_with_user(user_id).to_json(orient="records")
 
     parsed_json = json.loads(json_string)
@@ -98,8 +99,8 @@ def get_rides_for_user(user_id):
 
 
 @flask_app.route("/daily", methods=["GET"])
-# daily endpoint should handle both daily and daily + query string
 def get_daily():
+    """Endpoint to query all rides on a specific date, defaults to current day"""
     requested_date = request.args.get("date")
 
     if requested_date is None:
@@ -122,6 +123,7 @@ def get_daily():
 ## DELETE Endpoints
 @flask_app.route("/rides/<ride_id>", methods=["DELETE"])
 def delete_ride_id(ride_id):
+    """Delete ride with ride_id"""
     result = conn.delete_ride(ride_id)
 
     response = jsonify({"status": result})
@@ -131,6 +133,7 @@ def delete_ride_id(ride_id):
 
 @flask_app.route("/user/<user_id>", methods=["DELETE"])
 def delete_user_id(user_id):
+    """Delete user and all associated rides with user_id"""
     result = conn.delete_user(user_id)
 
     response = jsonify({"status": result})
