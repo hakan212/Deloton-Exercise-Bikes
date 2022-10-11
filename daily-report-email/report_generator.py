@@ -56,4 +56,4 @@ def generate_report(df):
     pdf.image("./assets/temp/gender_fig.png", 0, 185, w=95, h=100)
     pdf.image("./assets/temp/age_fig.png", 100, 185, w=115, h=100)
 
-    pdf.output(name=f"./assets/temp/deloton_daily_report.pdf", dest="F")
+    pdf.output(name=f"./assets/tmp/deloton_daily_report.pdf", dest="F")
