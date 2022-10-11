@@ -93,9 +93,9 @@ def current_rider_details(data: dict) -> html.Div:
             html.Div(f"User id: {data.get('user_id')}"),
             html.Div(f"Name: {data.get('user_name')}"),
             html.Div(f"Gender: {data.get('user_gender')}"),
-            html.Div(f"Height: {data.get('user_height')}cm"),
+            html.Div(f"Height: {data.get('user_height')} cm"),
             html.Div(f"Age: {data.get('user_age')}"),
-            html.Div(f"Weight: {data.get('user_weight')}kg"),
+            html.Div(f"Weight: {data.get('user_weight')} kg"),
         ]
     )
 
