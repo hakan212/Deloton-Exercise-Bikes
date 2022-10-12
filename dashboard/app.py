@@ -136,10 +136,11 @@ def live_ride_details(data: dict) -> html.Span:
 
 
 def live_ride_gauge(data: dict):
-    age, heart_rate = data.get("user_age"), data.get("heart_rate")
-    if not (age and heart_rate):
-        return
+    age, heart_rate = data.get("user_age"), data.get("heart_rate") or 0
 
+    if not age:
+        return
+        
     max_rate = calculate_max_heart_rate(age)
     return daq.Gauge(
         color={
