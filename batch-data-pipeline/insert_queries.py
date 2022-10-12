@@ -1,3 +1,4 @@
+"""Insert queries to insert cleaned data into Aurora production schema"""
 import pandas as pd #needed for .empty method
 
 

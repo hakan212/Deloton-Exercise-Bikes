@@ -1,3 +1,4 @@
+"""Script for connecting to Kafka consumer"""
 import os
 import uuid
 

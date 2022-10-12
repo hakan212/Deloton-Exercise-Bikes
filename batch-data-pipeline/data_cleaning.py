@@ -1,3 +1,4 @@
+"""Script for cleaning data coming in from Kafka logs. User data is cleaned and atomised into individual values for the database."""
 from datetime import datetime
 
 

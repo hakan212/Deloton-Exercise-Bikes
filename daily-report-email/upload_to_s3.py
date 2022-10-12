@@ -1,3 +1,4 @@
+"""Script for uploading generated pdf reports to an s3 bucket, for backup purposes"""
 import os
 from datetime import date
 

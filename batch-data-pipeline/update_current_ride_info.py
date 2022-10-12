@@ -1,3 +1,4 @@
+"""Script that accumulates data from current user, such as heart_rate, power, rpm and duration so that it is ready for insertion at the end of the ride. """
 import log_processing
 
 

@@ -1,3 +1,5 @@
+"""Main script for polling Kafka for consumer data. It will wait for the current user to finish before processing as the user data is not available for a ride that has 
+already started. It will perform aggregate functions on accumulated data and make insert queries to insert user and ride info into an Aurora database."""
 import json
 import os
 from statistics import mean
