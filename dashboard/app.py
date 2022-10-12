@@ -20,7 +20,7 @@ app.layout = html.Div(
                     interval=1000,  # refresh frequency in milliseconds
                     n_intervals=0,  # loop counter
                 ),
-                html.H2("Current Ride"),
+                html.Div("Current Ride", className='panel-title', style={'font-size':30}),
                 html.Div(
                     [
                         html.H3("Current Rider Account Details"),
@@ -52,14 +52,14 @@ app.layout = html.Div(
                     * 1000,  # refresh frequency in milliseconds (= 5 mins)
                     n_intervals=0,  # loop counter
                 ),
-                html.H2("Recent Rides"),
+                html.Div("Recent Rides", className='panel-title', style={'font-size':30}),
                 dcc.Graph(id="number-of-riders-gender-pie"),
                 dcc.Graph(id="duration-of-ride-gender-pie"),
                 dcc.Graph(id="number-of-riders-age-bar"),
                 html.H3("Total Power:"),
                 html.H2(id="total-power"),
                 html.H3("Average Power per Rider:"),
-                html.H2(id="average-power"),
+                html.H3(id="average-power"),
             ],
             className="panel",
             id="right-panel",
