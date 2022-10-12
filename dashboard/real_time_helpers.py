@@ -1,3 +1,4 @@
+
 import datetime
 import json
 import re
@@ -5,7 +6,7 @@ from datetime import date
 
 
 def update_duration_and_resistance(current_data: dict, duration_and_resistance: list):
-    '''Will update current_data given [duration, resistance]'''
+    """Will update current_data given [duration, resistance]"""
     duration = duration_and_resistance[0]
     resistance = duration_and_resistance[1]
 
@@ -14,7 +15,7 @@ def update_duration_and_resistance(current_data: dict, duration_and_resistance: 
 
 
 def update_heart_rpm_and_power(current_data: dict, heart_rpm_and_power: list):
-    '''Will update current_data given [heart, rpm, power]'''
+    """Will update current_data given [heart, rpm, power]"""
     heart_rate = int(heart_rpm_and_power[0])
     rpm = int(heart_rpm_and_power[1])
     power = round(float(heart_rpm_and_power[2]), 2)
@@ -25,7 +26,7 @@ def update_heart_rpm_and_power(current_data: dict, heart_rpm_and_power: list):
 
 
 def update_current_ride_metrics(current_data: dict, log: str):
-    '''Will update current_data given log containing information on the current ride'''
+    """Will update current_data given log containing information on the current ride"""
     values = json.loads(log)
     new_log = values.get("log")
 
@@ -58,7 +59,7 @@ def calculate_age(born: datetime) -> int:
 
 
 def update_user_information(current_data: dict, user_information: str):
-    '''Given string from log on new user, will update current_data user information'''
+    """Given string from log on new user, will update current_data user information"""
     current_data["user_id"] = int(re.findall('"user_id":(\d+)', user_information)[0])
     current_data["user_name"] = re.findall(
         '"name":"(\w+ \w+ \w+|\w+ \w+)', user_information
@@ -90,7 +91,7 @@ def update_user_information(current_data: dict, user_information: str):
 
 
 def update_current_rider_information(current_data: dict, log: str):
-    '''Updates information on current rider'''
+    """Updates information on current rider"""
     values = json.loads(log)
     new_log = values.get("log")
     new_log = new_log.split(" mendoza v9: [SYSTEM] data = ")
