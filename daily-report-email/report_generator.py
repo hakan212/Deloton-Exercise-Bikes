@@ -1,3 +1,4 @@
+"""Generates pdf report with logo, graphs and data"""
 from datetime import date
 
 from fpdf import FPDF

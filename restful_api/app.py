@@ -1,3 +1,7 @@
+"""Flask app that hosts the API with various endpoints. Various queries can be made by appending the related endpoints to the host address.
+This includes select queries for users and rides as well as delete methods."""
+
+
 import json
 import os
 from datetime import date

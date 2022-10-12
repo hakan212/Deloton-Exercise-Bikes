@@ -3,3 +3,7 @@
 .gitignore
 __pycache__
 batch-data-pipeline/__pycache__
+daily-report-email/assets/gender_fig.png
+daily-report-email/.DS_Store
+daily-report-email/assets/deloton_daily_report.pdf
+daily-report-email/assets/age_fig.png
