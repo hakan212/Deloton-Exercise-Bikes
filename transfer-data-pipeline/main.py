@@ -61,7 +61,7 @@ def transfer_production_to_mart():
         rides_before AS (
             SELECT *
                 FROM {PRODUCTION_SCHEMA}.rides
-                WHERE begin_timestamp > (CURRENT_DATE - INTERVAL '12 hours')
+                WHERE begin_timestamp >= (NOW()- INTERVAL '12 hours')
         )
         SELECT ugd.user_id, rb.ride_id, ugd.gender, ugd.age, rb.begin_timestamp,
             rb.total_duration_sec, rb.total_power, rb.mean_power, rb.mean_resistance,
@@ -90,7 +90,7 @@ def clear_stale_data():
 
     query = f"""
         DELETE FROM {MART_SCHEMA}.recent_rides
-            WHERE begin_timestamp < (CURRENT_DATE - INTERVAL '12 hours')
+            WHERE begin_timestamp <= (NOW() - INTERVAL '12 hours')
     """
 
     run_query(query)
