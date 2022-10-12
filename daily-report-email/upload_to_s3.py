@@ -22,13 +22,11 @@ def upload_to_s3(file_path):
     try:
         s3.Bucket(BUCKET_NAME).put_object(Key=f"{date.today()}", Body=data)
         print("Upload Successful")
-        return True
     except FileNotFoundError:
         print("The file was not found")
         return False
     except NoCredentialsError:
         print("Credentials not available")
-        return False
 
 
 if __name__ == "__main__":
