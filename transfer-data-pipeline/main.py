@@ -1,3 +1,6 @@
+"""Transfers production data into a data mart, containing information on the last 12 hours of rides. This is used when querying the data needed
+for the recent rides section of the live dashboard."""
+
 import os
 
 from dotenv import load_dotenv
