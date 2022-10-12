@@ -12,6 +12,7 @@ from botocore.exceptions import ClientError
 from dotenv import load_dotenv
 
 from report_generator import generate_report
+from upload_to_s3 import upload_to_s3
 from visualisation_generator import (get_dataframe, plot_age_rides_bar,
                                      plot_gender_rides_pie)
 
@@ -100,5 +101,7 @@ def handler(event, context):
         EMAIL_SUBJECT,
         ATTACHMENT_PATH,
     )
+
+    upload_to_s3(ATTACHMENT_PATH)
 
     return "Function Execute"
