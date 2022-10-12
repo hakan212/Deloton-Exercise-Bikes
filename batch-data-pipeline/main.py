@@ -94,28 +94,27 @@ def polling_kafka():
                     duration = update_duration_and_resistance(resistance_list, log)
 
                 elif "Telemetry" in log:
-                    split_by_timestamp_and_logs = " mendoza v9: [INFO]: Telemetry - "
-                    timestamp_and_values = log.split(split_by_timestamp_and_logs)
-
-                    log_values = log_processing.extract_values_from_log(
-                        timestamp_and_values[1]
-                    )
-
-                    heart_rate_list.append(int(log_values[0]))
-                    rpm_list.append(int(log_values[1]))
-                    power_list.append(round(float(log_values[2]), 3))
+                    update_heart_rpm_power(power_list, heart_rate_list, rpm_list, log)
 
             elif (
                 "new ride" in log and first_user_collected
             ):  # New user is starting, so load collected data into snowflake and reset
-                total_power = sum(power_list)
-                mean_power = mean(power_list)
-                mean_rpm = mean(rpm_list)
-                mean_heart_rate = mean(heart_rate_list)
-                mean_resistance = mean(resistance_list)
+                write_ride_summary_to_db(conn, resistance_list, power_list, heart_rate_list, rpm_list, begin_timestamp, user_dictionary, duration)
 
-                insert_queries.insert_into_users(conn, user_dictionary)
-                insert_queries.insert_into_rides(
+                power_list = []
+                rpm_list = []
+                heart_rate_list = []
+                resistance_list = []
+
+def write_ride_summary_to_db(conn, resistance_list, power_list, heart_rate_list, rpm_list, begin_timestamp, user_dictionary, duration):
+    total_power = sum(power_list)
+    mean_power = mean(power_list)
+    mean_rpm = mean(rpm_list)
+    mean_heart_rate = mean(heart_rate_list)
+    mean_resistance = mean(resistance_list)
+
+    insert_queries.insert_into_users(conn, user_dictionary)
+    insert_queries.insert_into_rides(
                     conn,
                     user_dictionary,
                     begin_timestamp,
@@ -127,15 +126,26 @@ def polling_kafka():
                     mean_heart_rate,
                 )
 
-                power_list = []
-                rpm_list = []
-                heart_rate_list = []
-                resistance_list = []
+def update_heart_rpm_power(power_list, heart_rate_list, rpm_list, log):
+    """
+    Appends latest values to power, rpm & heart rate lists given a log containing
+    telemetry info.
+    """
+    split_by_timestamp_and_logs = " mendoza v9: [INFO]: Telemetry - "
+    timestamp_and_values = log.split(split_by_timestamp_and_logs)
+
+    log_values = log_processing.extract_values_from_log(
+                        timestamp_and_values[1]
+                    )
+
+    heart_rate_list.append(int(log_values[0]))
+    rpm_list.append(int(log_values[1]))
+    power_list.append(round(float(log_values[2]), 3))
 
 def update_duration_and_resistance(resistance_list, log):
     """
-    Will append latest resistance value to resistance_list & return latest duration value
-    when provided with a log containing ride information
+    Appends latest resistance value to resistance_list & returns latest duration value
+    when provided with a log containing ride info.
     """
 
     split_by_timestamp_and_logs = " mendoza v9: [INFO]: Ride - "
