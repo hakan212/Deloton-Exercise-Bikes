@@ -31,16 +31,13 @@ app.layout = html.Div(
                 html.Div(
                     "Current Ride", className="panel-title", style={"font-size": 30}
                 ),
+                html.Div(id="live-ride-gauge"),
                 html.Div(
                     [
                         html.H3("Current Rider Account Details"),
                         html.Div(id="current-rider-text"),
                     ]
                 ),
-                html.Div(
-                    [html.H3("Current Ride Stats"), html.Div(id="live-ride-text")]
-                ),
-                html.Div(id="live-ride-gauge"),
                 html.Div(
                     id="heart-rate-alert",
                     style={"display": "none"},
@@ -83,7 +80,6 @@ app.layout = html.Div(
 
 @app.callback(
     Output("current-rider-text", "children"),
-    Output("live-ride-text", "children"),
     Output("live-ride-gauge", "children"),
     Output("heart-rate-alert", "style"),
     Output("heart-rate-alert-description", "children"),
@@ -94,7 +90,6 @@ def current_ride_live_refresh(n_intervals: int) -> Tuple:
     data = real_time_processing.current_data
     return (
         current_rider_details(data),
-        live_ride_details(data),
         live_ride_gauge(data),
         heart_rate_alert(data),
         heart_rate_description(data),
@@ -115,51 +110,38 @@ def current_rider_details(data: dict) -> html.Div:
     )
 
 
-def live_ride_details(data: dict) -> html.Span:
-    """Returns an html span element containing text with live information on the current ride"""
-    ride_duration_seconds = data.get("duration")
-    heart_rate = data.get("heart_rate")
-
-    if ride_duration_seconds:
-        ride_duration_minutes = int(ride_duration_seconds // 60)
-        ride_duration_seconds = int(ride_duration_seconds % 60)
-    else:
-        ride_duration_minutes = 0
-        ride_duration_seconds = 0
-
-    message = (
-        f"Riding for {ride_duration_minutes} minutes and "
-        f"{ride_duration_seconds}  seconds. Heart rate: {heart_rate} BPM"
-    )
-
-    return html.Span(message)
-
-
-def live_ride_gauge(data: dict):
-    age, heart_rate = data.get("user_age"), data.get("heart_rate") or 0
+def live_ride_gauge(data: dict) -> daq.Gauge:
+    age = data.get("user_age") or 50
 
     if not age:
         return html.Span('Heart rate gauge unavailable without rider age data')
-        
+    
+    ride_duration = data.get("duration") or 0
+    ride_duration_minutes = int(ride_duration // 60)
+    ride_duration_seconds = int(ride_duration % 60)
+
     max_rate = calculate_max_heart_rate(age)
+    label = (f"{data.get('user_name')} {' ♂' if data.get('user_gender') == 'male' else ' ♀'}"
+        f"- {ride_duration_minutes}m {ride_duration_seconds}s")
+
     return daq.Gauge(
         color={
             "gradient": True,
             "ranges": {
                 "white": [0, 50],
-                "green": [50, 100],
-                "yellow": [100, max_rate],
+                "green": [50, max_rate - 20],
+                "yellow": [max_rate - 20, max_rate],
                 "red": [max_rate, 200],
             },
         },
-        label="Heart Rate",
+        label=label,
         showCurrentValue=True,
         units="BPM",
         scale={"start": 50, "interval": 25, "labelInterval": 50},
-        value=heart_rate or 0,
+        value= data.get("heart_rate") or 0,
         min=0,
         max=200,
-        style={"color": "black"},
+        style={"color": "black"}
     )
 
 
