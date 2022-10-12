@@ -163,22 +163,25 @@ def live_heart_rate_scatter(data: dict) -> plotly.graph_objects.Figure:
     latest = data.get('heart_rate') or np.nan
     heart_rates.append(latest)
     min_rate, max_rate = min(min_rate, latest), max(max_rate, latest)
-    fig = px.line(x=range(len(heart_rates)), y=heart_rates)
+    fig = px.line(x=range(len(heart_rates)), y=heart_rates, template="simple_white")
+
+    #Min and max values on the y-axis, adjusted to fit values in plot
     y_top, y_bottom = ((max_rate // 50) + 1) * 50, (min_rate // 50) * 50
+    #number between 0 and 1 representing height of latest point on line as fraction of graph size
+    line_height = ((latest - y_bottom) / (y_top - y_bottom)) 
+
+
     fig.update_layout(yaxis={'range': [y_bottom, y_top]})
+    zookeper_width, zookeeper_height = 0.1, 0.15
     fig.add_layout_image({
         'source': 'assets/apache_zookeeper.png',
-        'x': 0.9,
-        'y': ((latest - y_bottom) / (y_top - y_bottom)) + 0.15,
-        'sizex': 0.1,
-        'sizey': 0.15,
+        'x': 0.95, #zookeeper position on x-axis
+        'y': line_height + zookeeper_height, #zookeeper position on y-axis +0.15 offset for zookeeper height
+        'sizex': zookeper_width,
+        'sizey': zookeeper_height,
         'sizing': "stretch",
         'opacity': 1,
         'layer': "below"})
-    print('min is', min_rate)
-    print('max is', max_rate)
-    print('latest is', latest)
-    print((latest - y_bottom) / (y_top - y_bottom))
     return fig
 
 def heart_rate_alert(data: dict) -> dict:
