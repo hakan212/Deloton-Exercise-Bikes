@@ -90,31 +90,19 @@ def polling_kafka():
                 values = json.loads(log)
                 log = values.get("log")
 
-                if "Ride" in log:  # process strings with Ride info
-                    duration = update_duration_and_resistance(resistance_list, log)
-
-                elif "Telemetry" in log:
-                    update_heart_rpm_power(power_list, heart_rate_list, rpm_list, log)
+                duration = update_current_ride_info(resistance_list, power_list, heart_rate_list, rpm_list, log)
 
             elif (
                 "new ride" in log and first_user_collected
             ):  # New user is starting, so load collected data into snowflake and reset
-                write_ride_summary_to_db(conn, resistance_list, power_list, heart_rate_list, rpm_list, begin_timestamp, user_dictionary, duration)
+                total_power = sum(power_list)
+                mean_power = mean(power_list)
+                mean_rpm = mean(rpm_list)
+                mean_heart_rate = mean(heart_rate_list)
+                mean_resistance = mean(resistance_list)
 
-                power_list = []
-                rpm_list = []
-                heart_rate_list = []
-                resistance_list = []
-
-def write_ride_summary_to_db(conn, resistance_list, power_list, heart_rate_list, rpm_list, begin_timestamp, user_dictionary, duration):
-    total_power = sum(power_list)
-    mean_power = mean(power_list)
-    mean_rpm = mean(rpm_list)
-    mean_heart_rate = mean(heart_rate_list)
-    mean_resistance = mean(resistance_list)
-
-    insert_queries.insert_into_users(conn, user_dictionary)
-    insert_queries.insert_into_rides(
+                insert_queries.insert_into_users(conn, user_dictionary)
+                insert_queries.insert_into_rides(
                     conn,
                     user_dictionary,
                     begin_timestamp,
@@ -125,6 +113,19 @@ def write_ride_summary_to_db(conn, resistance_list, power_list, heart_rate_list,
                     mean_rpm,
                     mean_heart_rate,
                 )
+
+                power_list = []
+                rpm_list = []
+                heart_rate_list = []
+                resistance_list = []
+
+def update_current_ride_info(resistance_list, power_list, heart_rate_list, rpm_list, log):
+    if "Ride" in log:
+        duration = update_duration_and_resistance(resistance_list, log)
+
+    elif "Telemetry" in log:
+        update_heart_rpm_power(power_list, heart_rate_list, rpm_list, log)
+    return duration
 
 def update_heart_rpm_power(power_list, heart_rate_list, rpm_list, log):
     """
