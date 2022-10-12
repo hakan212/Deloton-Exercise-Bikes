@@ -46,7 +46,7 @@ def get_dataframe():
         rides_before AS (
             SELECT *
                 FROM {PRODUCTION_SCHEMA}.rides
-                WHERE begin_timestamp >= (CURRENT_DATE - INTERVAL '24 hours')
+                WHERE begin_timestamp >= (NOW() - INTERVAL '24 hours')
         )
 
         SELECT ugd.user_id, rb.ride_id, ugd.gender, ugd.age, rb.begin_timestamp,
@@ -76,7 +76,7 @@ def plot_gender_rides_pie(df_riders):
         color_discrete_sequence=["#8FBC8F", "#483D8B"],
     )
 
-    gender_fig.write_image("./assets/gender_fig.png")
+    gender_fig.write_image("/tmp/gender_fig.png")
 
     return gender_fig
 
@@ -98,7 +98,7 @@ def plot_age_rides_bar(df_riders):
     age_fig.update_xaxes(tickvals=age_bin_ticks, ticktext=age_range_list)
     age_fig.update_traces(marker=dict(color="#8FBC8F"))
 
-    age_fig.write_image("./assets/age_fig.png")
+    age_fig.write_image("/tmp/age_fig.png")
 
     return age_fig
 
