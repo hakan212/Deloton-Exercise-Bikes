@@ -30,7 +30,7 @@ def dict_from_system_log(log):
     split_log = system_log.split(" mendoza v9: [SYSTEM] data = ")
     begin_timestamp = split_log[0][
         :-7
-    ]  # remove milliseconds from timestamp for snowflake compatability
+    ]  # remove milliseconds from timestamp
 
     dictionary_string = split_log[1][:-1]
     user_dictionary = json.loads(dictionary_string)
