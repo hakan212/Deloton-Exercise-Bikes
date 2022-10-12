@@ -4,7 +4,7 @@ from datetime import date
 
 from fpdf import FPDF
 
-from visualisation_generator import (get_dataframe, get_mean_heart_rate,
+from visualisation_generator import (get_data_between_timestamps, get_mean_heart_rate,
                                      get_mean_power_output,
                                      get_mean_total_power, get_number_of_rides,
                                      plot_age_rides_bar, plot_gender_rides_pie)
@@ -91,7 +91,7 @@ def generate_report(df_rides):
 
 
 if __name__ == "__main__":
-    df_rides = get_dataframe()
+    df_rides = get_data_between_timestamps("(NOW() - INTERVAL '24 hours')", "NOW()")
     plot_age_rides_bar(df_rides)
     plot_gender_rides_pie(df_rides)
     generate_report(df_rides)
