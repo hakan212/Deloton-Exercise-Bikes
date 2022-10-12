@@ -57,7 +57,9 @@ def polling_kafka():
                 values = json.loads(log)
                 log = values.get("log")
 
-                duration = update_current_ride_info(resistance_list, power_list, heart_rate_list, rpm_list, log)
+                duration = update_current_ride_info(
+                    resistance_list, power_list, heart_rate_list, rpm_list, log
+                )
 
             elif (
                 "new ride" in log and first_user_collected

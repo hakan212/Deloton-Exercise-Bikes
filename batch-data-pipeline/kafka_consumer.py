@@ -1,5 +1,6 @@
 import os
 import uuid
+
 from confluent_kafka import Consumer
 from dotenv import load_dotenv
 
@@ -9,6 +10,7 @@ KAFKA_SERVER = os.getenv("KAFKA_SERVER")
 KAFKA_USERNAME = os.getenv("KAFKA_USERNAME")
 KAFKA_PASSWORD = os.getenv("KAFKA_PASSWORD")
 KAFKA_TOPIC_NAME = os.getenv("KAFKA_TOPIC_NAME")
+
 
 def subscribe_to_kafka_topic():
     """Produce a consumer that subscribes to the relevant Kafka topic"""
