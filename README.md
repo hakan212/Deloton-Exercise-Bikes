@@ -25,6 +25,11 @@ The applications we have produced are:
 
 Users currently on the bike will have their heart rates checked in real time for abnormalities. If their heart rate is detected to be too low or high, then they will receive an email detailing appropriate action. This is done by running the script on EC2 to ingest Kafka data and using SES to the send the email to the user.
 
+To run this script locally, you can execute: 
+```
+python3 daily-report-email/email_sender.py
+```
+
 ## Live Dashboard
 
 A live dashboard is available for business stakeholders, containing information on the current ride as well as recent rides with the last 12 hours.
@@ -35,17 +40,35 @@ The recent rides section contains visualisations of the data, such as the gender
 
 The dashboard is deployed on EC2 and is available online at: http://13.40.6.251:8080/
 
+To run this script locally, you can execute: 
+```
+python3 dashboard/app.py
+```
+
 ## Daily Executive Reports
 
 Through an automated report generator, the CEO of Deloton Exercise Bikes will receive a daily report email. This contains visualisations of data from users for the entire day, including the gender, age ranges and total and average power output.
 
 The report generator is deployed on an AWS Lambda function, which is scheduled to run everyday to deliver an email and PDF with insights generated from the day.
 
+To run this script locally, you can execute: 
+
+```
+python3 heart-rate-email/email-sender.py
+```
+
+
 ## Public API
 
 An API is available for Deloton Staff members to inspect the data stored for all users and rides. The API is designed around REST principles and queries up-to-date information of all data. Users can retrieve all rides, specific rides and users by their respective ids, all rides on a certain id, or send a delete request for any ride or user.
 
 The API is hosted using EC2 and is available online at: http://18.170.223.8:5001
+
+To run this script locally, you can execute: 
+
+```
+python3 restful-api/app.py
+```
 
 ## Tableau Integrations
 
