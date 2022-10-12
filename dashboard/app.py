@@ -1,13 +1,21 @@
 from typing import Tuple
 
 import dash_bootstrap_components as dbc
-import real_time_processing
-import recent_rides_visualisations
+import dash_daq as daq
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
-from heart_rate_calculator import heart_rate_high, heart_rate_low, heart_rate_ok
 
-app = Dash(__name__, use_pages=False, external_stylesheets=[dbc.themes.COSMO])
+import real_time_processing
+import recent_rides_visualisations
+from heart_rate_calculator import (calculate_max_heart_rate, heart_rate_high,
+                                   heart_rate_low, heart_rate_ok)
+
+app = Dash(
+    __name__,
+    use_pages=False,
+    external_stylesheets=[dbc.themes.COSMO],
+    title="Deloton Dashboard",
+)
 
 app.layout = html.Div(
     [
@@ -20,7 +28,9 @@ app.layout = html.Div(
                     interval=1000,  # refresh frequency in milliseconds
                     n_intervals=0,  # loop counter
                 ),
-                html.Div("Current Ride", className='panel-title', style={'font-size':30}),
+                html.Div(
+                    "Current Ride", className="panel-title", style={"font-size": 30}
+                ),
                 html.Div(
                     [
                         html.H3("Current Rider Account Details"),
@@ -30,6 +40,7 @@ app.layout = html.Div(
                 html.Div(
                     [html.H3("Current Ride Stats"), html.Div(id="live-ride-text")]
                 ),
+                html.Div(id="live-ride-gauge"),
                 html.Div(
                     id="heart-rate-alert",
                     style={"display": "none"},
@@ -52,7 +63,9 @@ app.layout = html.Div(
                     * 1000,  # refresh frequency in milliseconds (= 5 mins)
                     n_intervals=0,  # loop counter
                 ),
-                html.Div("Recent Rides", className='panel-title', style={'font-size':30}),
+                html.Div(
+                    "Recent Rides", className="panel-title", style={"font-size": 30}
+                ),
                 dcc.Graph(id="number-of-riders-gender-pie"),
                 dcc.Graph(id="duration-of-ride-gender-pie"),
                 dcc.Graph(id="number-of-riders-age-bar"),
@@ -71,6 +84,7 @@ app.layout = html.Div(
 @app.callback(
     Output("current-rider-text", "children"),
     Output("live-ride-text", "children"),
+    Output("live-ride-gauge", "children"),
     Output("heart-rate-alert", "style"),
     Output("heart-rate-alert-description", "children"),
     Input("current-ride-interval", "n_intervals"),
@@ -81,6 +95,7 @@ def current_ride_live_refresh(n_intervals: int) -> Tuple:
     return (
         current_rider_details(data),
         live_ride_details(data),
+        live_ride_gauge(data),
         heart_rate_alert(data),
         heart_rate_description(data),
     )
@@ -118,6 +133,33 @@ def live_ride_details(data: dict) -> html.Span:
     )
 
     return html.Span(message)
+
+
+def live_ride_gauge(data: dict):
+    age, heart_rate = data.get("user_age"), data.get("heart_rate")
+    if not (age and heart_rate):
+        return
+
+    max_rate = calculate_max_heart_rate(age)
+    return daq.Gauge(
+        color={
+            "gradient": True,
+            "ranges": {
+                "white": [0, 50],
+                "green": [50, 100],
+                "yellow": [100, max_rate],
+                "red": [max_rate, 200],
+            },
+        },
+        label="Heart Rate",
+        showCurrentValue=True,
+        units="BPM",
+        scale={"start": 50, "interval": 25, "labelInterval": 50},
+        value=heart_rate,
+        min=0,
+        max=200,
+        style={"color": "black"},
+    )
 
 
 def heart_rate_alert(data: dict) -> dict:
