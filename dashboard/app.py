@@ -2,6 +2,7 @@ from typing import Tuple
 
 import dash_bootstrap_components as dbc
 import dash_daq as daq
+import numpy as np
 import plotly.graph_objects
 import plotly.express as px
 from dash import Dash, dcc, html
@@ -9,8 +10,12 @@ from dash.dependencies import Input, Output
 
 import real_time_processing
 import recent_rides_visualisations
-from heart_rate_calculator import (calculate_max_heart_rate, heart_rate_high,
-                                   heart_rate_low, heart_rate_ok)
+from heart_rate_calculator import (
+    calculate_max_heart_rate,
+    heart_rate_high,
+    heart_rate_low,
+    heart_rate_ok,
+)
 
 app = Dash(
     __name__,
@@ -34,7 +39,7 @@ app.layout = html.Div(
                     "Current Ride", className="panel-title", style={"font-size": 30}
                 ),
                 html.Div(id="live-ride-gauge"),
-                dcc.Graph(id='live-heart-rate-scatter'),
+                dcc.Graph(id="live-heart-rate-scatter"),
                 html.Div(
                     [
                         html.H3("Current Rider Account Details"),
@@ -84,7 +89,7 @@ app.layout = html.Div(
 @app.callback(
     Output("current-rider-text", "children"),
     Output("live-ride-gauge", "children"),
-    Output('live-heart-rate-scatter', 'figure'),
+    Output("live-heart-rate-scatter", "figure"),
     Output("heart-rate-alert", "style"),
     Output("heart-rate-alert-description", "children"),
     Input("current-ride-interval", "n_intervals"),
@@ -122,15 +127,17 @@ def live_ride_gauge(data: dict) -> daq.Gauge:
     age = data.get("user_age") or 50
 
     if not age:
-        return html.Span('Heart rate gauge unavailable without rider age data')
-    
+        return html.Span("Heart rate gauge unavailable without rider age data")
+
     ride_duration = data.get("duration") or 0
     ride_duration_minutes = int(ride_duration // 60)
     ride_duration_seconds = int(ride_duration % 60)
 
     max_rate = calculate_max_heart_rate(age)
-    label = (f"{data.get('user_name')} {' ♂' if data.get('user_gender') == 'male' else ' ♀'}"
-        f"- {ride_duration_minutes}m {ride_duration_seconds}s")
+    label = (
+        f"{data.get('user_name')} {' ♂' if data.get('user_gender') == 'male' else ' ♀'}"
+        f"- {ride_duration_minutes}m {ride_duration_seconds}s"
+    )
 
     return daq.Gauge(
         color={
@@ -146,42 +153,56 @@ def live_ride_gauge(data: dict) -> daq.Gauge:
         showCurrentValue=True,
         units="BPM",
         scale={"start": 50, "interval": 25, "labelInterval": 50},
-        value= data.get("heart_rate") or 0,
+        value=data.get("heart_rate") or 0,
         min=0,
         max=200,
-        style={"color": "black"}
+        style={"color": "black"},
     )
 
-import numpy as np
+
 min_rate, max_rate = 100, 100
+
 def live_heart_rate_scatter(data: dict) -> plotly.graph_objects.Figure:
     """Generates live-updating scatter graph for user's heart-rate"""
-    
+
     global min_rate, max_rate
 
-    latest = data.get('heart_rate') or np.nan
-    heart_rates = data.get('heart_rates') or []
+    latest = data.get("heart_rate") or np.nan
+    heart_rates = data.get("heart_rates") or []
+
     min_rate, max_rate = min(min_rate, latest), max(max_rate, latest)
-    fig = px.line(x=range(len(heart_rates)), y=heart_rates, template="simple_white")
+    fig = px.line(
+        x=range(len(heart_rates)),
+        y=heart_rates,
+        template="simple_white",
+        labels={"x": "Ride Duration (s)", "y": "Heart Rate (BPM)"},
+    )
 
-    #Min and max values on the y-axis, adjusted to fit values in plot
+    # Min and max values on the y-axis, adjusted to fit values in plot
     y_top, y_bottom = ((max_rate // 50) + 1) * 50, (min_rate // 50) * 50
-    #number between 0 and 1 representing height of latest point on line as fraction of graph size
-    line_height = ((latest - y_bottom) / (y_top - y_bottom)) 
+    # number between 0 and 1 representing height of latest point on line as fraction of graph size
+    line_height = (latest - y_bottom) / (y_top - y_bottom)
 
+    # Set y-axis size and axes labels
+    fig.update_layout(yaxis={"range": [y_bottom, y_top]})
 
-    fig.update_layout(yaxis={'range': [y_bottom, y_top]})
+    # Add zookeeper
     zookeper_width, zookeeper_height = 0.1, 0.15
-    fig.add_layout_image({
-        'source': 'assets/apache_zookeeper.png',
-        'x': 0.95, #zookeeper position on x-axis
-        'y': line_height + zookeeper_height, #zookeeper position on y-axis +0.15 offset for zookeeper height
-        'sizex': zookeper_width,
-        'sizey': zookeeper_height,
-        'sizing': "stretch",
-        'opacity': 1,
-        'layer': "below"})
+    fig.add_layout_image(
+        {
+            "source": "assets/apache_zookeeper.png",
+            "x": 0.95,  # zookeeper position on x-axis
+            "y": line_height
+            + zookeeper_height,  # zookeeper position on y-axis +0.15 offset for zookeeper height
+            "sizex": zookeper_width,
+            "sizey": zookeeper_height,
+            "sizing": "stretch",
+            "opacity": 1,
+            "layer": "below",
+        }
+    )
     return fig
+
 
 def heart_rate_alert(data: dict) -> dict:
     """Will display warning message on screen if heart rate is too high or low
