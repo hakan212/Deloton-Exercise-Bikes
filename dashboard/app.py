@@ -153,7 +153,6 @@ def live_ride_gauge(data: dict) -> daq.Gauge:
     )
 
 import numpy as np
-heart_rates = []
 min_rate, max_rate = 100, 100
 def live_heart_rate_scatter(data: dict) -> plotly.graph_objects.Figure:
     """Generates live-updating scatter graph for user's heart-rate"""
@@ -161,7 +160,7 @@ def live_heart_rate_scatter(data: dict) -> plotly.graph_objects.Figure:
     global min_rate, max_rate
 
     latest = data.get('heart_rate') or np.nan
-    heart_rates.append(latest)
+    heart_rates = data.get('heart_rates')
     min_rate, max_rate = min(min_rate, latest), max(max_rate, latest)
     fig = px.line(x=range(len(heart_rates)), y=heart_rates, template="simple_white")
 

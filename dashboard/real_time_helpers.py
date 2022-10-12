@@ -21,6 +21,9 @@ def update_heart_rpm_and_power(current_data: dict, heart_rpm_and_power: list):
     power = round(float(heart_rpm_and_power[2]), 2)
 
     current_data["heart_rate"] = heart_rate
+    if not current_data.get('heart_rates'):
+        current_data['heart_rates'] = []
+    current_data["heart_rates"].append(heart_rate)
     current_data["rpm"] = rpm
     current_data["power"] = power
 
