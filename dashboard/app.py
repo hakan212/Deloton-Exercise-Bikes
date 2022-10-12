@@ -7,8 +7,12 @@ from dash.dependencies import Input, Output
 
 import real_time_processing
 import recent_rides_visualisations
-from heart_rate_calculator import (calculate_max_heart_rate, heart_rate_high,
-                                   heart_rate_low, heart_rate_ok)
+from heart_rate_calculator import (
+    calculate_max_heart_rate,
+    heart_rate_high,
+    heart_rate_low,
+    heart_rate_ok,
+)
 
 app = Dash(
     __name__,
@@ -19,60 +23,94 @@ app = Dash(
 
 app.layout = html.Div(
     [
-        html.H1("Deloton Dashboard"),
-        # Current Ride info
+        html.Div([html.H1("Deloton Live Dashboard")]),
         html.Div(
             [
-                dcc.Interval(  # Calls a callback to refresh all the live components in the div
-                    id="current-ride-interval",
-                    interval=1000,  # refresh frequency in milliseconds
-                    n_intervals=0,  # loop counter
-                ),
-                html.Div(
-                    "Current Ride", className="panel-title", style={"font-size": 30}
-                ),
-                html.Div(id="live-ride-gauge"),
                 html.Div(
                     [
-                        html.H3("Current Rider Account Details"),
-                        html.Div(id="current-rider-text"),
-                    ]
-                ),
-                html.Div(
-                    id="heart-rate-alert",
-                    style={"display": "none"},
-                    children=[
-                        html.H3("HEART RATE WARNING"),
-                        html.Div(id="heart-rate-alert-description"),
+                        html.Div(
+                            [   
+                                dcc.Interval(  # Calls a callback to refresh all the live components in the div
+                                    id="current-ride-interval",
+                                    interval=1000,  # refresh frequency in milliseconds
+                                    n_intervals=0,  # loop counter
+                                ),
+                                html.Div(
+                                    "Current Ride",
+                                    className="panel-title",
+                                    style={"font-size": 30},
+                                ),
+                                html.Div(id="live-ride-gauge"),
+                                html.Div(
+                                    [
+                                        html.H3("Current Rider Account Details"),
+                                        html.Div(id="current-rider-text"),
+                                    ]
+                                ),
+                                html.Div(
+                                    id="heart-rate-alert",
+                                    style={"display": "none"},
+                                    children=[
+                                        html.H3("HEART RATE WARNING"),
+                                        html.Div(id="heart-rate-alert-description"),
+                                    ],
+                                ),
+                            ], className="panel_div"
+                        ),
                     ],
-                ),
-            ],
-            className="panel",
-            id="left-panel",
-        ),
-        # Recent Ride info
-        html.Div(
-            [
-                dcc.Interval(  # Calls a callback to refresh all the live components in the div
-                    id="recent-rides-interval",
-                    interval=5
-                    * 60
-                    * 1000,  # refresh frequency in milliseconds (= 5 mins)
-                    n_intervals=0,  # loop counter
+                    className="left_panel",
+                    id="left-panel",
                 ),
                 html.Div(
-                    "Recent Rides", className="panel-title", style={"font-size": 30}
+                    [   html.Div([
+                            html.Div(
+                                        "Recent Rides",
+                                        className="panel-title",
+                                        style={"font-size": 30},
+                                    )
+                    ]),
+                    html.Div([
+                        dcc.Interval(  # Calls a callback to refresh all the live components in the div
+                                    id="recent-rides-interval",
+                                    interval=5
+                                    * 60
+                                    * 1000,  # refresh frequency in milliseconds (= 5 mins)
+                                    n_intervals=0,  # loop counter
+                                ),
+        
+                        html.Div(children=[
+                            dcc.Graph(id="number-of-riders-gender-pie", style={'display': 'inline-block'}),
+                            dcc.Graph(id="duration-of-ride-gender-pie", style={'display': 'inline-block'})
+                        ])
+                    ])
+                        # html.Div(
+                        #     [
+                        #         dcc.Interval(  # Calls a callback to refresh all the live components in the div
+                        #             id="recent-rides-interval",
+                        #             interval=5
+                        #             * 60
+                        #             * 1000,  # refresh frequency in milliseconds (= 5 mins)
+                        #             n_intervals=0,  # loop counter
+                        #         ),
+                        #         html.Div(
+                        #             "Recent Rides",
+                        #             className="panel-title",
+                        #             style={"font-size": 30},
+                        #         ),
+                        #         dcc.Graph(id="number-of-riders-gender-pie"),
+                        #         dcc.Graph(id="duration-of-ride-gender-pie"),
+                        #         dcc.Graph(id="number-of-riders-age-bar"),
+                        #         html.H3("Total Power:"),
+                        #         html.H2(id="total-power"),
+                        #         html.H3("Average Power per Rider:"),
+                        #         html.H3(id="average-power"),
+                        #     ], className="panel_div"
+                        # ),
+                    ],
+                    className="right_panel",
+                    id="right-panel",
                 ),
-                dcc.Graph(id="number-of-riders-gender-pie"),
-                dcc.Graph(id="duration-of-ride-gender-pie"),
-                dcc.Graph(id="number-of-riders-age-bar"),
-                html.H3("Total Power:"),
-                html.H2(id="total-power"),
-                html.H3("Average Power per Rider:"),
-                html.H3(id="average-power"),
-            ],
-            className="panel",
-            id="right-panel",
+            ]
         ),
     ]
 )
@@ -117,15 +155,17 @@ def live_ride_gauge(data: dict) -> daq.Gauge:
     age = data.get("user_age") or 50
 
     if not age:
-        return html.Span('Heart rate gauge unavailable without rider age data')
-    
+        return html.Span("Heart rate gauge unavailable without rider age data")
+
     ride_duration = data.get("duration") or 0
     ride_duration_minutes = int(ride_duration // 60)
     ride_duration_seconds = int(ride_duration % 60)
 
     max_rate = calculate_max_heart_rate(age)
-    label = (f"{data.get('user_name')} {' ♂' if data.get('user_gender') == 'male' else ' ♀'}"
-        f"- {ride_duration_minutes}m {ride_duration_seconds}s")
+    label = (
+        f"{data.get('user_name')} {' ♂' if data.get('user_gender') == 'male' else ' ♀'}"
+        f"- {ride_duration_minutes}m {ride_duration_seconds}s"
+    )
 
     return daq.Gauge(
         color={
@@ -140,11 +180,11 @@ def live_ride_gauge(data: dict) -> daq.Gauge:
         label=label,
         showCurrentValue=True,
         units="BPM",
-        scale={"start": 50, "interval": 25, "labelInterval": 50},
-        value= data.get("heart_rate") or 0,
+        scale={"start": 0, "interval": 25, "labelInterval": 1},
+        value=data.get("heart_rate") or 0,
         min=0,
         max=200,
-        style={"color": "black"}
+        style={"color": "white"},
     )
 
 
