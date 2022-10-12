@@ -1,6 +1,6 @@
 body {
   background-color: #333333;
-  color: #7fc37e;
+  color: #8FBC8F;
 }
 
 .panel {
@@ -17,11 +17,11 @@ body {
 #left-panel {
   left: 0.5%;
   background-color: #53565a;
-  color: #7fc37e;
+  color: #8FBC8F;
 }
 
 #right-panel {
   right: 0.5%;
   background-color: #53565a;
-  color: #7fc37e;
+  color: #8FBC8F;
 }
