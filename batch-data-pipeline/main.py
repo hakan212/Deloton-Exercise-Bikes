@@ -61,10 +61,7 @@ def polling_kafka():
     consumer = subscribe_to_kafka_topic()
     conn = databaseConnection(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
 
-    resistance_list = []
-    power_list = []
-    heart_rate_list = []
-    rpm_list = []
+    resistance_list, power_list, heart_rate_list, heart_rate_list = [], [], [], []
 
     while True:
 
