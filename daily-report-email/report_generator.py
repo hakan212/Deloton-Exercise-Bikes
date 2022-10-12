@@ -12,7 +12,7 @@ A4_DOC_WIDTH = 210
 
 def create_image_header(pdf):
     """Creates an image header with the logo"""
-    pdf.image("./assets/images/deloton-logo.png", -0.1, 0, A4_DOC_WIDTH + 1)
+    pdf.image("./assets/deloton-logo.png", -0.1, 0, A4_DOC_WIDTH + 1)
     pdf.ln(5)
 
 
@@ -65,13 +65,13 @@ def create_graph_block(pdf):
     Creates a block with two data insight graphs:
     gender split for rides, and age split for rides
     """
-    pdf.image("./assets/tmp/gender_fig.png", 0, 185, w=95, h=100)
-    pdf.image("./assets/tmp/age_fig.png", 100, 185, w=115, h=100)
+    pdf.image("/tmp/gender_fig.png", 0, 185, w=95, h=100)
+    pdf.image("/tmp/age_fig.png", 100, 185, w=115, h=100)
 
 
 def save_pdf_file(pdf):
-    """Saves the pdf into the temp directory in assets"""
-    pdf.output(name="./assets/tmp/deloton_daily_report.pdf", dest="F")
+    """Saves the pdf into the temp directory in /tmp"""
+    pdf.output(name="/tmp/deloton_daily_report.pdf", dest="F")
 
 
 def generate_report(df_rides):
