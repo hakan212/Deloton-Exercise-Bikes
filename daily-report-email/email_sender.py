@@ -1,5 +1,5 @@
 """Main script for sending daily reports to Deloton CEO. A dataframe is constructed using the last 24 hours of rides and used to construct plotly graphs. 
-The graphs will be used when generating the pdf attachment for the email. The email will be sent to the CEO once the pdf and email body has been generated. """
+The graphs will be used when generating the pdf attachment for the email. The email will be sent to the CEO once the pdf and email body has been generated."""
 
 import os
 from datetime import date

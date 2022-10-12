@@ -1,5 +1,6 @@
 """Generates graphs for pdf report by querying last 12 hours of data using data mart. The graphs are produced using the plotly library
 and data values are obtained by performing aggregate functions on the data."""
+
 import os
 from datetime import date
 
