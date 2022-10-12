@@ -1,52 +1,21 @@
 import json
 import os
-import uuid
 from statistics import mean
 
-from confluent_kafka import Consumer
 from dotenv import load_dotenv
 
 import insert_queries
 import log_processing
 from assets.pipeline_engine_wrapper import databaseConnection
+from kafka_consumer import subscribe_to_kafka_topic
 
 load_dotenv()
-
-KAFKA_SERVER = os.getenv("KAFKA_SERVER")
-KAFKA_USERNAME = os.getenv("KAFKA_USERNAME")
-KAFKA_PASSWORD = os.getenv("KAFKA_PASSWORD")
-KAFKA_TOPIC_NAME = os.getenv("KAFKA_TOPIC_NAME")
 
 DB_HOST = os.getenv("DB_HOST")
 DB_PORT = os.getenv("DB_PORT")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
-
-
-def subscribe_to_kafka_topic():
-    """Produce a consumer that subscribes to the relevant Kafka topic"""
-    c = Consumer(
-        {
-            "bootstrap.servers": KAFKA_SERVER,
-            "group.id": f"deleton" + str(uuid.uuid1()),
-            "security.protocol": "SASL_SSL",
-            "sasl.mechanisms": "PLAIN",
-            "sasl.username": KAFKA_USERNAME,
-            "sasl.password": KAFKA_PASSWORD,
-            "session.timeout.ms": 6000,
-            "heartbeat.interval.ms": 1000,
-            "fetch.wait.max.ms": 6000,
-            "auto.offset.reset": "latest",
-            "enable.auto.commit": "false",
-            "max.poll.interval.ms": "86400000",
-            "topic.metadata.refresh.interval.ms": "-1",
-            "client.id": "id-002-005",
-        }
-    )
-
-    c.subscribe([KAFKA_TOPIC_NAME])
-    return c
 
 
 def polling_kafka():
