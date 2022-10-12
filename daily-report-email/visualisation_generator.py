@@ -46,7 +46,7 @@ def get_dataframe():
         rides_before AS (
             SELECT *
                 FROM {PRODUCTION_SCHEMA}.rides
-                WHERE begin_timestamp > (CURRENT_DATE) and begin_timestamp < (CURRENT_DATE + 1)
+                WHERE begin_timestamp >= (CURRENT_DATE - INTERVAL '24 hours')
         )
 
         SELECT ugd.user_id, rb.ride_id, ugd.gender, ugd.age, rb.begin_timestamp,
