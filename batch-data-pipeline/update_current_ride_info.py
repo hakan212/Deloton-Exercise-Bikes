@@ -15,6 +15,7 @@ def update_duration_and_resistance(resistance_list, log):
     # Duration is first value to appear in the log and resistance is the second
     duration = int(float(log_values[0]))
     resistance_list.append(int(log_values[1]))
+
     return duration
 
 
@@ -34,7 +35,7 @@ def update_heart_rpm_power(power_list, heart_rate_list, rpm_list, log):
 
 
 def update_current_ride_info(
-    resistance_list, power_list, heart_rate_list, rpm_list, log
+    resistance_list, power_list, heart_rate_list, rpm_list, log, duration
 ):
     """Updates either ride or telemetry information given log on current ride info"""
 
@@ -43,4 +44,5 @@ def update_current_ride_info(
 
     elif "Telemetry" in log:
         update_heart_rpm_power(power_list, heart_rate_list, rpm_list, log)
+
     return duration

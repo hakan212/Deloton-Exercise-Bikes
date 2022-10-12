@@ -31,7 +31,8 @@ def polling_kafka():
     consumer = subscribe_to_kafka_topic()
     conn = databaseConnection(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
 
-    resistance_list, power_list, heart_rate_list, heart_rate_list = [], [], [], []
+    resistance_list, power_list, heart_rate_list, heart_rate_list, rpm_list = [], [], [], [], []
+    duration = 0
 
     while True:
 
@@ -58,7 +59,7 @@ def polling_kafka():
                 log = values.get("log")
 
                 duration = update_current_ride_info(
-                    resistance_list, power_list, heart_rate_list, rpm_list, log
+                    resistance_list, power_list, heart_rate_list, rpm_list, log, duration
                 )
 
             elif (
