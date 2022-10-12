@@ -160,7 +160,7 @@ def live_heart_rate_scatter(data: dict) -> plotly.graph_objects.Figure:
     global min_rate, max_rate
 
     latest = data.get('heart_rate') or np.nan
-    heart_rates = data.get('heart_rates')
+    heart_rates = data.get('heart_rates') or []
     min_rate, max_rate = min(min_rate, latest), max(max_rate, latest)
     fig = px.line(x=range(len(heart_rates)), y=heart_rates, template="simple_white")
 
