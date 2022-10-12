@@ -37,7 +37,7 @@ def create_page_title(pdf, text):
     pdf.line(0, 110, 210, 110)
 
 
-def create_text_block(pdf, df_rides):
+def create_text_block(pdf, df_rides, df_yesterday):
     """
     Creates a text block with key ride analytics:
     total number of rides, average total power generated,
@@ -46,7 +46,9 @@ def create_text_block(pdf, df_rides):
     """
     pdf.set_font("Times", "", 16)
     pdf.ln(15)
-    pdf.write(5, f"Total number of rides: {get_number_of_rides(df_rides)}")
+    pdf.write(5, f"Total number of rides in past 24 hours: {get_number_of_rides(df_rides)}")
+    pdf.ln(10)
+    pdf.write(5, f"Total number of rides 24 to 48 hours ago: {get_number_of_rides(df_yesterday)}")
     pdf.ln(10)
     pdf.write(
         5,
@@ -76,7 +78,7 @@ def save_pdf_file(pdf):
     pdf.output(name="/tmp/deloton_daily_report.pdf", dest="F")
 
 
-def generate_report(df_rides):
+def generate_report(df_rides, df_yesterday):
     """Generate a PDF report with data insights"""
     pdf = FPDF()  # A4 by default
     pdf.compress = False
@@ -85,7 +87,7 @@ def generate_report(df_rides):
     create_image_header(pdf)
     create_cover_title(pdf)
     create_page_title(pdf, text="Ride Analytics")
-    create_text_block(pdf, df_rides)
+    create_text_block(pdf, df_rides, df_yesterday)
     create_graph_block(pdf)
     save_pdf_file(pdf)
 
