@@ -2,6 +2,8 @@ from typing import Tuple
 
 import dash_bootstrap_components as dbc
 import dash_daq as daq
+import plotly.graph_objects
+import plotly.express as px
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
 
@@ -32,6 +34,7 @@ app.layout = html.Div(
                     "Current Ride", className="panel-title", style={"font-size": 30}
                 ),
                 html.Div(id="live-ride-gauge"),
+                dcc.Graph(id='live-heart-rate-scatter'),
                 html.Div(
                     [
                         html.H3("Current Rider Account Details"),
@@ -81,6 +84,7 @@ app.layout = html.Div(
 @app.callback(
     Output("current-rider-text", "children"),
     Output("live-ride-gauge", "children"),
+    Output('live-heart-rate-scatter', 'figure'),
     Output("heart-rate-alert", "style"),
     Output("heart-rate-alert-description", "children"),
     Input("current-ride-interval", "n_intervals"),
@@ -91,6 +95,7 @@ def current_ride_live_refresh(n_intervals: int) -> Tuple:
     return (
         current_rider_details(data),
         live_ride_gauge(data),
+        live_heart_rate_scatter(data),
         heart_rate_alert(data),
         heart_rate_description(data),
     )
@@ -147,6 +152,34 @@ def live_ride_gauge(data: dict) -> daq.Gauge:
         style={"color": "black"}
     )
 
+import numpy as np
+heart_rates = []
+min_rate, max_rate = 100, 100
+def live_heart_rate_scatter(data: dict) -> plotly.graph_objects.Figure:
+    """Generates live-updating scatter graph for user's heart-rate"""
+    
+    global min_rate, max_rate
+
+    latest = data.get('heart_rate') or np.nan
+    heart_rates.append(latest)
+    min_rate, max_rate = min(min_rate, latest), max(max_rate, latest)
+    fig = px.line(x=range(len(heart_rates)), y=heart_rates)
+    y_top, y_bottom = ((max_rate // 50) + 1) * 50, (min_rate // 50) * 50
+    fig.update_layout(yaxis={'range': [y_bottom, y_top]})
+    fig.add_layout_image({
+        'source': 'assets/apache_zookeeper.png',
+        'x': 0.9,
+        'y': ((latest - y_bottom) / (y_top - y_bottom)) + 0.15,
+        'sizex': 0.1,
+        'sizey': 0.15,
+        'sizing': "stretch",
+        'opacity': 1,
+        'layer': "below"})
+    print('min is', min_rate)
+    print('max is', max_rate)
+    print('latest is', latest)
+    print((latest - y_bottom) / (y_top - y_bottom))
+    return fig
 
 def heart_rate_alert(data: dict) -> dict:
     """Will display warning message on screen if heart rate is too high or low
