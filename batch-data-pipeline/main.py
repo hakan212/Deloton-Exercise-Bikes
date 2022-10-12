@@ -91,15 +91,7 @@ def polling_kafka():
                 log = values.get("log")
 
                 if "Ride" in log:  # process strings with Ride info
-                    split_by_timestamp_and_logs = " mendoza v9: [INFO]: Ride - "
-                    timestamp_and_values = log.split(split_by_timestamp_and_logs)
-
-                    log_values = log_processing.extract_values_from_log(
-                        timestamp_and_values[1]
-                    )
-
-                    duration = int(float(log_values[0]))
-                    resistance_list.append(int(log_values[1]))
+                    duration = update_duration_and_resistance(resistance_list, log)
 
                 elif "Telemetry" in log:
                     split_by_timestamp_and_logs = " mendoza v9: [INFO]: Telemetry - "
@@ -139,6 +131,24 @@ def polling_kafka():
                 rpm_list = []
                 heart_rate_list = []
                 resistance_list = []
+
+def update_duration_and_resistance(resistance_list, log):
+    """
+    Will append latest resistance value to resistance_list & return latest duration value
+    when provided with a log containing ride information
+    """
+
+    split_by_timestamp_and_logs = " mendoza v9: [INFO]: Ride - "
+    timestamp_and_values = log.split(split_by_timestamp_and_logs)
+
+    log_values = log_processing.extract_values_from_log(
+                        timestamp_and_values[1]
+                    )
+    
+    # Duration is first value to appear in the log and resistance is the second
+    duration = int(float(log_values[0]))
+    resistance_list.append(int(log_values[1]))
+    return duration
 
 
 polling_kafka()
