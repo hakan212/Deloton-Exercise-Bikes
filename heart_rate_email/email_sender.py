@@ -1,3 +1,6 @@
+"""This script continuously polls kafka for heart_rate information, in order to be able to send heart rate alerts in real time.
+If the heart rate is too high or too low, an email will be constructed and sent to the user as a warning."""
+
 import datetime
 import json
 import os

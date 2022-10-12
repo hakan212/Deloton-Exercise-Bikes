@@ -1,3 +1,5 @@
+"""Contains utility functions to help construct the email subject, content and body."""
+
 import boto3
 from botocore.exceptions import ClientError
 from heart_rate_calculator import heart_rate_high, heart_rate_low

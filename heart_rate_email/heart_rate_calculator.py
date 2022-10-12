@@ -1,3 +1,5 @@
+"""Checks to see if a given heart rate is too high or too low based on age"""
+
 def calculate_max_heart_rate(age: int) -> int:
     """Calculates maximum heart rate given age. 211, 208, 0.64 and 0.7 taken from formulas found in published papers"""
     if age <= 40:
