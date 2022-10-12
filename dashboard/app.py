@@ -155,7 +155,7 @@ def live_ride_gauge(data: dict):
         showCurrentValue=True,
         units="BPM",
         scale={"start": 50, "interval": 25, "labelInterval": 50},
-        value=heart_rate,
+        value=heart_rate or 0,
         min=0,
         max=200,
         style={"color": "black"},
