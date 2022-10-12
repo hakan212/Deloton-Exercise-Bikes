@@ -139,7 +139,7 @@ def live_ride_gauge(data: dict):
     age, heart_rate = data.get("user_age"), data.get("heart_rate") or 0
 
     if not age:
-        return
+        return html.Span('Heart rate gauge unavailable without rider age data')
         
     max_rate = calculate_max_heart_rate(age)
     return daq.Gauge(
