@@ -100,7 +100,7 @@ def current_ride_live_refresh(n_intervals: int) -> Tuple:
     return (
         current_rider_details(data),
         live_ride_gauge(data),
-        live_heart_rate_scatter(data),
+        live_heart_rate_plot(data),
         heart_rate_alert(data),
         heart_rate_description(data),
     )
@@ -162,7 +162,7 @@ def live_ride_gauge(data: dict) -> daq.Gauge:
 
 min_rate, max_rate = 100, 100
 
-def live_heart_rate_scatter(data: dict) -> plotly.graph_objects.Figure:
+def live_heart_rate_plot(data: dict) -> plotly.graph_objects.Figure:
     """Generates live-updating scatter graph for user's heart-rate"""
 
     global min_rate, max_rate
