@@ -3,7 +3,6 @@ from typing import Tuple
 import dash_bootstrap_components as dbc
 import dash_daq as daq
 import numpy as np
-import pandas as pd
 import plotly.express as px
 import plotly.graph_objects
 from dash import Dash, dcc, html
@@ -30,16 +29,15 @@ app.layout = html.Div(
         html.Div([html.H1("Deloton Live Dashboard")]),
         html.Div(
             [
-                dcc.Interval(  # Calls a callback to refresh all the live components in the div
-                    id="current-ride-interval",
-                    interval=1000,  # refresh frequency in milliseconds
-                    n_intervals=0,  # loop counter
-                ),
+                # dcc.Interval(  # Calls a callback to refresh all the live components in the div
+                #     id="current-ride-interval",
+                #     interval=1000,  # refresh frequency in milliseconds
+                #     n_intervals=0,  # loop counter
+                # ),
                 html.Div(
                     "Current Ride", className="panel-title", style={"font-size": 30}
                 ),
-                html.Div(id="live-ride-gauge"),
-                dcc.Graph(id="live-heart-rate-scatter"),
+                # html.Div(id="live-ride-gauge"),
                 html.Div(
                     [
                         html.Div(
@@ -55,6 +53,7 @@ app.layout = html.Div(
                                     style={"font-size": 30},
                                 ),
                                 html.Div(id="live-ride-gauge"),
+                                dcc.Graph(id="live-heart-rate-scatter"),
                                 html.Div(
                                     [
                                         html.H3("Current Rider Account Details"),
@@ -216,7 +215,7 @@ def live_ride_gauge(data: dict) -> daq.Gauge:
     """Generates the heart rate gauge for a given user, based on the information in the data
     parameter.
     """
-    age = data.get("user_age")
+    age = data.get("user_age") or 50
 
     if not age:
         return html.Span("Heart rate gauge unavailable without rider age data")
@@ -262,18 +261,18 @@ def live_heart_rate_plot(data: dict) -> plotly.graph_objects.Figure:
 
     latest = data.get("heart_rate") or np.nan
     heart_rates = data.get("heart_rates")
-
-    # Return empty plot if no data
-    if heart_rates is None:
-        return px.line(template="simple_white")
-
-    # Create plot
-    fig = px.line(
-        x=heart_rates.index,
-        y=heart_rates.values,
-        template="simple_white",
-        labels={"x": "Ride Duration (s)", "y": "Heart Rate (BPM)"},
-    )
+    
+    if heart_rates is None: # Return empty plot if no data
+        fig = px.line(height=300)
+    else: # Create plot
+        fig = px.line(
+            x=heart_rates.index,
+            y=heart_rates.values,
+            template="simple_white",
+            height=400,
+            labels={"x": "Ride Duration (s)", "y": "Heart Rate (BPM)"},
+        )
+    set_line_plot_colors(fig)
 
     # set least and greatest values on the y-axis, adjusted to fit values read so far
     min_reading, max_reading = min(min_reading, latest), max(max_reading, latest)
@@ -285,6 +284,14 @@ def live_heart_rate_plot(data: dict) -> plotly.graph_objects.Figure:
         add_surfing_zookeeper(fig, latest, y_bottom, y_top)
     return fig
 
+def set_line_plot_colors(fig) -> None:
+    """Set colors on line plot"""
+    fig.update_layout({
+    'plot_bgcolor': 'rgba(0,0,0,0)',
+    'paper_bgcolor': 'rgba(0,0,0,0)',
+    'font_color': "#FFFFFF"
+    })
+    fig.update_traces(line_color='red')
 
 def add_surfing_zookeeper(
     fig: plotly.graph_objects.Figure, latest: int, y_bottom: int, y_top: int
