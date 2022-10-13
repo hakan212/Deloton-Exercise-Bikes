@@ -2,13 +2,21 @@ from typing import Tuple
 
 import dash_bootstrap_components as dbc
 import dash_daq as daq
+import numpy as np
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
 
 import real_time_processing
 import recent_rides_visualisations
-from heart_rate_calculator import (calculate_max_heart_rate, heart_rate_high,
-                                   heart_rate_low, heart_rate_ok)
+from heart_rate_calculator import (
+    calculate_max_heart_rate,
+    heart_rate_high,
+    heart_rate_low,
+    heart_rate_ok,
+)
 
 app = Dash(
     __name__,
@@ -31,16 +39,14 @@ app.layout = html.Div(
                 html.Div(
                     "Current Ride", className="panel-title", style={"font-size": 30}
                 ),
+                html.Div(id="live-ride-gauge"),
+                dcc.Graph(id="live-heart-rate-scatter"),
                 html.Div(
                     [
                         html.H3("Current Rider Account Details"),
                         html.Div(id="current-rider-text"),
                     ]
                 ),
-                html.Div(
-                    [html.H3("Current Ride Stats"), html.Div(id="live-ride-text")]
-                ),
-                html.Div(id="live-ride-gauge"),
                 html.Div(
                     id="heart-rate-alert",
                     style={"display": "none"},
@@ -83,8 +89,8 @@ app.layout = html.Div(
 
 @app.callback(
     Output("current-rider-text", "children"),
-    Output("live-ride-text", "children"),
     Output("live-ride-gauge", "children"),
+    Output("live-heart-rate-scatter", "figure"),
     Output("heart-rate-alert", "style"),
     Output("heart-rate-alert-description", "children"),
     Input("current-ride-interval", "n_intervals"),
@@ -94,8 +100,8 @@ def current_ride_live_refresh(n_intervals: int) -> Tuple:
     data = real_time_processing.current_data
     return (
         current_rider_details(data),
-        live_ride_details(data),
         live_ride_gauge(data),
+        live_heart_rate_plot(data),
         heart_rate_alert(data),
         heart_rate_description(data),
     )
@@ -115,51 +121,100 @@ def current_rider_details(data: dict) -> html.Div:
     )
 
 
-def live_ride_details(data: dict) -> html.Span:
-    """Returns an html span element containing text with live information on the current ride"""
-    ride_duration_seconds = data.get("duration")
-    heart_rate = data.get("heart_rate")
-
-    if ride_duration_seconds:
-        ride_duration_minutes = int(ride_duration_seconds // 60)
-        ride_duration_seconds = int(ride_duration_seconds % 60)
-    else:
-        ride_duration_minutes = 0
-        ride_duration_seconds = 0
-
-    message = (
-        f"Riding for {ride_duration_minutes} minutes and "
-        f"{ride_duration_seconds}  seconds. Heart rate: {heart_rate} BPM"
-    )
-
-    return html.Span(message)
-
-
-def live_ride_gauge(data: dict):
-    age, heart_rate = data.get("user_age"), data.get("heart_rate") or 0
+def live_ride_gauge(data: dict) -> daq.Gauge:
+    """Generates the heart rate gauge for a given user, based on the information in the data
+    parameter.
+    """
+    age = data.get("user_age")
 
     if not age:
-        return html.Span('Heart rate gauge unavailable without rider age data')
-        
+        return html.Span("Heart rate gauge unavailable without rider age data")
+
+    ride_duration = data.get("duration") or 0
+    ride_duration_minutes = int(ride_duration // 60)
+    ride_duration_seconds = int(ride_duration % 60)
+
     max_rate = calculate_max_heart_rate(age)
+    label = (
+        f"{data.get('user_name')} {' ♂' if data.get('user_gender') == 'male' else ' ♀'}"
+        f"- {ride_duration_minutes}m {ride_duration_seconds}s"
+    )
+
     return daq.Gauge(
         color={
             "gradient": True,
             "ranges": {
                 "white": [0, 50],
-                "green": [50, 100],
-                "yellow": [100, max_rate],
+                "green": [50, max_rate - 20],
+                "yellow": [max_rate - 20, max_rate],
                 "red": [max_rate, 200],
             },
         },
-        label="Heart Rate",
+        label=label,
         showCurrentValue=True,
         units="BPM",
         scale={"start": 50, "interval": 25, "labelInterval": 50},
-        value=heart_rate or 0,
+        value=data.get("heart_rate") or 0,
         min=0,
         max=200,
         style={"color": "black"},
+    )
+
+
+min_reading, max_reading = 100, 100
+
+
+def live_heart_rate_plot(data: dict) -> plotly.graph_objects.Figure:
+    """Generates live-updating scatter graph for user's heart-rate"""
+
+    global min_reading, max_reading
+
+    latest = data.get("heart_rate") or np.nan
+    heart_rates = data.get("heart_rates")
+
+    # Return empty plot if no data
+    if heart_rates is None:
+        return px.line(template="simple_white")
+
+    # Create plot
+    fig = px.line(
+        x=heart_rates.index,
+        y=heart_rates.values,
+        template="simple_white",
+        labels={"x": "Ride Duration (s)", "y": "Heart Rate (BPM)"},
+    )
+
+    # set least and greatest values on the y-axis, adjusted to fit values read so far
+    min_reading, max_reading = min(min_reading, latest), max(max_reading, latest)
+    y_top, y_bottom = ((max_reading // 50) + 1) * 50, (min_reading // 50) * 50
+    fig.update_layout(yaxis={"range": [y_bottom, y_top]})
+
+    # Add surfing zookeeper if there is a latest reading
+    if latest is not np.nan:
+        add_surfing_zookeeper(fig, latest, y_bottom, y_top)
+    return fig
+
+
+def add_surfing_zookeeper(
+    fig: plotly.graph_objects.Figure, latest: int, y_bottom: int, y_top: int
+) -> None:
+    """Add surfing zookeeper to line plot"""
+    # number between 0 and 1 representing height of latest point on line as fraction of graph height
+    line_height = (latest - y_bottom) / (y_top - y_bottom)
+
+    zookeper_width, zookeeper_height = 0.1, 0.15
+    fig.add_layout_image(
+        {
+            "source": "assets/apache_zookeeper.png",
+            "x": 0.95,  # zookeeper position on x-axis
+            "y": line_height
+            + zookeeper_height,  # zookeeper position on y-axis +0.15 offset for zookeeper height
+            "sizex": zookeper_width,
+            "sizey": zookeeper_height,
+            "sizing": "stretch",
+            "opacity": 1,
+            "layer": "below",
+        }
     )
 
 
