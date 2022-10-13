@@ -29,7 +29,7 @@ app.layout = html.Div(
                 html.Div(
                     [
                         html.Div(
-                            [   
+                            [
                                 dcc.Interval(  # Calls a callback to refresh all the live components in the div
                                     id="current-ride-interval",
                                     interval=1000,  # refresh frequency in milliseconds
@@ -55,62 +55,84 @@ app.layout = html.Div(
                                         html.Div(id="heart-rate-alert-description"),
                                     ],
                                 ),
-                            ], className="panel_div"
+                            ],
+                            className="panel_div",
                         ),
                     ],
                     className="left_panel",
                     id="left-panel",
                 ),
                 html.Div(
-                    [   html.Div([
-                            html.Div(
-                                        "Recent Rides",
-                                        className="panel-title",
-                                        style={"font-size": 30},
-                                    )
-                    ]),
-                    html.Div([
-                        dcc.Interval(  # Calls a callback to refresh all the live components in the div
+                    [
+                        html.Div(
+                            [
+                                html.Div(
+                                    "Recent Rides",
+                                    className="panel-title",
+                                    style={"font-size": 30},
+                                ),
+                                html.Div(
+                                    [
+                                        html.Div(
+                                            children=[
+                                                html.H3("Total Power:"),
+                                                html.H2(id="total-power"),
+                                                html.H3("Average Power per Rider:"),
+                                                html.H3(id="average-power"),
+                                            ], style={"display": "inline-block"}
+                                        ),
+                                        html.Div(
+                                            [
+                                                dcc.Graph(
+                                                    id="number-of-riders-age-bar",
+                                                    style={
+                                                        "width": "45vh",
+                                                        "height": "45vh",
+                                                    },
+                                                )
+                                            ], style={"display": "inline-block"}
+                                        ),
+                                    ],
+                                    # style={"display": "inline-block"},
+                                ),
+                            ], className="panel_div"
+                        ),
+                        html.Div(
+                            [
+                                dcc.Interval(  # Calls a callback to refresh all the live components in the div
                                     id="recent-rides-interval",
                                     interval=5
                                     * 60
                                     * 1000,  # refresh frequency in milliseconds (= 5 mins)
                                     n_intervals=0,  # loop counter
                                 ),
-        
-                        html.Div(children=[
-                            dcc.Graph(id="number-of-riders-gender-pie", style={'display': 'inline-block'}),
-                            dcc.Graph(id="duration-of-ride-gender-pie", style={'display': 'inline-block'})
-                        ])
-                    ])
-                        # html.Div(
-                        #     [
-                        #         dcc.Interval(  # Calls a callback to refresh all the live components in the div
-                        #             id="recent-rides-interval",
-                        #             interval=5
-                        #             * 60
-                        #             * 1000,  # refresh frequency in milliseconds (= 5 mins)
-                        #             n_intervals=0,  # loop counter
-                        #         ),
-                        #         html.Div(
-                        #             "Recent Rides",
-                        #             className="panel-title",
-                        #             style={"font-size": 30},
-                        #         ),
-                        #         dcc.Graph(id="number-of-riders-gender-pie"),
-                        #         dcc.Graph(id="duration-of-ride-gender-pie"),
-                        #         dcc.Graph(id="number-of-riders-age-bar"),
-                        #         html.H3("Total Power:"),
-                        #         html.H2(id="total-power"),
-                        #         html.H3("Average Power per Rider:"),
-                        #         html.H3(id="average-power"),
-                        #     ], className="panel_div"
-                        # ),
+                                html.Div(
+                                    children=[
+                                        dcc.Graph(
+                                            id="number-of-riders-gender-pie",
+                                            style={
+                                                "display": "inline-block",
+                                                "width": "45vh",
+                                                "height": "45vh",
+                                            },
+                                        ),
+                                        dcc.Graph(
+                                            id="duration-of-ride-gender-pie",
+                                            style={
+                                                "display": "inline-block",
+                                                "width": "45vh",
+                                                "height": "45vh",
+                                            },
+                                        ),
+                                    ]
+                                ),
+                            ], className="panel_div"
+                        ),
                     ],
                     className="right_panel",
                     id="right-panel",
                 ),
-            ]
+            ],
         ),
     ]
 )
