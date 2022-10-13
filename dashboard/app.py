@@ -4,10 +4,9 @@ import dash_bootstrap_components as dbc
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
 
-import real_time_processing
 import current_ride_visualisations
+import real_time_processing
 import recent_rides_visualisations
-
 
 app = Dash(
     __name__,
@@ -91,7 +90,6 @@ app.layout = html.Div(
                                                                 html.P(
                                                                     id="total-power"
                                                                 ),
-                                                            
                                                                 html.P(
                                                                     id="average-power"
                                                                 ),
@@ -179,7 +177,7 @@ def current_ride_live_refresh(n_intervals: int) -> Tuple:
         current_ride_visualisations.heart_rate_alert(data),
         current_ride_visualisations.live_heart_rate_plot(data),
         current_ride_visualisations.current_rider_details(data),
-        current_ride_visualisations.heart_rate_description(data)
+        current_ride_visualisations.heart_rate_description(data),
     )
 
 

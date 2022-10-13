@@ -7,12 +7,8 @@ from dash.dependencies import Input, Output
 
 import real_time_processing
 import recent_rides_visualisations
-from heart_rate_calculator import (
-    calculate_max_heart_rate,
-    heart_rate_high,
-    heart_rate_low,
-    heart_rate_ok,
-)
+from heart_rate_calculator import (calculate_max_heart_rate, heart_rate_high,
+                                   heart_rate_low, heart_rate_ok)
 
 
 def live_ride_gauge(data: dict) -> daq.Gauge:
@@ -54,6 +50,7 @@ def live_ride_gauge(data: dict) -> daq.Gauge:
         style={"color": "white"},
     )
 
+
 def current_rider_details(data: dict) -> html.Div:
     """Returns an html span element containing text with current rider information"""
     return html.Div(
@@ -78,10 +75,10 @@ def live_heart_rate_plot(data: dict) -> plotly.graph_objects.Figure:
 
     latest = data.get("heart_rate") or np.nan
     heart_rates = data.get("heart_rates")
-    
-    if heart_rates is None: # Return empty plot if no data
+
+    if heart_rates is None:  # Return empty plot if no data
         fig = px.line(template="simple_white", height=300)
-    else: # Create plot
+    else:  # Create plot
         fig = px.line(
             x=heart_rates.index,
             y=heart_rates.values,
@@ -101,16 +98,19 @@ def live_heart_rate_plot(data: dict) -> plotly.graph_objects.Figure:
         add_surfing_zookeeper(fig, latest, y_bottom, y_top)
     return fig
 
+
 def set_line_plot_colors(fig) -> None:
     """Set colors on line plot"""
-    fig.update_layout({
-    'plot_bgcolor': 'rgba(0,0,0,0)',
-    'paper_bgcolor': 'rgba(0,0,0,0)',
-    'font_color': "#FFFFFF"
-    })
-    fig.update_traces(line_color='red')
-    fig.update_xaxes(linecolor='#FFFFFF')
-    fig.update_yaxes(linecolor='#FFFFFF')
+    fig.update_layout(
+        {
+            "plot_bgcolor": "rgba(0,0,0,0)",
+            "paper_bgcolor": "rgba(0,0,0,0)",
+            "font_color": "#FFFFFF",
+        }
+    )
+    fig.update_traces(line_color="red")
+    fig.update_xaxes(linecolor="#FFFFFF")
+    fig.update_yaxes(linecolor="#FFFFFF")
 
 
 def add_surfing_zookeeper(
@@ -134,6 +134,7 @@ def add_surfing_zookeeper(
             "layer": "below",
         }
     )
+
 
 def heart_rate_alert(data: dict) -> dict:
     """Will display warning message on screen if heart rate is too high or low
