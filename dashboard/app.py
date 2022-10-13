@@ -47,13 +47,6 @@ app.layout = html.Div(
                                     style={"font-size": 30},
                                 ),
                                 html.Div(id="live-ride-gauge"),
-                                dcc.Graph(id="live-heart-rate-scatter"),
-                                html.Div(
-                                    [
-                                        html.H3("Current Rider Account Details"),
-                                        html.Div(id="current-rider-text"),
-                                    ]
-                                ),
                                 html.Div(
                                     id="heart-rate-alert",
                                     style={"display": "none"},
@@ -61,6 +54,13 @@ app.layout = html.Div(
                                         html.H3("HEART RATE WARNING"),
                                         html.Div(id="heart-rate-alert-description"),
                                     ],
+                                ),
+                                dcc.Graph(id="live-heart-rate-scatter"),
+                                html.Div(
+                                    [
+                                        html.H3("Current Rider Account Details"),
+                                        html.Div(id="current-rider-text"),
+                                    ]
                                 ),
                             ],
                             className="panel_div",
@@ -172,10 +172,10 @@ app.layout = html.Div(
 
 
 @app.callback(
-    Output("current-rider-text", "children"),
     Output("live-ride-gauge", "children"),
-    Output("live-heart-rate-scatter", "figure"),
     Output("heart-rate-alert", "style"),
+    Output("live-heart-rate-scatter", "figure"),
+    Output("current-rider-text", "children"),
     Output("heart-rate-alert-description", "children"),
     Input("current-ride-interval", "n_intervals"),
 )
@@ -183,10 +183,10 @@ def current_ride_live_refresh(n_intervals: int) -> Tuple:
     real_time_processing.refresh_data()
     data = real_time_processing.current_data
     return (
-        current_rider_details(data),
         live_ride_gauge(data),
-        live_heart_rate_plot(data),
         heart_rate_alert(data),
+        live_heart_rate_plot(data),
+        current_rider_details(data),
         heart_rate_description(data),
     )
 
