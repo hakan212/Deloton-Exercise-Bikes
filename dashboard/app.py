@@ -29,15 +29,9 @@ app.layout = html.Div(
         html.Div([html.H1("Deloton Live Dashboard")]),
         html.Div(
             [
-                # dcc.Interval(  # Calls a callback to refresh all the live components in the div
-                #     id="current-ride-interval",
-                #     interval=1000,  # refresh frequency in milliseconds
-                #     n_intervals=0,  # loop counter
-                # ),
                 html.Div(
                     "Current Ride", className="panel-title", style={"font-size": 30}
                 ),
-                # html.Div(id="live-ride-gauge"),
                 html.Div(
                     [
                         html.Div(
