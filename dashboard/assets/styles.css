@@ -1,27 +1,149 @@
 body {
-  background-color: #333333;
-  color: #7fc37e;
+  background-color: #343434;
+  background-image: url("https://user-images.githubusercontent.com/5181870/188019461-4a27a045-9301-4931-910c-b367f7b2709a.png");
+  background-repeat: no-repeat;
+  background-size: 1536px auto;
+  color: #8FBC8F;
 }
 
-.panel {
+
+.left_panel {
   height: 90%;
-  width: 48.75%;
+  width: 32.5%;
   position: absolute;
   z-index: 1;
   overflow-x: hidden;
-  padding-top: 200px;
+  padding-top: 50;
   border: solid 2px #000;
-  border-radius: 40px;
+  border-radius: 5px;
 }
 
-#left-panel {
+.right_panel {
+  height: 90%;
+  width: 66%;
+  position: absolute;
+  z-index: 1;
+  overflow-x: hidden;
+  padding-top: 50;
+  border: solid 2px #000;
+  border-radius: 5px;
+}
+
+.panel_div {
+  position: relative;
+  padding: 25px;
+  height: 100%;
+}
+
+.cRfgdB .scale {
+  fill: rgb(255, 255, 255) !important;
+}
+
+.dHABtm {
+  color: rgb(255, 255, 255) !important;
+}
+
+
+
+#left_panel {
   left: 0.5%;
-  background-color: #53565a;
-  color: #7fc37e;
+  /* background-color: #343536; */
+  color: #ffffff;
+ 
+  /* From https://css.glass */
+  background: rgba(64, 61, 61, 0.67);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(7.9px);
+  -webkit-backdrop-filter: blur(7.9px);
 }
 
-#right-panel {
+#right_panel {
   right: 0.5%;
-  background-color: #53565a;
-  color: #7fc37e;
+  /* background-color: #343536; */
+  color: #ffffff;
+  /* From https://css.glass */
+  background: rgba(64, 61, 61, 0.67);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(7.9px);
+  -webkit-backdrop-filter: blur(7.9px);
+
 }
+
+#top_panel {
+  height: 30%;
+  width: 100%;
+}
+
+#bottom_panel {
+  height: 70%;
+  width: 100%;
+}
+
+.glass_effect {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(3.7px);
+  -webkit-backdrop-filter: blur(3.7px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+
+
+
+
+
+/* 
+
+body {
+  font-size: 1.25rem;
+  font-family: sans-serif;
+  line-height: 150%;
+  text-shadow: 0 2px 2px #b6701e;
+}
+
+section {
+  color: #fff;
+  text-align: center;
+}
+
+div {
+  height: 100%;
+}
+
+article {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 1.75rem;
+  margin: 0 0 0.75rem 0;
+}
+
+/* Pattern styles */
+/* 
+.container {
+  display: table;
+  width: 100%;
+}
+
+.left-half {
+  background-color: #ff9e2c;
+  position: absolute;
+  left: 0px;
+  width: 50%;
+}
+
+.right-half {
+  background-color: #b6701e;
+  position: absolute;
+  right: 0px;
+  width: 50%;
+} */ 

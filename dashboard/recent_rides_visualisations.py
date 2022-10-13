@@ -37,19 +37,24 @@ def get_recent_rides_data():
 
 def create_gender_split_pie_chart(gender_related_data, title):
     """Creates a pie chart given gender related data"""
+
+    color_scheme = ["#483D8B", "#8FBC8F"]
+
     gender_split_pie_chart = go.Figure(
-        data=go.Pie(labels=["Female", "Male"], values=gender_related_data)
+        data=go.Pie(labels=["Female", "Male"], values=gender_related_data),
     )
+
+    
 
     gender_split_pie_chart.update_layout(
         title_text=title,
         width=400,
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font_color="#7FC37F",
+        font_color="#FFFFFF",
     )
 
-    gender_split_pie_chart.update_traces(marker=dict(colors=["#7FC37F", "#000000"]))
+    gender_split_pie_chart.update_traces(marker=dict(colors=color_scheme))
 
     return gender_split_pie_chart
 
@@ -72,13 +77,13 @@ def create_ride_age_groups_bar(recent_rides_data):
         y="num_of_riders",
         title="Number of riders by age group",
         color_discrete_sequence=[
-            "#7FC37F",
-            "#7FC37F",
-            "#7FC37F",
-            "#7FC37F",
-            "#7FC37F",
-            "#7FC37F",
-            "#7FC37F",
+            "#8FBC8F",
+            "#8FBC8F",
+            "#8FBC8F",
+            "#8FBC8F",
+            "#8FBC8F",
+            "#8FBC8F",
+            "#8FBC8F",
         ],
     )
 
@@ -93,7 +98,7 @@ def create_ride_age_groups_bar(recent_rides_data):
         ),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font_color="#7FC37F",
+        font_color="#FFFFFF",
     )
 
     return rides_by_age_plot
