@@ -13,8 +13,11 @@ from dotenv import load_dotenv
 
 from report_generator import generate_report
 from upload_to_s3 import upload_to_s3
-from visualisation_generator import (get_data_between_timestamps, plot_age_rides_bar,
-                                     plot_gender_rides_pie)
+from visualisation_generator import (
+    get_data_between_timestamps,
+    plot_age_rides_bar,
+    plot_gender_rides_pie,
+)
 
 load_dotenv()
 
@@ -86,8 +89,9 @@ def send_email(
 def handler(event, context):
     """Handler function for AWS Lambda"""
     df_rides = get_data_between_timestamps("(NOW() - INTERVAL '24 hours')", "NOW()")
-    df_yesterday = get_data_between_timestamps("(NOW() - INTERVAL '48 hours')", "(NOW() - INTERVAL '24 hours')")
-
+    df_yesterday = get_data_between_timestamps(
+        "(NOW() - INTERVAL '48 hours')", "(NOW() - INTERVAL '24 hours')"
+    )
 
     plot_age_rides_bar(df_rides)
 

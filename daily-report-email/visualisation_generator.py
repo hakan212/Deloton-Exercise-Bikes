@@ -28,7 +28,7 @@ def get_engine_connection():
     return create_engine(conn_string)
 
 
-def get_data_between_timestamps(start_timestamp:str, end_timestamp:str):
+def get_data_between_timestamps(start_timestamp: str, end_timestamp: str):
     """
     Creates a Pandas DataFrame by querying AWS Aurora with an SQL statement.
 

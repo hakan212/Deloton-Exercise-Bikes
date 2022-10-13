@@ -4,10 +4,15 @@ from datetime import date
 
 from fpdf import FPDF
 
-from visualisation_generator import (get_data_between_timestamps, get_mean_heart_rate,
-                                     get_mean_power_output,
-                                     get_mean_total_power, get_number_of_rides,
-                                     plot_age_rides_bar, plot_gender_rides_pie)
+from visualisation_generator import (
+    get_data_between_timestamps,
+    get_mean_heart_rate,
+    get_mean_power_output,
+    get_mean_total_power,
+    get_number_of_rides,
+    plot_age_rides_bar,
+    plot_gender_rides_pie,
+)
 
 A4_DOC_WIDTH = 210
 
@@ -46,8 +51,11 @@ def create_text_block(pdf, df_rides, df_yesterday):
     """
     ride_count_past_24_hrs = get_number_of_rides(df_rides)
     ride_count_previous_24_hours = get_number_of_rides(df_yesterday)
-    percentage_change = round(100*(ride_count_past_24_hrs-ride_count_previous_24_hours)/ride_count_previous_24_hours)
-
+    percentage_change = round(
+        100
+        * (ride_count_past_24_hrs - ride_count_previous_24_hours)
+        / ride_count_previous_24_hours
+    )
 
     pdf.set_font("Times", "", 16)
     pdf.ln(15)
@@ -99,7 +107,9 @@ def generate_report(df_rides, df_yesterday):
 
 if __name__ == "__main__":
     df_rides = get_data_between_timestamps("(NOW() - INTERVAL '24 hours')", "NOW()")
-    df_yesterday = get_data_between_timestamps("(NOW() - INTERVAL '48 hours')", "(NOW() - INTERVAL '24 hours')")
+    df_yesterday = get_data_between_timestamps(
+        "(NOW() - INTERVAL '48 hours')", "(NOW() - INTERVAL '24 hours')"
+    )
     plot_age_rides_bar(df_rides)
     plot_gender_rides_pie(df_rides)
     generate_report(df_rides, df_yesterday)
