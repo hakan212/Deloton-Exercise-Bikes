@@ -44,11 +44,16 @@ def create_text_block(pdf, df_rides, df_yesterday):
     average power generated per ride, and average heart rate
     per rider.
     """
+    ride_count_past_24_hrs = get_number_of_rides(df_rides)
+    ride_count_previous_24_hours = get_number_of_rides(df_yesterday)
+    percentage_change = round(100*(ride_count_past_24_hrs-ride_count_previous_24_hours)/ride_count_previous_24_hours)
+
+
     pdf.set_font("Times", "", 16)
     pdf.ln(15)
-    pdf.write(5, f"Total number of rides in past 24 hours: {get_number_of_rides(df_rides)}")
+    pdf.write(5, f"Total number of rides in past 24 hours: {ride_count_past_24_hrs}")
     pdf.ln(10)
-    pdf.write(5, f"Total number of rides 24 to 48 hours ago: {get_number_of_rides(df_yesterday)}")
+    pdf.write(5, f"Percentage change from previous 24 hours: {percentage_change}%")
     pdf.ln(10)
     pdf.write(
         5,
