@@ -199,7 +199,7 @@ def add_surfing_zookeeper(
     fig: plotly.graph_objects.Figure, latest: int, y_bottom: int, y_top: int
 ) -> None:
     """Add surfing zookeeper to line plot"""
-    # number between 0 and 1 representing height of latest point on line as fraction of graph size
+    # number between 0 and 1 representing height of latest point on line as fraction of graph height
     line_height = (latest - y_bottom) / (y_top - y_bottom)
 
     zookeper_width, zookeeper_height = 0.1, 0.15
