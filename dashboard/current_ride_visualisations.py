@@ -1,12 +1,12 @@
 """This module contains the functions which generate the content for the current ride section of
 the dashboard"""
 
-import dash_daq as daq
+import dash_daq as daq #type: ignore
 import numpy as np
-import plotly.express as px
-import plotly.graph_objects
-from dash import Dash, dcc, html
-from dash.dependencies import Input, Output
+import plotly.express as px #type: ignore
+import plotly.graph_objects #type: ignore
+from dash import Dash, dcc, html #type: ignore
+from dash.dependencies import Input, Output #type: ignore
 
 import real_time_processing
 import recent_rides_visualisations
@@ -68,7 +68,7 @@ def current_rider_details(data: dict) -> html.Div:
     )
 
 
-min_reading, max_reading = 100, 100
+min_reading, max_reading = 100.0, 100.0
 
 
 def live_heart_rate_plot(data: dict) -> plotly.graph_objects.Figure:
@@ -117,7 +117,7 @@ def set_line_plot_colors(fig) -> None:
 
 
 def add_surfing_zookeeper(
-    fig: plotly.graph_objects.Figure, latest: int, y_bottom: int, y_top: int
+    fig: plotly.graph_objects.Figure, latest: float, y_bottom: int, y_top: int
 ) -> None:
     """Add surfing zookeeper to line plot"""
     # number between 0 and 1 representing height of latest point on line as fraction of graph height

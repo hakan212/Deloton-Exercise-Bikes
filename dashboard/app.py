@@ -6,9 +6,9 @@ aurora database) respectively."""
 
 from typing import Tuple
 
-import dash_bootstrap_components as dbc
-from dash import Dash, dcc, html
-from dash.dependencies import Input, Output
+import dash_bootstrap_components as dbc #type: ignore
+from dash import Dash, dcc, html #type: ignore
+from dash.dependencies import Input, Output #type: ignore
 
 import current_ride_visualisations
 import real_time_processing

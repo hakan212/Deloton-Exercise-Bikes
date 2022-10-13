@@ -57,13 +57,13 @@ def update_current_ride_metrics(current_data: dict, log: str) -> None:
         update_heart_rpm_and_power(current_data, heart_rpm_and_power)
 
 
-def convert_epoc_milliseconds_to_dob(epoc_milliseconds: int) -> datetime:
+def convert_epoc_milliseconds_to_dob(epoc_milliseconds: int) -> datetime.datetime:
     epoc_seconds = epoc_milliseconds / 1000
 
     return datetime.datetime.fromtimestamp(epoc_seconds)
 
 
-def calculate_age(born: datetime) -> int:
+def calculate_age(born: datetime.datetime) -> int:
     today = date.today()
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
 

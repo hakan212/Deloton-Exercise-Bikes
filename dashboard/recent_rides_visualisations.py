@@ -4,7 +4,7 @@ the dashboard"""
 import os
 
 import pandas as pd
-import plotly.graph_objs as go
+import plotly.graph_objs as go # type: ignore
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 
@@ -46,8 +46,6 @@ def create_gender_split_pie_chart(gender_related_data, title):
     gender_split_pie_chart = go.Figure(
         data=go.Pie(labels=["Female", "Male"], values=gender_related_data),
     )
-
-    
 
     gender_split_pie_chart.update_layout(
         title_text=title,
