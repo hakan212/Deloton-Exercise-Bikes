@@ -1,3 +1,6 @@
+"""This module contains the functions which generate the content for the current rides section of
+the dashboard"""
+
 import dash_daq as daq
 import numpy as np
 import plotly.express as px
