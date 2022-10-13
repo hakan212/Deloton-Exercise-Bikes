@@ -125,7 +125,7 @@ def live_ride_gauge(data: dict) -> daq.Gauge:
     """Generates the heart rate gauge for a given user, based on the information in the data
     parameter.
     """
-    age = data.get("user_age") or 50
+    age = data.get("user_age")
 
     if not age:
         return html.Span("Heart rate gauge unavailable without rider age data")
