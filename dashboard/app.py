@@ -21,9 +21,6 @@ app.layout = html.Div(
         html.Div(
             [
                 html.Div(
-                    "Current Ride", className="panel-title", style={"font-size": 30}
-                ),
-                html.Div(
                     [
                         html.Div(
                             [
