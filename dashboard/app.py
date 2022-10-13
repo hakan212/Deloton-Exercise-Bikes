@@ -2,9 +2,10 @@ from typing import Tuple
 
 import dash_bootstrap_components as dbc
 import dash_daq as daq
+import pandas as pd
 import numpy as np
-import plotly.graph_objects
 import plotly.express as px
+import plotly.graph_objects
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
 
@@ -160,33 +161,47 @@ def live_ride_gauge(data: dict) -> daq.Gauge:
     )
 
 
-min_rate, max_rate = 100, 100
+min_reading, max_reading = 100, 100
+
 
 def live_heart_rate_plot(data: dict) -> plotly.graph_objects.Figure:
     """Generates live-updating scatter graph for user's heart-rate"""
 
-    global min_rate, max_rate
+    global min_reading, max_reading
 
     latest = data.get("heart_rate") or np.nan
-    heart_rates = data.get("heart_rates") or []
+    heart_rates = data.get("heart_rates")
 
-    min_rate, max_rate = min(min_rate, latest), max(max_rate, latest)
+    #Return empty plot if no data
+    if heart_rates is None:
+        return px.line(template="simple_white")
+
+    # Create plot
     fig = px.line(
-        x=range(len(heart_rates)),
-        y=heart_rates,
+        x=heart_rates.index,
+        y=heart_rates.values,
         template="simple_white",
         labels={"x": "Ride Duration (s)", "y": "Heart Rate (BPM)"},
     )
 
-    # Min and max values on the y-axis, adjusted to fit values in plot
-    y_top, y_bottom = ((max_rate // 50) + 1) * 50, (min_rate // 50) * 50
+    # set least and greatest values on the y-axis, adjusted to fit values read so far
+    min_reading, max_reading = min(min_reading, latest), max(max_reading, latest)
+    y_top, y_bottom = ((max_reading // 50) + 1) * 50, (min_reading // 50) * 50
+    fig.update_layout(yaxis={"range": [y_bottom, y_top]})
+
+    # Add surfing zookeeper if there is a latest reading
+    if latest is not np.nan:
+        add_surfing_zookeeper(fig, latest, y_bottom, y_top)
+    return fig
+
+
+def add_surfing_zookeeper(
+    fig: plotly.graph_objects.Figure, latest: int, y_bottom: int, y_top: int
+) -> None:
+    """Add surfing zookeeper to line plot"""
     # number between 0 and 1 representing height of latest point on line as fraction of graph size
     line_height = (latest - y_bottom) / (y_top - y_bottom)
 
-    # Set y-axis size and axes labels
-    fig.update_layout(yaxis={"range": [y_bottom, y_top]})
-
-    # Add zookeeper
     zookeper_width, zookeeper_height = 0.1, 0.15
     fig.add_layout_image(
         {
@@ -201,7 +216,6 @@ def live_heart_rate_plot(data: dict) -> plotly.graph_objects.Figure:
             "layer": "below",
         }
     )
-    return fig
 
 
 def heart_rate_alert(data: dict) -> dict:
