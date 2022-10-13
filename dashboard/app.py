@@ -219,4 +219,4 @@ def recent_rides_live_refresh(n_intervals: int):
 
 
 if __name__ == "__main__":
-    app.run_server(host="0.0.0.0", debug=True, port=8080)
+    app.run_server(host="0.0.0.0", debug=False, port=8080)
