@@ -1,6 +1,9 @@
+"""This module contains the refresh_data function, which ingests data from our kafka stream to
+serve the live section of the dashboard"""
+
 import os
 
-from confluent_kafka import Consumer
+from confluent_kafka import Consumer #type: ignore
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -13,7 +16,7 @@ KAFKA_USERNAME = os.getenv("KAFKA_USERNAME")
 KAFKA_PASSWORD = os.getenv("KAFKA_PASSWORD")
 KAFKA_TOPIC_NAME = os.getenv("KAFKA_TOPIC_NAME")
 
-current_data = {}
+current_data = {} #type: ignore
 
 c = Consumer(
     {
@@ -37,7 +40,7 @@ c = Consumer(
 c.subscribe([KAFKA_TOPIC_NAME])
 
 
-def refresh_data():
+def refresh_data() -> None:
     global current_data
     kafka_message = c.poll(
         0.5
