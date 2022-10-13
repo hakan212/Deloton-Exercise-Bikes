@@ -28,14 +28,14 @@ def get_engine_connection():
     return create_engine(conn_string)
 
 
-def get_dataframe():
+def get_data_between_timestamps(start_timestamp: str, end_timestamp: str):
     """
-    Creates a Pandas DataFrame by querying
-    AWS Aurora with an SQL statement.
+    Creates a Pandas DataFrame by querying AWS Aurora with an SQL statement.
 
-    Data collected is rides and users joined
-    where the timestamp is within the last 24
-    hours.
+    Data collected is rides and users joined where the timestamp is within the specified
+    time frame.
+
+    Note that input strings should be timestamps in SQL.
     """
 
     query = f"""
@@ -49,7 +49,8 @@ def get_dataframe():
         rides_before AS (
             SELECT *
                 FROM {PRODUCTION_SCHEMA}.rides
-                WHERE begin_timestamp >= (NOW() - INTERVAL '24 hours')
+                WHERE begin_timestamp >= {start_timestamp}
+                AND begin_timestamp <= {end_timestamp}
         )
 
         SELECT ugd.user_id, rb.ride_id, ugd.gender, ugd.age, rb.begin_timestamp,
