@@ -2,8 +2,8 @@ from typing import Tuple
 
 import dash_bootstrap_components as dbc
 import dash_daq as daq
-import pandas as pd
 import numpy as np
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects
 from dash import Dash, dcc, html
@@ -172,7 +172,7 @@ def live_heart_rate_plot(data: dict) -> plotly.graph_objects.Figure:
     latest = data.get("heart_rate") or np.nan
     heart_rates = data.get("heart_rates")
 
-    #Return empty plot if no data
+    # Return empty plot if no data
     if heart_rates is None:
         return px.line(template="simple_white")
 
