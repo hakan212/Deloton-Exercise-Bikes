@@ -51,7 +51,7 @@ def create_gender_split_pie_chart(gender_related_data, title):
         width=400,
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font_color="#8FBC8F",
+        font_color="#FFFFFF",
     )
 
     gender_split_pie_chart.update_traces(marker=dict(colors=color_scheme))
@@ -98,7 +98,7 @@ def create_ride_age_groups_bar(recent_rides_data):
         ),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font_color="#8FBC8F",
+        font_color="#FFFFFF",
     )
 
     return rides_by_age_plot
