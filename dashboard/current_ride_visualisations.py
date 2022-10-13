@@ -1,4 +1,4 @@
-"""This module contains the functions which generate the content for the current rides section of
+"""This module contains the functions which generate the content for the current ride section of
 the dashboard"""
 
 import dash_daq as daq

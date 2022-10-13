@@ -1,3 +1,6 @@
+"""This module contains the functions which generate the content for the recent rides section of
+the dashboard"""
+
 import os
 
 import pandas as pd
