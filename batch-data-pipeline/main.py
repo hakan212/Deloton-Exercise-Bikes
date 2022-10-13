@@ -1,52 +1,24 @@
+"""Main script for polling Kafka for consumer data. It will wait for the current user to finish before processing as the user data is not available for a ride that has 
+already started. It will perform aggregate functions on accumulated data and make insert queries to insert user and ride info into an Aurora database."""
 import json
 import os
-import uuid
 from statistics import mean
 
-from confluent_kafka import Consumer
 from dotenv import load_dotenv
 
 import insert_queries
 import log_processing
 from assets.pipeline_engine_wrapper import databaseConnection
+from kafka_consumer import subscribe_to_kafka_topic
+from update_current_ride_info import update_current_ride_info
 
 load_dotenv()
-
-KAFKA_SERVER = os.getenv("KAFKA_SERVER")
-KAFKA_USERNAME = os.getenv("KAFKA_USERNAME")
-KAFKA_PASSWORD = os.getenv("KAFKA_PASSWORD")
-KAFKA_TOPIC_NAME = os.getenv("KAFKA_TOPIC_NAME")
 
 DB_HOST = os.getenv("DB_HOST")
 DB_PORT = os.getenv("DB_PORT")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
-
-
-def subscribe_to_kafka_topic():
-    """Produce a consumer that subscribes to the relevant Kafka topic"""
-    c = Consumer(
-        {
-            "bootstrap.servers": KAFKA_SERVER,
-            "group.id": f"deleton" + str(uuid.uuid1()),
-            "security.protocol": "SASL_SSL",
-            "sasl.mechanisms": "PLAIN",
-            "sasl.username": KAFKA_USERNAME,
-            "sasl.password": KAFKA_PASSWORD,
-            "session.timeout.ms": 6000,
-            "heartbeat.interval.ms": 1000,
-            "fetch.wait.max.ms": 6000,
-            "auto.offset.reset": "latest",
-            "enable.auto.commit": "false",
-            "max.poll.interval.ms": "86400000",
-            "topic.metadata.refresh.interval.ms": "-1",
-            "client.id": "id-002-005",
-        }
-    )
-
-    c.subscribe([KAFKA_TOPIC_NAME])
-    return c
 
 
 def polling_kafka():
@@ -61,10 +33,8 @@ def polling_kafka():
     consumer = subscribe_to_kafka_topic()
     conn = databaseConnection(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
 
-    resistance_list = []
-    power_list = []
-    heart_rate_list = []
-    rpm_list = []
+    resistance_list, power_list, heart_rate_list, heart_rate_list, rpm_list = [], [], [], [], []
+    duration = 0
 
     while True:
 
@@ -90,28 +60,9 @@ def polling_kafka():
                 values = json.loads(log)
                 log = values.get("log")
 
-                if "Ride" in log:  # process strings with Ride info
-                    split_by_timestamp_and_logs = " mendoza v9: [INFO]: Ride - "
-                    timestamp_and_values = log.split(split_by_timestamp_and_logs)
-
-                    log_values = log_processing.extract_values_from_log(
-                        timestamp_and_values[1]
-                    )
-
-                    duration = int(float(log_values[0]))
-                    resistance_list.append(int(log_values[1]))
-
-                elif "Telemetry" in log:
-                    split_by_timestamp_and_logs = " mendoza v9: [INFO]: Telemetry - "
-                    timestamp_and_values = log.split(split_by_timestamp_and_logs)
-
-                    log_values = log_processing.extract_values_from_log(
-                        timestamp_and_values[1]
-                    )
-
-                    heart_rate_list.append(int(log_values[0]))
-                    rpm_list.append(int(log_values[1]))
-                    power_list.append(round(float(log_values[2]), 3))
+                duration = update_current_ride_info(
+                    resistance_list, power_list, heart_rate_list, rpm_list, log, duration
+                )
 
             elif (
                 "new ride" in log and first_user_collected

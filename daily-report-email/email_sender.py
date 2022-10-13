@@ -12,8 +12,12 @@ from botocore.exceptions import ClientError
 from dotenv import load_dotenv
 
 from report_generator import generate_report
-from visualisation_generator import (get_dataframe, plot_age_rides_bar,
-                                     plot_gender_rides_pie)
+from upload_to_s3 import upload_to_s3
+from visualisation_generator import (
+    get_data_between_timestamps,
+    plot_age_rides_bar,
+    plot_gender_rides_pie,
+)
 
 load_dotenv()
 
@@ -84,13 +88,16 @@ def send_email(
 
 def handler(event, context):
     """Handler function for AWS Lambda"""
-    df_rides = get_dataframe()
+    df_rides = get_data_between_timestamps("(NOW() - INTERVAL '24 hours')", "NOW()")
+    df_yesterday = get_data_between_timestamps(
+        "(NOW() - INTERVAL '48 hours')", "(NOW() - INTERVAL '24 hours')"
+    )
 
     plot_age_rides_bar(df_rides)
 
     plot_gender_rides_pie(df_rides)
 
-    generate_report(df_rides)
+    generate_report(df_rides, df_yesterday)
 
     send_email(
         REGION,
@@ -100,5 +107,7 @@ def handler(event, context):
         EMAIL_SUBJECT,
         ATTACHMENT_PATH,
     )
+
+    upload_to_s3(ATTACHMENT_PATH)
 
     return "Function Execute"

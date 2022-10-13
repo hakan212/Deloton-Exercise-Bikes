@@ -1,3 +1,4 @@
+"""Utility functions to help with Kafka log processing, such as regular expressions to extract data and waiting for the first user finish."""
 import json
 import re
 

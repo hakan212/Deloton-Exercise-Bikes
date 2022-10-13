@@ -2,6 +2,10 @@ from typing import Tuple
 
 import dash_bootstrap_components as dbc
 import dash_daq as daq
+import numpy as np
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
 
@@ -26,6 +30,16 @@ app.layout = html.Div(
         html.Div([html.H1("Deloton Live Dashboard")]),
         html.Div(
             [
+                dcc.Interval(  # Calls a callback to refresh all the live components in the div
+                    id="current-ride-interval",
+                    interval=1000,  # refresh frequency in milliseconds
+                    n_intervals=0,  # loop counter
+                ),
+                html.Div(
+                    "Current Ride", className="panel-title", style={"font-size": 30}
+                ),
+                html.Div(id="live-ride-gauge"),
+                dcc.Graph(id="live-heart-rate-scatter"),
                 html.Div(
                     [
                         html.Div(
@@ -167,6 +181,7 @@ app.layout = html.Div(
 @app.callback(
     Output("current-rider-text", "children"),
     Output("live-ride-gauge", "children"),
+    Output("live-heart-rate-scatter", "figure"),
     Output("heart-rate-alert", "style"),
     Output("heart-rate-alert-description", "children"),
     Input("current-ride-interval", "n_intervals"),
@@ -177,6 +192,7 @@ def current_ride_live_refresh(n_intervals: int) -> Tuple:
     return (
         current_rider_details(data),
         live_ride_gauge(data),
+        live_heart_rate_plot(data),
         heart_rate_alert(data),
         heart_rate_description(data),
     )
@@ -200,7 +216,7 @@ def live_ride_gauge(data: dict) -> daq.Gauge:
     """Generates the heart rate gauge for a given user, based on the information in the data
     parameter.
     """
-    age = data.get("user_age") or 50
+    age = data.get("user_age")
 
     if not age:
         return html.Span("Heart rate gauge unavailable without rider age data")
@@ -233,6 +249,63 @@ def live_ride_gauge(data: dict) -> daq.Gauge:
         min=0,
         max=200,
         style={"color": "white"},
+    )
+
+
+min_reading, max_reading = 100, 100
+
+
+def live_heart_rate_plot(data: dict) -> plotly.graph_objects.Figure:
+    """Generates live-updating scatter graph for user's heart-rate"""
+
+    global min_reading, max_reading
+
+    latest = data.get("heart_rate") or np.nan
+    heart_rates = data.get("heart_rates")
+
+    # Return empty plot if no data
+    if heart_rates is None:
+        return px.line(template="simple_white")
+
+    # Create plot
+    fig = px.line(
+        x=heart_rates.index,
+        y=heart_rates.values,
+        template="simple_white",
+        labels={"x": "Ride Duration (s)", "y": "Heart Rate (BPM)"},
+    )
+
+    # set least and greatest values on the y-axis, adjusted to fit values read so far
+    min_reading, max_reading = min(min_reading, latest), max(max_reading, latest)
+    y_top, y_bottom = ((max_reading // 50) + 1) * 50, (min_reading // 50) * 50
+    fig.update_layout(yaxis={"range": [y_bottom, y_top]})
+
+    # Add surfing zookeeper if there is a latest reading
+    if latest is not np.nan:
+        add_surfing_zookeeper(fig, latest, y_bottom, y_top)
+    return fig
+
+
+def add_surfing_zookeeper(
+    fig: plotly.graph_objects.Figure, latest: int, y_bottom: int, y_top: int
+) -> None:
+    """Add surfing zookeeper to line plot"""
+    # number between 0 and 1 representing height of latest point on line as fraction of graph height
+    line_height = (latest - y_bottom) / (y_top - y_bottom)
+
+    zookeper_width, zookeeper_height = 0.1, 0.15
+    fig.add_layout_image(
+        {
+            "source": "assets/apache_zookeeper.png",
+            "x": 0.95,  # zookeeper position on x-axis
+            "y": line_height
+            + zookeeper_height,  # zookeeper position on y-axis +0.15 offset for zookeeper height
+            "sizex": zookeper_width,
+            "sizey": zookeeper_height,
+            "sizing": "stretch",
+            "opacity": 1,
+            "layer": "below",
+        }
     )
 
 
