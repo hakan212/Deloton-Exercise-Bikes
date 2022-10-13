@@ -286,6 +286,9 @@ def set_line_plot_colors(fig) -> None:
     'font_color': "#FFFFFF"
     })
     fig.update_traces(line_color='red')
+    fig.update_xaxes(linecolor='#FFFFFF')
+    fig.update_yaxes(linecolor='#FFFFFF')
+
 
 def add_surfing_zookeeper(
     fig: plotly.graph_objects.Figure, latest: int, y_bottom: int, y_top: int
