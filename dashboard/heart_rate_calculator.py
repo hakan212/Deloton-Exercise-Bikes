@@ -1,3 +1,6 @@
+"""This module contains functions for determining whether a rider's heart rate is within a healthy
+range."""
+
 def calculate_max_heart_rate(age: float) -> float:
     """Calculates maximum heart rate given age. 211, 208, 0.64 and 0.7 taken from formulas found in published papers"""
     if age <= 40:
