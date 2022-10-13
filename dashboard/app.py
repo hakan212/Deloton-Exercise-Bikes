@@ -60,54 +60,78 @@ app.layout = html.Div(
                         ),
                     ],
                     className="left_panel",
-                    id="left-panel",
+                    id="left_panel",
                 ),
                 html.Div(
                     [
-                        html.Div(
-                            [
-                                html.Div(
-                                    "Recent Rides",
-                                    className="panel-title",
-                                    style={"font-size": 30},
-                                ),
-                                html.Div(
-                                    [
-                                        html.Div(
-                                            children=[
-                                                html.H3("Total Power:"),
-                                                html.H2(id="total-power"),
-                                                html.H3("Average Power per Rider:"),
-                                                html.H3(id="average-power"),
-                                            ], style={"display": "inline-block"}
-                                        ),
-                                        html.Div(
-                                            [
-                                                dcc.Graph(
-                                                    id="number-of-riders-age-bar",
-                                                    style={
-                                                        "width": "45vh",
-                                                        "height": "45vh",
-                                                    },
-                                                )
-                                            ], style={"display": "inline-block"}
-                                        ),
-                                    ],
-                                    # style={"display": "inline-block"},
-                                ),
-                            ], className="panel_div"
+                        dcc.Interval(  # Calls a callback to refresh all the live components in the div
+                            id="recent-rides-interval",
+                            interval=5
+                            * 60
+                            * 1000,  # refresh frequency in milliseconds (= 5 mins)
+                            n_intervals=0,  # loop counter
                         ),
                         html.Div(
                             [
-                                dcc.Interval(  # Calls a callback to refresh all the live components in the div
-                                    id="recent-rides-interval",
-                                    interval=5
-                                    * 60
-                                    * 1000,  # refresh frequency in milliseconds (= 5 mins)
-                                    n_intervals=0,  # loop counter
+                                html.Div(
+                                    [
+                                        html.Div(
+                                            [
+                                                html.Div(
+                                                    [
+                                                        html.Div(
+                                                            "Recent Rides",
+                                                            className="panel-title",
+                                                            style={
+                                                                "font-size": 30,
+                                                                "height": "20%",
+                                                            },
+                                                        ),
+                                                        html.Div(
+                                                            [
+                                                                html.P(
+                                                                    id="total-power"
+                                                                ),
+                                                            
+                                                                html.P(
+                                                                    id="average-power"
+                                                                ),
+                                                            ],
+                                                            style={
+                                                                "height": "80%",
+                                                                "padding": "10px",
+                                                            },
+                                                        ),
+                                                    ],
+                                                    style={
+                                                        "float": "left",
+                                                        "width": "33%",
+                                                    },
+                                                ),
+                                                html.Div(
+                                                    [
+                                                        dcc.Graph(
+                                                            id="number-of-riders-age-bar",
+                                                            style={
+                                                                "width": "75%",
+                                                                "height": "60%",
+                                                                "padding-left": "50px",
+                                                            },
+                                                        )
+                                                    ],
+                                                    style={
+                                                        "float": "right",
+                                                        "width": "66%",
+                                                    },
+                                                ),
+                                            ],
+                                            style={"height": "80%"},
+                                        ),
+                                    ],
+                                    id="top_panel",
                                 ),
                                 html.Div(
-                                    children=[
+                                    [
                                         dcc.Graph(
                                             id="number-of-riders-gender-pie",
                                             style={
@@ -124,13 +148,15 @@ app.layout = html.Div(
                                                 "height": "45vh",
                                             },
                                         ),
-                                    ]
+                                    ],
+                                    id="bottom_panel",
                                 ),
-                            ], className="panel_div"
+                            ],
+                            className="panel_div",
                         ),
                     ],
                     className="right_panel",
-                    id="right-panel",
+                    id="right_panel",
                 ),
             ],
         ),
@@ -262,12 +288,12 @@ def recent_rides_live_refresh(n_intervals: int):
     ride_age_groups_bar = recent_rides_visualisations.create_ride_age_groups_bar(
         recent_rides_data
     )
-    total_power = recent_rides_visualisations.get_total_power_recent_rides(
+    total_power = f"""Total Power: {recent_rides_visualisations.get_total_power_recent_rides(
         recent_rides_data
-    )
-    average_power = recent_rides_visualisations.get_mean_power_recent_rides(
+    )}"""
+    average_power = f"""Average Power per Rider: {recent_rides_visualisations.get_mean_power_recent_rides(
         recent_rides_data
-    )
+    )}"""
 
     return (
         gender_count_pie,
