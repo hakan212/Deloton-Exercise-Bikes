@@ -301,7 +301,7 @@ def add_surfing_zookeeper(
     fig.add_layout_image(
         {
             "source": "assets/apache_zookeeper.png",
-            "x": 0.95,  # zookeeper position on x-axis
+            "x": 0.9,  # zookeeper position on x-axis
             "y": line_height
             + zookeeper_height,  # zookeeper position on y-axis +0.15 offset for zookeeper height
             "sizex": zookeper_width,
