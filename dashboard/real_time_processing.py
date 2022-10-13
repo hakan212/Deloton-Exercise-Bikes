@@ -40,7 +40,7 @@ c = Consumer(
 c.subscribe([KAFKA_TOPIC_NAME])
 
 
-def refresh_data():
+def refresh_data() -> None:
     global current_data
     kafka_message = c.poll(
         0.5
