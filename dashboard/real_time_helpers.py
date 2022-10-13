@@ -1,3 +1,6 @@
+"""This module contains helpers for refresh_data function in real_time_processing, which ingests
+data from our kafka stream to serve the live section of the dashboard"""
+
 
 import datetime
 import json

@@ -1,3 +1,6 @@
+"""This module contains the refresh_data function, which ingests data from our kafka stream to
+serve the live section of the dashboard"""
+
 import os
 
 from confluent_kafka import Consumer
