@@ -257,7 +257,7 @@ def live_heart_rate_plot(data: dict) -> plotly.graph_objects.Figure:
     heart_rates = data.get("heart_rates")
     
     if heart_rates is None: # Return empty plot if no data
-        fig = px.line(height=300)
+        fig = px.line(template="simple_white", height=300)
     else: # Create plot
         fig = px.line(
             x=heart_rates.index,
