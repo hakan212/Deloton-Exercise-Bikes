@@ -1,3 +1,9 @@
+"""This module contains the code which builds the live dashboard using plotly. The main 
+are the app.layout variable, which defines the DOM structure, and the two callback functions
+current_ride_live_refresh and recent_rides_live_refresh, which in turn call functions to generate
+visualisations for current rides (using kafka streaming data) and recent rides (gathered from our
+aurora database) respectively."""
+
 from typing import Tuple
 
 import dash_bootstrap_components as dbc
