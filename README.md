@@ -38,7 +38,7 @@ The current ride section shows information about the user as well as their perfo
 
 The recent rides section contains visualisations of the data, such as the gender and age range as well as the total and average power output of users.
 
-The dashboard is deployed on EC2 and is available online at: http://13.42.37.218:8080/
+The dashboard is deployed on EC2 and is available online at: http://18.132.60.194:8080/
 
 To run this script locally, you can execute: 
 ```
