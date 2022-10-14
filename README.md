@@ -79,3 +79,19 @@ The Tableau visualisations can be accessed via
 https://prod-uk-a.online.tableau.com/#/site/zookeeperstableau/workbooks/221509?:origin=card_share_link
 
 (Tableau Cloud account required)
+
+## Requirements
+
+- [boto3](https://pypi.org/project/boto3/)
+- [confluent_kafka](https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html)
+- [flask](https://flask.palletsprojects.com/en/2.2.x/)
+- [pandas](https://pypi.org/project/pandas/)
+- [fpdf](https://pyfpdf.readthedocs.io/en/latest/)
+- [kaleido](https://pypi.org/project/kaleido/)
+- [plotly](https://pypi.org/project/plotly/)
+- [psycopg2-binary](https://pypi.org/project/psycopg2-binary/)
+- [python-dotenv](https://pypi.org/project/python-dotenv/)
+- [sqlalchemy](https://pypi.org/project/SQLAlchemy/)
+
+- 
+- []
