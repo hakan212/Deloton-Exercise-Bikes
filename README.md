@@ -92,6 +92,3 @@ https://prod-uk-a.online.tableau.com/#/site/zookeeperstableau/workbooks/221509?:
 - [psycopg2-binary](https://pypi.org/project/psycopg2-binary/)
 - [python-dotenv](https://pypi.org/project/python-dotenv/)
 - [sqlalchemy](https://pypi.org/project/SQLAlchemy/)
-
-- 
-- []
