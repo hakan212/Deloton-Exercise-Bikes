@@ -38,8 +38,6 @@ The current ride section shows information about the user as well as their perfo
 
 The recent rides section contains visualisations of the data, such as the gender and age range as well as the total and average power output of users.
 
-The dashboard is deployed on EC2 and is available online at: http://18.132.60.194:8080/
-
 To run this script locally, you can execute: 
 ```
 python3 dashboard/app.py
@@ -61,8 +59,6 @@ python3 heart-rate-email/email-sender.py
 ## Public API
 
 An API is available for Deloton Staff members to inspect the data stored for all users and rides. The API is designed around REST principles and queries up-to-date information of all data. Users can retrieve all rides, specific rides and users by their respective ids, all rides on a certain id, or send a delete request for any ride or user.
-
-The API is hosted using EC2 and is available online at: http://18.170.223.8:5001
 
 To run this script locally, you can execute: 
 
